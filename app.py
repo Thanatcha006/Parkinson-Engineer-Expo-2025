@@ -11,6 +11,7 @@ from streamlit_drawable_canvas import st_canvas
 st.set_page_config(page_title="Parkinson Tester", layout="centered")
 
 st.title("🧠 Parkinson Detection")
+st.title("----------")
 
 st.divider()
 
