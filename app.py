@@ -15,7 +15,7 @@ st.title("🧠 Parkinson Detection")
 st.divider()
 
 # ----------------------------------
-# Load Spiral Model Only
+# Load Spiral Model
 # ----------------------------------
 @st.cache_resource
 def load_spiral_model():
