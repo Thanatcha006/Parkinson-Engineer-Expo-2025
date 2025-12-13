@@ -149,12 +149,12 @@ st.markdown("""
         font-size: 18px;
     }
     div[data-testid="stVerticalBlockBorderWrapper"] {
-        background-color: black !important;   
-        border: 10px solid black !important;   
-        border-radius: 20px !important;         
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important; 
-        padding: 25px !important;               
-        margin-bottom: 30px !important;        
+        background-color: #ffffff !important;
+        border: 3px solid #885D95 !important;  
+        border-radius: 25px !important;        
+        box-shadow: 0 10px 30px rgba(136, 93, 149, 0.2) !important; 
+        padding: 30px !important;
+        margin-bottom: 30px !important;
     }
 
 </style>
@@ -204,35 +204,38 @@ def preprocess(img):
 # =====================  BOX 1 : SPIRAL  ==================
 # =========================================================
 
+# ... (ส่วน Preprocess ด้านบนเหมือนเดิม) ...
+
+# จุด Anchor
 st.markdown('<div id="test_area"></div>', unsafe_allow_html=True) 
 
-# สร้าง Columns: ซ้าย-ขวา ว่างไว้เพื่อให้เนื้อหาอยู่ตรงกลาง (c2)
+# Layout หลัก: ซ้าย-ขวา ว่างไว้
 c1, c2, c3 = st.columns([1, 2, 1]) 
 
 with c2: 
-    # =====================  BOX 1 : SPIRAL  ==================
-    # ✅ กล่องที่ 1
+    # =====================  การ์ด 1 : SPIRAL  ==================
+    # ใช้ border=True เพื่อเรียก CSS ตัวที่เราเขียนไว้
     with st.container(border=True): 
         st.subheader("🌀 Spiral") 
-
+        
+        # ส่วนเลือก Mode
         spiral_mode = st.radio("เลือกวิธีใส่ภาพ (Spiral)", ["Upload", "Draw"], horizontal=True, key="spiral_mode")
         
         spiral_image = None
-
         if spiral_mode == "Upload":
             spiral_file = st.file_uploader("อัปโหลด Spiral", type=["png", "jpg", "jpeg"], key="spiral_upload")
             if spiral_file:
                 spiral_image = Image.open(spiral_file).convert("RGB")
                 st.image(spiral_image, caption="Spiral Preview", use_container_width=True)
         else:
-            # Draw Mode
-            dc1, dc2, dc3 = st.columns([0.1, 5, 0.1])
-            with dc2:
+            # Draw Mode - จัด Canvas ให้อยู่กลาง
+            col_draw_1, col_draw_2, col_draw_3 = st.columns([0.2, 5, 0.2])
+            with col_draw_2:
                 spiral_canvas = st_canvas(
-                    fill_color="rgba(0,0,0,0)",
+                    fill_color="rgba(255, 255, 255, 0)",
                     stroke_width=6,
                     stroke_color="black",
-                    background_color="white",
+                    background_color="#ffffff",
                     height=300,
                     width=500,     
                     drawing_mode="freedraw",
@@ -244,14 +247,13 @@ with c2:
         st.markdown("<br>", unsafe_allow_html=True)
         spiral_result_box = st.empty()
 
-    # =====================  BOX 2 : WAVE  =====================
+    # =====================  การ์ด 2 : WAVE  =====================
     with st.container(border=True): 
-        st.subheader("🌊 Wave")
+        st.subheader("🌊 Wave") 
 
         wave_mode = st.radio("เลือกวิธีใส่ภาพ (Wave)", ["Upload", "Draw"], horizontal=True, key="wave_mode")
         
         wave_image = None
-
         if wave_mode == "Upload":
             wave_file = st.file_uploader("อัปโหลด Wave", type=["png", "jpg", "jpeg"], key="wave_upload")
             if wave_file:
@@ -259,13 +261,13 @@ with c2:
                 st.image(wave_image, caption="Wave Preview", use_container_width=True)
         else:
             # Draw Mode
-            wc1, wc2, wc3 = st.columns([0.1, 5, 0.1])
-            with wc2:
+            w_col_1, w_col_2, w_col_3 = st.columns([0.2, 5, 0.2])
+            with w_col_2:
                 wave_canvas = st_canvas(
-                    fill_color="rgba(0,0,0,0)",
+                    fill_color="rgba(255, 255, 255, 0)",
                     stroke_width=6,
                     stroke_color="black",
-                    background_color="white",
+                    background_color="#ffffff",
                     height=300,
                     width=500,
                     drawing_mode="freedraw",
@@ -278,10 +280,11 @@ with c2:
         wave_result_box = st.empty()
 
     # =====================  BUTTON  ==================
-    
+    # ปุ่มกด (แยกออกมานอกกรอบ แต่อยู่ตรงกลาง)
+    st.markdown("<br>", unsafe_allow_html=True)
     if st.button("🔍 ประมวลผลทั้งหมด", use_container_width=True):
         
-        # Spiral Check
+        # (ส่วน Logic ประมวลผลเดิมของคุณ)
         if spiral_image is not None:
             try:
                 input_tensor = preprocess(spiral_image)
@@ -295,7 +298,6 @@ with c2:
         else:
             spiral_result_box.warning("🌀 Spiral : ยังไม่ได้ใส่ภาพ")
 
-        # Wave Check
         if wave_image is not None:
             wave_result_box.info("🌊 Wave : มีภาพแล้ว รอโมเดล")
         else:
