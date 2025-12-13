@@ -11,66 +11,6 @@ import os
 # Page Config (Mobile First)
 # ----------------------------------
 st.set_page_config(page_title="Parkinson Tester", layout="centered")
-st.markdown("""
-    <style>
-    .header {
-        font-family: 'Times New Roman', Times, serif;
-        font-size: 80px !important;
-        font-weight: 500;
-        color: #000000;
-        text-align: center;
-        margin-bottom: 10px;
-        margin-top: -50px;
-    }
-    .hero-container {
-        position: relative;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 20px 0;
-    }
-    .blue-container {
-        position: absolute;
-        width: 100%;        
-        height: 60%; 
-        background-color: #B4CDE6; 
-        border-radius: 20px;
-        z-index: 0;        
-        top: 50%;
-        transform: translateY(-50%);
-    }
-    .inner-image {
-        position: relative;
-        width: 100%;
-        max-width: 700px;  
-        z-index: 1;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-        border-radius: 15px;
-        display: block;
-    }
-    .stApp {
-        background-color: white;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-st.markdown('<p class="header">Parkinson Detection</p>', unsafe_allow_html=True)
-img_cover = "parkinson cover.svg"
-if os.path.exists(img_cover):
-    with open(img_cover, "rb") as f:
-        data = f.read()
-        encoded = base64.b64encode(data).decode()
-    img_src = f"data:image/svg+xml;base64,{encoded}"
-html_code = f'''
-<div class="hero-container">
-    <div class="blue-container">
-        <img src="{img_src}" class="inner-img">
-    </div>
-</div>
-'''
-st.markdown(html_code, unsafe_allow_html=True)
-
-        
 st.divider()
 
 # ----------------------------------
