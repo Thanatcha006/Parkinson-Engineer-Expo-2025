@@ -11,7 +11,7 @@ import os
 # Page Config (Mobile First)
 # ----------------------------------
 st.set_page_config(page_title="Parkinson Tester", layout="centered")
-st.title("Parkinson Detection", layout="centered") 
+st.title("Parkinson Detection") 
 st.divider()
 
 # ----------------------------------
