@@ -13,6 +13,14 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Open+Sans:wght@400;600;700&display=swap');
 
+    :root {
+        --primary-color: #885D95;
+        --background-color: #ffffff;
+        --secondary-background-color: #f0f2f6;
+        --text-color: #333333;
+        --font: 'Kanit', sans-serif;
+    }
+
     html, body, [class*="css"] {
         font-family: 'Kanit', sans-serif;
         scroll-behavior: smooth;
@@ -72,6 +80,7 @@ st.markdown("""
 
     /* Hero Text */
     .hero-content {
+        min-height: 85vh;
         text-align: center;
         padding-top: 30px;
         padding-bottom: 10px;
@@ -79,8 +88,6 @@ st.markdown("""
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        
-         
     }
     .hero-title {
         color: #4A4A4A;
@@ -148,40 +155,20 @@ st.markdown("""
         height: 50px;
         font-size: 18px;
     }
-    details[data-testid="stExpander"] {
+    div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
-        border: 3px solid #885D95 !important;  /* ขอบสีม่วง หนา 3px */
-        border-radius: 20px !important;        /* มุมโค้ง */
-        box-shadow: 0 10px 30px rgba(136, 93, 149, 0.2) !important;
-        padding: 0px !important;               /* รีเซ็ต Padding */
-        overflow: hidden !important;           /* ตัดมุมโค้งให้เนียน */
-    }
-
-    
-    details[data-testid="stExpander"] > summary {
-        background-color: #f8f0fc !important;  /* พื้นหลังหัวข้อสีม่วงอ่อนๆ จางๆ */
-        color: #885D95 !important;             /* ตัวหนังสือสีม่วงเข้ม */
-        font-size: 1.5rem !important;
-        font-weight: 700 !important;
-        border-bottom: 2px solid #885D95 !important; /* เส้นคั่น header กับ content */
-        pointer-events: none !important;     
-        cursor: default !important;
+        border: 2px solid #885D95 !important;   /* เส้นขอบสีม่วง หนา 2px */
+        border-radius: 20px !important;         /* มุมโค้ง */
+        box-shadow: 0 10px 30px rgba(136, 93, 149, 0.15) !important; /* เงาสีม่วงจางๆ */
+        padding: 30px !important;
+        margin-bottom: 30px !important;
     }
     
-    
-    details[data-testid="stExpander"] > summary svg {
-        display: none !important;
-    }
-
-   
-    details[data-testid="stExpander"] > summary span {
-        color: #885D95 !important;
-    }
-
-  
-    div[data-testid="stExpanderDetails"] {
-        background-color: #ffffff !important;
-        color: #333333 !important;
+    /* ถ้าหา Wrapper ไม่เจอ ให้ใช้ตัวนี้สำรอง (Wildcard selector) */
+    div[class*="stVerticalBlockBorderWrapper"] {
+        border: 2px solid #885D95 !important;
+        border-radius: 20px !important;
+        box-shadow: 0 10px 30px rgba(136, 93, 149, 0.15) !important;
     }
 
 </style>
@@ -230,18 +217,15 @@ def preprocess(img):
 # =========================================================
 # =====================  BOX 1 : SPIRAL  ==================
 # =========================================================
-# จุด Anchor
-st.markdown('<div id="test_area"></div>', unsafe_allow_html=True) 
+st.markdown('<div id="test_area" style="padding-top: 50px;"></div>', unsafe_allow_html=True)
 
-# Layout หลัก
-c1, c2, c3 = st.columns([1, 2, 1]) 
+# Layout Columns [ว่าง 1ส่วน | เนื้อหา 2ส่วน | ว่าง 1ส่วน]
+c1, c2, c3 = st.columns([1, 2, 1])
 
-with c2: 
-    # =====================  การ์ด 1 : SPIRAL (ใช้ Expander แทน) ==================
-    # expanded=True คือสั่งให้มันเปิดตลอดเวลา
-    with st.expander("🌀 Spiral", expanded=True): 
-        
-        # (ไม่ต้องใส่ st.subheader แล้ว เพราะชื่อมันไปอยู่ที่หัว Expander แล้ว)
+with c2:
+    # =====================  การ์ด 1 : SPIRAL ==================
+    with st.container(border=True):
+        st.subheader("🌀 Spiral")
         
         spiral_mode = st.radio("เลือกวิธีใส่ภาพ (Spiral)", ["Upload", "Draw"], horizontal=True, key="spiral_mode")
         
@@ -253,7 +237,7 @@ with c2:
                 st.image(spiral_image, caption="Spiral Preview", use_container_width=True)
         else:
             # Draw Mode
-            col_draw_1, col_draw_2, col_draw_3 = st.columns([0.2, 5, 0.2])
+            col_draw_1, col_draw_2, col_draw_3 = st.columns([0.1, 8, 0.1])
             with col_draw_2:
                 spiral_canvas = st_canvas(
                     fill_color="rgba(255, 255, 255, 0)",
@@ -268,11 +252,16 @@ with c2:
             if spiral_canvas.image_data is not None:
                 spiral_image = Image.fromarray(spiral_canvas.image_data.astype("uint8")).convert("RGB")
         
+        # กล่องผลลัพธ์
         st.markdown("<br>", unsafe_allow_html=True)
         spiral_result_box = st.empty()
 
-    # =====================  การ์ด 2 : WAVE (ใช้ Expander แทน) =====================
-    with st.expander("🌊 Wave", expanded=True): 
+
+    # =========================================================
+    # CARD 2 : WAVE (ใช้ st.container + border=True)
+    # =========================================================
+    with st.container(border=True):
+        st.subheader("🌊 Wave")
 
         wave_mode = st.radio("เลือกวิธีใส่ภาพ (Wave)", ["Upload", "Draw"], horizontal=True, key="wave_mode")
         
@@ -284,7 +273,7 @@ with c2:
                 st.image(wave_image, caption="Wave Preview", use_container_width=True)
         else:
             # Draw Mode
-            w_col_1, w_col_2, w_col_3 = st.columns([0.2, 5, 0.2])
+            w_col_1, w_col_2, w_col_3 = st.columns([0.1, 8, 0.1])
             with w_col_2:
                 wave_canvas = st_canvas(
                     fill_color="rgba(255, 255, 255, 0)",
@@ -299,28 +288,39 @@ with c2:
             if wave_canvas.image_data is not None:
                 wave_image = Image.fromarray(wave_canvas.image_data.astype("uint8")).convert("RGB")
 
+        # กล่องผลลัพธ์
         st.markdown("<br>", unsafe_allow_html=True)
         wave_result_box = st.empty()
 
-    # =====================  BUTTON  ==================
+    # =========================================================
+    # PROCESS BUTTON
+    # =========================================================
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("🔍 ประมวลผลทั้งหมด", use_container_width=True):
         
-        # (Logic เหมือนเดิม)
+        # ---------- Spiral Logic ----------
         if spiral_image is not None:
             try:
-                input_tensor = preprocess(spiral_image)
-                pred = spiral_model.predict(input_tensor)[0][0]
-                if pred > 0.5:
-                    spiral_result_box.error(f"🌀 Spiral : เสี่ยง Parkinson ({pred:.3f})")
+                # เช็คว่า model โหลดติดไหม
+                if 'spiral_model' in globals():
+                    input_tensor = preprocess(spiral_image)
+                    pred = spiral_model.predict(input_tensor)[0][0]
+
+                    if pred > 0.5:
+                        spiral_result_box.error(f"🌀 Spiral : เสี่ยง Parkinson ({pred:.3f})")
+                    else:
+                        spiral_result_box.success(f"🌀 Spiral : ปกติ ({pred:.3f})")
                 else:
-                    spiral_result_box.success(f"🌀 Spiral : ปกติ ({pred:.3f})")
+                    spiral_result_box.error("Model not loaded properly.")
             except Exception as e:
                 spiral_result_box.error(f"Error: {e}")
         else:
             spiral_result_box.warning("🌀 Spiral : ยังไม่ได้ใส่ภาพ")
 
+        # ---------- Wave Logic ----------
         if wave_image is not None:
-            wave_result_box.info("🌊 Wave : มีภาพแล้ว รอโมเดล")
+            wave_result_box.info("🌊 Wave : มีภาพแล้ว (รอโมเดล)")
+        else:
+            wave_result_box.warning("🌊 Wave : ยังไม่ได้ใส่ภาพ")
         else:
             wave_result_box.warning("🌊 Wave : ยังไม่ได้ใส่ภาพ")
