@@ -148,12 +148,28 @@ st.markdown("""
         height: 50px;
         font-size: 18px;
     }
-    div[data-testid="stVerticalBlockBorderWrapper"] {
-        border: 3px solid!important;  
-        border-radius: 25px !important;        
-        box-shadow: 0 10px 30px rgba(136, 93, 149, 0.2) !important; 
-        padding: 30px !important;
-        margin-bottom: 30px !important;
+    .streamlit-expander {
+        border: 2px solid #885D95 !important;  /* เส้นขอบสีม่วง */
+        border-radius: 20px !important;
+        background-color: white !important;
+        box-shadow: 0 8px 20px rgba(136, 93, 149, 0.15) !important;
+        margin-bottom: 25px !important;
+        overflow: hidden !important;
+    }
+    
+    .streamlit-expanderHeader {
+        background-color: #fcfcfc !important;
+        border-bottom: 1px solid #f0f0f0 !important;
+        pointer-events: none !important; /* ล็อกไม่ให้พับ */
+    }
+    
+    .streamlit-expanderHeader svg {
+        display: none !important; /* ซ่อนลูกศร */
+    }
+    
+    .streamlit-expanderHeader p {
+        font-size: 1.5rem !important;
+        color: #885D95 !important; /* หัวข้อสีม่วง */
     }
 
 </style>
@@ -202,22 +218,19 @@ def preprocess(img):
 # =========================================================
 # =====================  BOX 1 : SPIRAL  ==================
 # =========================================================
-
-# ... (ส่วน Preprocess ด้านบนเหมือนเดิม) ...
-
 # จุด Anchor
 st.markdown('<div id="test_area"></div>', unsafe_allow_html=True) 
 
-# Layout หลัก: ซ้าย-ขวา ว่างไว้
+# Layout หลัก
 c1, c2, c3 = st.columns([1, 2, 1]) 
 
 with c2: 
-    # =====================  การ์ด 1 : SPIRAL  ==================
-    # ใช้ border=True เพื่อเรียก CSS ตัวที่เราเขียนไว้
-    with st.container(border=True): 
-        st.subheader("🌀 Spiral") 
+    # =====================  การ์ด 1 : SPIRAL (ใช้ Expander แทน) ==================
+    # expanded=True คือสั่งให้มันเปิดตลอดเวลา
+    with st.expander("🌀 Spiral", expanded=True): 
         
-        # ส่วนเลือก Mode
+        # (ไม่ต้องใส่ st.subheader แล้ว เพราะชื่อมันไปอยู่ที่หัว Expander แล้ว)
+        
         spiral_mode = st.radio("เลือกวิธีใส่ภาพ (Spiral)", ["Upload", "Draw"], horizontal=True, key="spiral_mode")
         
         spiral_image = None
@@ -227,7 +240,7 @@ with c2:
                 spiral_image = Image.open(spiral_file).convert("RGB")
                 st.image(spiral_image, caption="Spiral Preview", use_container_width=True)
         else:
-            # Draw Mode - จัด Canvas ให้อยู่กลาง
+            # Draw Mode
             col_draw_1, col_draw_2, col_draw_3 = st.columns([0.2, 5, 0.2])
             with col_draw_2:
                 spiral_canvas = st_canvas(
@@ -246,9 +259,8 @@ with c2:
         st.markdown("<br>", unsafe_allow_html=True)
         spiral_result_box = st.empty()
 
-    # =====================  การ์ด 2 : WAVE  =====================
-    with st.container(border=True): 
-        st.subheader("🌊 Wave") 
+    # =====================  การ์ด 2 : WAVE (ใช้ Expander แทน) =====================
+    with st.expander("🌊 Wave", expanded=True): 
 
         wave_mode = st.radio("เลือกวิธีใส่ภาพ (Wave)", ["Upload", "Draw"], horizontal=True, key="wave_mode")
         
@@ -279,11 +291,10 @@ with c2:
         wave_result_box = st.empty()
 
     # =====================  BUTTON  ==================
-    # ปุ่มกด (แยกออกมานอกกรอบ แต่อยู่ตรงกลาง)
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("🔍 ประมวลผลทั้งหมด", use_container_width=True):
         
-        # (ส่วน Logic ประมวลผลเดิมของคุณ)
+        # (Logic เหมือนเดิม)
         if spiral_image is not None:
             try:
                 input_tensor = preprocess(spiral_image)
