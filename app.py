@@ -156,13 +156,12 @@ st.markdown("""
 # Hero Content
 st.markdown('<div class="hero-bg-box"></div>', unsafe_allow_html=True)
 with st.container():
-st.markdown('<div class="hero-content">', unsafe_allow_html=True)
-st.markdown('<div class="hero-title">“Early detection changes everything.”</div>', unsafe_allow_html=True)
-st.markdown('<div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>', unsafe_allow_html=True)
-
-st.markdown('<a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>', unsafe_allow_html=True)
-st.markdown('<br><br>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-content">', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">“Early detection changes everything.”</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>', unsafe_allow_html=True)
+    st.markdown('<a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>', unsafe_allow_html=True)
+    st.markdown('<br><br>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 col_img1, col_img2, col_img3 = st.columns([1, 8, 1])
 with col_img2:
