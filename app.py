@@ -43,11 +43,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 st.markdown('<p class="header">Parkinson Detection</p>', unsafe_allow_html=True)
 img_cover = "parkinson cover.svg"
-st.markdown(f"""
-    <div class="ipad-container">
-        <img src="{image_cover}" class="inner-img">
-    </div>
-    """, unsafe_allow_html=True)
+
         
 st.divider()
 
