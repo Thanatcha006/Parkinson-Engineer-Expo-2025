@@ -55,6 +55,7 @@ st.markdown("""
         font-weight: 700;
         line-height: 1.1;
         margin-bottom: 20px;
+        text-align: center;
     }
     .hero-sub {
         color: #757575;
@@ -62,6 +63,7 @@ st.markdown("""
         font-weight: 300;
         margin-bottom: 40px;
         line-height: 1.6;
+        text-align: center;
     }
 
     /* ปุ่มกดแบบ Link (CTA) */
