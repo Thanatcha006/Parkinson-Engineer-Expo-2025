@@ -79,7 +79,11 @@ st.markdown("""
         transition: transform 0.2s;
         display: inline-block;
         margin-bottom: 30px;
-        align-items: center;
+        display: block !important;    
+        width: fit-content;          
+        margin-left: auto !important; 
+        margin-right: auto !important;
+        margin-bottom: 30px;
     }
     .cta-button:hover {
         transform: translateY(-3px);
