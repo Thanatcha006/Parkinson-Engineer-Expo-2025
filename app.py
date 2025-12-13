@@ -10,8 +10,136 @@ import os
 # ----------------------------------
 # Page Config (Mobile First)
 # ----------------------------------
-st.set_page_config(page_title="Parkinson Tester", layout="centered")
-st.title("Parkinson Detection") 
+st.set_page_config(page_title="Parkinson Tester", layout="wide", initial_sidebar_state="collapsed")
+st.markdown("""
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Open+Sans:wght@400;600;700&display=swap');
+
+    html, body, [class*="css"] {
+        font-family: 'Kanit', sans-serif;
+        scroll-behavior: smooth;
+    }
+    .stApp {
+        background-color: white; 
+    }
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        color: #555;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+    .hero-container {
+        text-align: center;
+        padding-top: 20px;
+        padding-bottom: 40px;
+    }
+    .hero-title {
+        color: black;
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 10px;
+    }
+    .hero-sub {
+        color: #757575;
+        font-size: 1.2rem;
+        font-weight: 300;
+        margin-bottom: 30px;
+    }
+    .cta-button {
+        background-color: #A4BBE5;
+        color: white !important;
+        padding: 15px 50px;
+        border-radius: 50px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 4px 10px rgba(136, 93, 149, 0.4);
+        transition: transform 0.2s;
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+    .cta-button:hover {
+        transform: translateY(-3px);
+        background-color: #724C7F;
+    }
+    
+    .input-card {
+        background-color: white;
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        border: 1px solid #eee;
+        height: 100%;
+    }
+    .info-section {
+        background-color: white;
+        padding: 60px 20px;
+        margin-top: 50px;
+        border-radius: 30px 30px 0 0;
+    }
+    .info-title {
+        color: #4A4A4A;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .info-text {
+        color: #666;
+        font-size: 1.1rem;
+        line-height: 1.8;
+        max-width: 800px;
+        margin: 0 auto 30px auto;
+        text-align: justify;
+    }
+
+    div.stButton > button {
+        background-color: #E06469; 
+        color: white;
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-weight: 600;
+        border: none;
+        width: 100%;
+        margin-top: 10px;
+    }
+    div.stButton > button:hover {
+        background-color: #C64E53;
+        color: white;
+    }
+
+</style>
+""", unsafe_allow_html=True)
+# Navbar
+st.markdown("""
+<div class="navbar">
+    <div style="font-size: 1.2rem;">🧬 Parkinson AI</div>
+    <div>
+        <a href="#info_section" style="text-decoration:none; color:#555; margin-right:15px;">เกี่ยวกับโรค</a>
+        <a href="https://github.com/" style="text-decoration:none; color:#555;">Github</a>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Hero Content
+st.markdown('<div class="hero-container">', unsafe_allow_html=True)
+st.markdown('<div class="hero-title">“Early detection changes everything.”</div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>', unsafe_allow_html=True)
+
+st.markdown('<a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
+
+col_img1, col_img2, col_img3 = st.columns([1, 2, 1])
+with col_img2:
+    image_path = "img cover.svg" 
+    if os.path.exists(image_path):
+        st.image(image_path, use_container_width=True)
+
 st.divider()
 
 # ----------------------------------
