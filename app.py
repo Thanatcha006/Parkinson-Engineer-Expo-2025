@@ -31,7 +31,7 @@ st.markdown("""
         padding: 20px 0;
     }
     .blue-container {
-       position: absolute;
+        position: absolute;
         width: 100%;        
         height: 60%; 
         background-color: #B4CDE6; 
@@ -63,9 +63,9 @@ if os.path.exists(img_cover):
     img_src = f"data:image/svg+xml;base64,{encoded}"
 html_code = f'''
 <div class="hero-container">
-    <div class="blue-container"></div>
-    
-    <img src="{img_src}" class="inner-img">
+    <div class="blue-container">
+        <img src="{img_src}" class="inner-img">
+    </div>
 </div>
 '''
 st.markdown(html_code, unsafe_allow_html=True)
