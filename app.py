@@ -4,9 +4,6 @@ import cv2
 from PIL import Image
 import tensorflow as tf
 from streamlit_drawable_canvas import st_canvas
-import base64
-import os
-
 # ----------------------------------
 # Page Config (Mobile First)
 # ----------------------------------
@@ -22,7 +19,7 @@ st.markdown("""
     }
 
     .stApp {
-        background-color: white; 
+        background-color: #A4BBE5;
     }
 
     header, footer {visibility: hidden;}
@@ -55,6 +52,7 @@ st.markdown("""
         color: #555;
         font-weight: 600;
         margin-bottom: 20px;
+        background-color: white;
         
     }
 
@@ -67,7 +65,7 @@ st.markdown("""
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        background-color: #A4BBE5; 
+         
     }
     .hero-title {
         color: #4A4A4A;
