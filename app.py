@@ -23,7 +23,7 @@ st.markdown("""
 
     /* พื้นหลังสีเดียวกับรูปภาพของคุณ */
     .stApp {
-        background-color: #FFF2E9; 
+        background-color: white; 
     }
 
     header, footer {visibility: hidden;}
@@ -132,7 +132,7 @@ col_img1, col_img2, col_img3 = st.columns([1, 8, 1])
 with col_img2:
     image_path = "parkinson cover.svg" 
     if os.path.exists(image_path):
-        st.markdown(image_path, use_container_width=True)
+        st.image(image_path, use_container_width=True)
 
 # ----------------------------------
 # Load Spiral Model
