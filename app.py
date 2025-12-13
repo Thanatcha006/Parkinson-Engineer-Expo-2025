@@ -8,6 +8,10 @@ from streamlit_drawable_canvas import st_canvas
 # Page Config (Mobile First)
 # ----------------------------------
 st.set_page_config(page_title="Parkinson Tester", layout="wide", initial_sidebar_state="collapsed")
+[theme]
+base="light"
+borderColor="black"
+showWidgetBorder=true
 
 st.markdown("""
 <style>
