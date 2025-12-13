@@ -11,6 +11,7 @@ import os
 # Page Config (Mobile First)
 # ----------------------------------
 st.set_page_config(page_title="Parkinson Tester", layout="wide", initial_sidebar_state="collapsed")
+
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Open+Sans:wght@400;600;700&display=swap');
@@ -19,101 +20,66 @@ st.markdown("""
         font-family: 'Kanit', sans-serif;
         scroll-behavior: smooth;
     }
+
+    /* พื้นหลังสีเดียวกับรูปภาพของคุณ */
     .stApp {
-        background-color: white;
-        padding: 60px 20px;
-        max-width: 1000px;
-        margin: 0 auto;
+        background-color: #FFF2E9; 
     }
-    header {{visibility: hidden;}}
-    footer {{visibility: hidden;}}
+
+    header, footer {visibility: hidden;}
+
+    /* Navbar */
     .navbar {
-        position: relative;
-        z-index: 100;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 10px 40px;
-        background-color: white; 
-        border-bottom: 1px solid #eee; 
+        padding: 15px 30px;
         color: #555;
         font-weight: 600;
-        margin-top: -50px; 
-        margin-left: -5rem;
-        margin-right: -5rem;
-        padding-left: 5rem;
-        padding-right: 5rem;
-        height: 80px;
+        margin-bottom: 20px;
     }
-    .hero-bg-box {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
+
+    /* Hero Text */
+    .hero-container {
         text-align: center;
-        padding-top: 100px; /* เผื่อที่ให้ Navbar */
-        position: relative;
-        overflow: hidden;
-        background-color: #FFDFD0;
-    }
-    .hero-content {
-        z-index: 10; 
-        text-align: center;
-        max-width: 800px;
-        padding: 0 20px;
+        padding-top: 30px;
+        padding-bottom: 10px;
     }
     .hero-title {
-        color: black;
-        font-size: 3.5rem;
+        color: #4A4A4A;
+        font-size: 4rem; 
         font-weight: 700;
-        line-height: 1.2;
-        margin-bottom: 10px;
+        line-height: 1.1;
+        margin-bottom: 20px;
     }
     .hero-sub {
         color: #757575;
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         font-weight: 300;
-        margin-bottom: 30px;
+        margin-bottom: 40px;
+        line-height: 1.6;
     }
-    .hero-img-container {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: flex-end;
-    }
-    .hero-img {
-        width: 100%;
-        max-width: 1100px; 
-        height: auto;
-        display: block;
-        margin-bottom: -5px;
-    }
+
+    /* ปุ่มกดแบบ Link (CTA) */
     .cta-button {
-        background-color: #A4BBE5;
+        background-color: #885D95; 
         color: white !important;
-        padding: 15px 50px;
+        padding: 18px 60px;
         border-radius: 50px;
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         font-weight: 600;
         text-decoration: none;
-        box-shadow: 0 4px 10px rgba(136, 93, 149, 0.4);
+        box-shadow: 0 4px 15px rgba(136, 93, 149, 0.4);
         transition: transform 0.2s;
         display: inline-block;
-        margin-bottom: 20px;
+        margin-bottom: 30px;
     }
     .cta-button:hover {
         transform: translateY(-3px);
         background-color: #724C7F;
     }
-    .white-section {
-        position: relative;
-        z-index: 10;
-        background-color: white; 
-        padding-top: 60px;
-        border-radius: 40px 40px 0 0; 
-        margin-top: -40px; 
-    }
+
+    /* Test Cards */
     .input-card {
         background-color: white;
         padding: 25px;
@@ -123,46 +89,25 @@ st.markdown("""
         border: 1px solid #eee;
         height: 100%;
     }
+
+    /* Info Section */
     .info-section {
         background-color: white;
         padding: 60px 20px;
         margin-top: 50px;
-        border-radius: 30px 30px 0 0;
+        border-radius: 40px 40px 0 0;
     }
-    .info-title {
-        color: #4A4A4A;
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 20px;
-        text-align: center;
-    }
-    .info-text {
-        color: #666;
-        font-size: 1.1rem;
-        line-height: 1.8;
-        max-width: 800px;
-        margin: 0 auto 30px auto;
-        text-align: justify;
-    }
-
+    
     div.stButton > button {
-        background-color: #E06469; 
-        color: white;
-        border-radius: 50px;
-        padding: 12px 30px;
-        font-weight: 600;
-        border: none;
         width: 100%;
-        margin-top: 10px;
-    }
-    div.stButton > button:hover {
-        background-color: #C64E53;
-        color: white;
+        border-radius: 30px;
+        height: 50px;
+        font-size: 18px;
     }
 
 </style>
 """, unsafe_allow_html=True)
-# Navbar
+
 st.markdown("""
 <div class="navbar">
     <div style="font-size: 1.3rem; color: #885D95; font-weight:700;">🧬 Parkinson AI</div>
