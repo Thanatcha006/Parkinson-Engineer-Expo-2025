@@ -22,17 +22,30 @@ st.markdown("""
         margin-bottom: 10px;
         margin-top: -50px;
     }
-    .blue-container {
-        background-color: #A4BBE5;
-        padding: 40px;            
-        border-radius: 20px;    
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    .hero-container {
+        position: relative;
+        width: 100%;
         display: flex;
         justify-content: center;
+        align-items: center;
+        padding: 20px 0;
+    }
+    .blue-container {
+       position: absolute;
+        width: 100%;        
+        height: 60%; 
+        background-color: #B4CDE6; 
+        border-radius: 20px;
+        z-index: 0;        
+        top: 50%;
+        transform: translateY(-50%);
     }
     .inner-image {
+        position: relative;
         width: 100%;
-        max-width: 700px;      
+        max-width: 700px;  
+        z-index: 1;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         border-radius: 15px;
         display: block;
     }
@@ -49,7 +62,9 @@ if os.path.exists(img_cover):
         encoded = base64.b64encode(data).decode()
     img_src = f"data:image/svg+xml;base64,{encoded}"
 html_code = f'''
-<div class="blue-container">
+<div class="hero-container">
+    <div class="blue-container"></div>
+    
     <img src="{img_src}" class="inner-img">
 </div>
 '''
