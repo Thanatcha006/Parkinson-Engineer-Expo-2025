@@ -79,6 +79,7 @@ st.markdown("""
         transition: transform 0.2s;
         display: inline-block;
         margin-bottom: 30px;
+        text-align: center;
     }
     .cta-button:hover {
         transform: translateY(-3px);
