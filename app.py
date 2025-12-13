@@ -149,12 +149,12 @@ st.markdown("""
         font-size: 18px;
     }
     div[data-testid="stVerticalBlockBorderWrapper"] {
-        border-radius: 20px !important;       
-        border: 1px solid #885D95 !important; */
-        box-shadow: 0 8px 24px rgba(0,0,0,0.05) !important; 
-        background-color: white !important;
-        padding: 20px !important;             
-        margin-bottom: 30px !important;
+        background-color: #FFFFFF !important;   
+        border: 2px solid #885D95 !important;   
+        border-radius: 20px !important;         
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important; 
+        padding: 25px !important;               
+        margin-bottom: 30px !important;        
     }
 
 </style>
