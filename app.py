@@ -43,8 +43,11 @@ st.markdown("""
     .hero-content {
         text-align: center;
         padding-top: 30px;
-        align-item: center;
         padding-bottom: 10px;
+        display: flex;           
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
     .hero-title {
         color: #4A4A4A;
