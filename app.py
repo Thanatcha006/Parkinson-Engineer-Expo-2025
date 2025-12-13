@@ -46,7 +46,7 @@ st.markdown("""
         left: 0;
         width: 100%;
         height: 850px; 
-        background-color: #F7E3D6;
+        background-color: #FFDFD0;
         z-index: 0;
     }
     .hero-content {
