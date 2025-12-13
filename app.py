@@ -55,6 +55,7 @@ st.markdown("""
         color: #555;
         font-weight: 600;
         margin-bottom: 20px;
+        
     }
 
     /* Hero Text */
@@ -66,6 +67,7 @@ st.markdown("""
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        background-color: #A4BBE5; 
     }
     .hero-title {
         color: #4A4A4A;
@@ -180,6 +182,7 @@ def preprocess(img):
 # =========================================================
 # =====================  BOX 1 : SPIRAL  ==================
 # =========================================================
+st.markdown('<div id="test_area"></div>', unsafe_allow_html=True)
 st.subheader("🌀 Spiral")
 
 spiral_mode = st.radio(
