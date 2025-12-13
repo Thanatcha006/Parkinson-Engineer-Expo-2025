@@ -19,7 +19,7 @@ st.markdown("""
     }
 
     .stApp {
-        background-color: white;
+        background-color: brown;
     }
 
     header, footer {visibility: hidden;}
