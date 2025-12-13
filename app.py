@@ -130,9 +130,9 @@ with st.container():
     st.markdown("<br>", unsafe_allow_html=True)
 
 # Hero Image (PNG only)
-col_img1, col_img2, col_img3 = st.columns([1, 8, 1])
-with col_img2:
-    st.image("parkinson cover.png", use_container_width=True)
+#col_img1, col_img2, col_img3 = st.columns([1, 8, 1])
+#with col_img2:
+   # st.image("parkinson cover.png", use_container_width=True)
 
 
 # ----------------------------------
