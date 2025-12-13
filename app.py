@@ -9,8 +9,23 @@ from streamlit_drawable_canvas import st_canvas
 # Page Config (Mobile First)
 # ----------------------------------
 st.set_page_config(page_title="Parkinson Tester", layout="centered")
-
-st.title("🧠 Parkinson Detection")
+st.markdown("""
+    <style>
+    .header {
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 80px !important;
+        font-weight: 500;
+        color: #000000;
+        text-align: center;
+        margin-bottom: 10px;
+        margin-top: -50px;
+    }
+    .stApp {
+        background-color: white;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+st.markdown('<p class="header">Parkinson Detection</p>', unsafe_allow_html=True)
 
 st.divider()
 
