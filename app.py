@@ -15,6 +15,7 @@ st.markdown("""
         font-family: 'Times New Roman', Times, serif;
         font-size: 80px !important;
         font-weight: 500;
+        text-color
         color: #000000;
         text-align: center;
         margin-bottom: 10px;
@@ -26,6 +27,10 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 st.markdown('<p class="header">Parkinson Detection</p>', unsafe_allow_html=True)
+col1, col2, col3 = st.columns([1, 10, 1]) 
+
+with col2:
+    st.image("parkinson cover.svg", use_container_width=True)
 
 st.divider()
 
