@@ -42,10 +42,10 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 st.markdown('<p class="header">Parkinson Detection</p>', unsafe_allow_html=True)
-img-cover = "parkinson cover.svg"
+img_cover = "parkinson cover.svg"
 st.markdown(f""
     <div class="ipad-container">
-        <img src="{image-cover}" class="inner-img" >
+        <img src="{image_cover}" class="inner-img" >
     </div>
     "", unsafe_allow_html=True)
         
