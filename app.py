@@ -19,7 +19,7 @@ st.markdown("""
     }
 
     .stApp {
-        background-color: #A4BBE5;
+        background-color: white;
     }
 
     header, footer {visibility: hidden;}
@@ -52,7 +52,6 @@ st.markdown("""
         color: #555;
         font-weight: 600;
         margin-bottom: 20px;
-        background-color: white;
         
     }
 
@@ -74,6 +73,7 @@ st.markdown("""
         line-height: 1.1;
         margin-bottom: 20px;
         text-align: center;
+        background-color: #A4BBE5;
     }
     .hero-sub {
         color: #757575;
@@ -82,6 +82,7 @@ st.markdown("""
         margin-bottom: 40px;
         line-height: 1.6;
         text-align: center;
+        background-color: #A4BBE5;
     }
 
     /* ปุ่มกดแบบ Link (CTA) */
