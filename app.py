@@ -136,7 +136,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 col_img1, col_img2, col_img3 = st.columns([1, 2, 1])
 with col_img2:
-    image_path = "img cover.svg" 
+    image_path = "parkinson cover.svg" 
     if os.path.exists(image_path):
         st.image(image_path, use_container_width=True)
 
