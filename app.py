@@ -51,7 +51,22 @@ st.markdown("""
         padding: 15px 30px;
         color: #555;
         font-weight: 600;
-        margin-bottom: 20px;
+        margin-bottom: 20px;position: relative;
+        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 40px;
+        background-color: white; 
+        border-bottom: 1px solid #eee; 
+        color: #555;
+        font-weight: 600;
+        margin-top: -50px; 
+        margin-left: -5rem;
+        margin-right: -5rem;
+        padding-left: 5rem;
+        padding-right: 5rem;
+        height: 80px;
         
     }
 
