@@ -64,6 +64,7 @@ st.markdown("""
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        background-color: #A4BBE5;
          
     }
     .hero-title {
