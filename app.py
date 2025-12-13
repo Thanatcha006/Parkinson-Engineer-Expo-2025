@@ -84,7 +84,7 @@ st.markdown("""
     }
     .hero-title {
         color: #4A4A4A;
-        font-size: clamp(2.2rem, 4vw, 2.5rem); 
+        font-size: clamp(2.0rem, 6vw, 3.5rem); 
         font-weight: 700;
         line-height: 1.1;
         margin-bottom: 20px;
@@ -92,7 +92,7 @@ st.markdown("""
     }
     .hero-sub {
         color: #757575;
-        font-size: clamp(1.05rem, 1.5vw, 0.3rem);
+        font-size: clamp(1rem, 2.5vw, 1.3rem);
         font-weight: 300;
         margin-bottom: 40px;
         line-height: 1.6;
@@ -105,7 +105,7 @@ st.markdown("""
         color: white !important;
         padding: 18px 60px;
         border-radius: 50px;
-        font-size: clamp(1.05rem, 2.5vw, 0.3rem);
+        font-size: clamp(1.05rem, 3vw, 1.3rem);
         font-weight: 600;
         text-decoration: none;
         box-shadow: 0 4px 15px rgba(136, 93, 149, 0.4);
