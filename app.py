@@ -4,215 +4,281 @@ import cv2
 from PIL import Image
 import tensorflow as tf
 from streamlit_drawable_canvas import st_canvas
+import base64
 import os
 
-# --------------------------------------------------
-# Page Config
-# --------------------------------------------------
-st.set_page_config(
-    page_title="Parkinson AI",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
+# ----------------------------------
+# Page Config (Mobile First)
+# ----------------------------------
+st.set_page_config(page_title="Parkinson Tester", layout="wide", initial_sidebar_state="collapsed")
 
-# --------------------------------------------------
-# Custom CSS
-# --------------------------------------------------
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Open+Sans:wght@400;600;700&display=swap');
 
-header, footer {visibility: hidden;}
+    html, body, [class*="css"] {
+        font-family: 'Kanit', sans-serif;
+        scroll-behavior: smooth;
+    }
 
-html, body, [class*="css"] {
-    font-family: 'Kanit', sans-serif;
-}
+    /* พื้นหลังสีเดียวกับรูปภาพของคุณ */
+    .stApp {
+        background-color: white; 
+    }
 
-/* Remove default padding */
-.block-container {
-    padding: 0rem !important;
-    max-width: 100% !important;
-}
+    header, footer {visibility: hidden;}
 
-/* Navbar */
-.navbar {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    height: 70px;
-    background: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 40px;
-    z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
+    /* Navbar */
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 30px;
+        color: #555;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
 
-/* Hero */
-.hero {
-    background-color: #FFDFD0;
-    min-height: 100vh;
-    padding-top: 100px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    text-align: center;
-    overflow: hidden;
-}
+    /* Hero Text */
+    .hero-container {
+        text-align: center;
+        padding-top: 30px;
+        padding-bottom: 10px;
+    }
+    .hero-title {
+        color: #4A4A4A;
+        font-size: 4rem; 
+        font-weight: 700;
+        line-height: 1.1;
+        margin-bottom: 20px;
+    }
+    .hero-sub {
+        color: #757575;
+        font-size: 1.3rem;
+        font-weight: 300;
+        margin-bottom: 40px;
+        line-height: 1.6;
+    }
 
-.hero h1 {
-    font-size: 3.5rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
+    /* ปุ่มกดแบบ Link (CTA) */
+    .cta-button {
+        background-color: #885D95; 
+        color: white !important;
+        padding: 18px 60px;
+        border-radius: 50px;
+        font-size: 1.3rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(136, 93, 149, 0.4);
+        transition: transform 0.2s;
+        display: inline-block;
+        margin-bottom: 30px;
+    }
+    .cta-button:hover {
+        transform: translateY(-3px);
+        background-color: #724C7F;
+    }
 
-.hero p {
-    font-size: 1.2rem;
-    color: #555;
-    margin-bottom: 30px;
-}
+    /* Test Cards */
+    .input-card {
+        background-color: white;
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        border: 1px solid #eee;
+        height: 100%;
+    }
 
-.hero img {
-    width: 100%;
-    max-width: 1000px;
-}
+    /* Info Section */
+    .info-section {
+        background-color: white;
+        padding: 60px 20px;
+        margin-top: 50px;
+        border-radius: 40px 40px 0 0;
+    }
+    
+    div.stButton > button {
+        width: 100%;
+        border-radius: 30px;
+        height: 50px;
+        font-size: 18px;
+    }
 
-/* Button */
-.cta {
-    background-color: #8c7ae6;
-    color: white;
-    padding: 14px 45px;
-    border-radius: 50px;
-    text-decoration: none;
-    font-size: 1.2rem;
-    font-weight: 600;
-    display: inline-block;
-}
-
-/* App container */
-.app {
-    max-width: 1000px;
-    margin: auto;
-    padding: 60px 20px;
-}
 </style>
 """, unsafe_allow_html=True)
 
-# --------------------------------------------------
-# Navbar
-# --------------------------------------------------
 st.markdown("""
 <div class="navbar">
-    <div style="font-size:1.4rem; font-weight:700; color:#885D95;">
-        🧬 Parkinson AI
-    </div>
-    <a href="#app" style="text-decoration:none; font-weight:600; color:#885D95;">
-        เริ่มใช้งาน
-    </a>
-</div>
-""", unsafe_allow_html=True)
-
-# --------------------------------------------------
-# Hero Section
-# --------------------------------------------------
-st.markdown("""
-<div class="hero">
+    <div style="font-size: 1.3rem; color: #885D95; font-weight:700;">🧬 Parkinson AI</div>
     <div>
-        <h1>Early detection changes everything</h1>
-        <p>
-            ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น<br>
-            เพียงวาดเส้นหรืออัปโหลดภาพ
-        </p>
-        <a href="#app" class="cta">เริ่มทำแบบทดสอบ →</a>
+        <a href="#info_section" style="text-decoration:none; color:#555; margin-right:20px;">เกี่ยวกับโรค</a>
+        <a href="#test_area" style="text-decoration:none; color:#885D95; font-weight:600;">เริ่มใช้งาน</a>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-
-st.image("parkinson_cover.png", use_container_width=True)
-
-# Anchor
-st.markdown('<div id="app"></div>', unsafe_allow_html=True)
-
-# --------------------------------------------------
-# App Section
-# --------------------------------------------------
+# Hero Content
+st.markdown('<div class="hero-bg-box"></div>', unsafe_allow_html=True)
 with st.container():
-    st.markdown('<div class="app">', unsafe_allow_html=True)
+    st.markdown('<div class="hero-content">', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">“Early detection changes everything.”</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>', unsafe_allow_html=True)
+    st.markdown('<a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>', unsafe_allow_html=True)
+    st.markdown('<br><br>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    # ---------------- Model ----------------
-    @st.cache_resource
-    def load_model():
-        if os.path.exists("(Test_naja)effnet_parkinson_model.keras"):
-            return tf.keras.models.load_model(
-                "(Test_naja)effnet_parkinson_model.keras"
-            )
-        return None
+col_img1, col_img2, col_img3 = st.columns([1, 8, 1])
+with col_img2:
+    image_path = "parkinson cover.svg" 
+    if os.path.exists(image_path):
+        st.image(image_path, use_container_width=True)
 
-    model = load_model()
+# ----------------------------------
+# Load Spiral Model
+# ----------------------------------
+@st.cache_resource
+def load_spiral_model():
+    return tf.keras.models.load_model("(Test_naja)effnet_parkinson_model.keras")
 
-    if model is None:
-        st.warning("⚠️ ไม่พบไฟล์โมเดล ระบบจะทำงานเฉพาะส่วนวาดภาพ")
+spiral_model = load_spiral_model()
 
-    def preprocess(img):
-        img = np.array(img.convert("RGB"))
-        img = cv2.resize(img, (256, 256))
-        img = img / 255.0
-        return np.expand_dims(img, axis=0)
+# ----------------------------------
+# Preprocess (256x256 ตามโมเดล)
+# ----------------------------------
+def preprocess(img):
+    img = np.array(img.convert("RGB"))
+    img = cv2.resize(img, (256, 256))   # ✅ สำคัญมาก
+    img = img / 255.0
+    img = np.expand_dims(img, axis=0)
+    return img
 
-    # ---------------- Spiral ----------------
-    st.subheader("1. 🌀 Spiral (ขดลวด)")
-    mode = st.radio(
-        "เลือกวิธีใส่ภาพ",
-        ["Upload", "Draw"],
-        horizontal=True
+# =========================================================
+# =====================  BOX 1 : SPIRAL  ==================
+# =========================================================
+st.subheader("🌀 Spiral")
+
+spiral_mode = st.radio(
+    "เลือกวิธีใส่ภาพ (Spiral)",
+    ["Upload", "Draw"],
+    horizontal=True,
+    key="spiral_mode"
+)
+
+spiral_image = None
+
+if spiral_mode == "Upload":
+    spiral_file = st.file_uploader(
+        "อัปโหลด Spiral",
+        type=["png", "jpg", "jpeg"],
+        key="spiral_upload"
     )
-
-    spiral_image = None
-
-    if mode == "Upload":
-        file = st.file_uploader(
-            "อัปโหลดภาพ Spiral",
-            type=["png", "jpg", "jpeg"]
+    if spiral_file:
+        spiral_image = Image.open(spiral_file).convert("RGB")
+        st.image(
+            spiral_image,
+            caption="Spiral Preview",
+            use_container_width=True
         )
-        if file:
-            spiral_image = Image.open(file)
-            st.image(spiral_image, width=300)
-    else:
-        canvas = st_canvas(
-            stroke_width=6,
-            stroke_color="black",
-            background_color="#f5f5f5",
-            width=500,
-            height=300,
-            drawing_mode="freedraw",
-            key="spiral"
+
+else:  # Draw Mode
+    spiral_canvas = st_canvas(
+        fill_color="rgba(0,0,0,0)",
+        stroke_width=6,
+        stroke_color="black",
+        background_color="white",
+        height=300,
+        width=500,     # ✅ แนวนอน
+        drawing_mode="freedraw",
+        key="spiral_draw"
+    )
+    if spiral_canvas.image_data is not None:
+        spiral_image = Image.fromarray(
+            spiral_canvas.image_data.astype("uint8")
+        ).convert("RGB")
+
+# ✅ ช่องแสดงผล Spiral (อยู่ก่อน divider)
+spiral_result_box = st.empty()
+
+st.divider()
+
+# =========================================================
+# =====================  BOX 2 : WAVE  =====================
+# =========================================================
+st.subheader("🌊 Wave")
+
+wave_mode = st.radio(
+    "เลือกวิธีใส่ภาพ (Wave)",
+    ["Upload", "Draw"],
+    horizontal=True,
+    key="wave_mode"
+)
+
+wave_image = None
+
+if wave_mode == "Upload":
+    wave_file = st.file_uploader(
+        "อัปโหลด Wave",
+        type=["png", "jpg", "jpeg"],
+        key="wave_upload"
+    )
+    if wave_file:
+        wave_image = Image.open(wave_file).convert("RGB")
+        st.image(
+            wave_image,
+            caption="Wave Preview",
+            use_container_width=True
         )
-        if canvas.image_data is not None:
-            if np.sum(canvas.image_data) > 0:
-                spiral_image = Image.fromarray(
-                    canvas.image_data.astype("uint8")
-                )
 
-    result_box = st.empty()
+else:  # Draw Mode
+    wave_canvas = st_canvas(
+        fill_color="rgba(0,0,0,0)",
+        stroke_width=6,
+        stroke_color="black",
+        background_color="white",
+        height=300,
+        width=500,     # ✅ แนวนอน
+        drawing_mode="freedraw",
+        key="wave_draw"
+    )
+    if wave_canvas.image_data is not None:
+        wave_image = Image.fromarray(
+            wave_canvas.image_data.astype("uint8")
+        ).convert("RGB")
 
-    if st.button("🔍 วิเคราะห์ Spiral"):
-        if spiral_image is None:
-            result_box.warning("กรุณาใส่ภาพก่อน")
-        elif model is None:
-            result_box.error("ไม่พบโมเดล")
-        else:
-            x = preprocess(spiral_image)
-            pred = model.predict(x)[0][0]
+# ✅ ช่องแสดงผล Wave (อยู่ก่อน divider)
+wave_result_box = st.empty()
+
+st.divider()
+
+# =========================================================
+# =====================  PROCESS BUTTON  ==================
+# =========================================================
+if st.button("🔍 ประมวลผลทั้งหมด",use_container_width=True):
+
+    # ---------- Spiral Prediction ----------
+    if spiral_image is not None:
+        try:
+            input_tensor = preprocess(spiral_image)
+            pred = spiral_model.predict(input_tensor)[0][0]
+
             if pred > 0.5:
-                result_box.error(
-                    f"มีความเสี่ยง Parkinson (Confidence {pred:.2f})"
+                spiral_result_box.error(
+                    f"🌀 Spiral : เสี่ยง Parkinson ({pred:.3f})"
                 )
             else:
-                result_box.success(
-                    f"ปกติ (Confidence {pred:.2f})"
+                spiral_result_box.success(
+                    f"🌀 Spiral : ปกติ ({pred:.3f})"
                 )
+        except Exception as e:
+            spiral_result_box.error(f"เกิดข้อผิดพลาดในการประมวลผล Spiral: {e}")
+    else:
+        spiral_result_box.warning("🌀 Spiral : ยังไม่ได้ใส่ภาพ")
 
-    st.markdown('</div>', unsafe_allow_html=True)
+    # ---------- Wave Status Only ----------
+    if wave_image is not None:
+        wave_result_box.info(
+            "🌊 Wave : มีภาพแล้ว แต่ยังไม่มีโมเดลสำหรับประมวลผล"
+        )
+    else:
+        wave_result_box.warning("🌊 Wave : ยังไม่ได้ใส่ภาพ")
