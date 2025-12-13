@@ -19,7 +19,7 @@ st.markdown("""
     }
 
     .stApp {
-        background-color: blue;
+        background-color: white;
     }
 
     header, footer {visibility: hidden;}
@@ -149,8 +149,8 @@ st.markdown("""
         font-size: 18px;
     }
     div[data-testid="stVerticalBlockBorderWrapper"] {
-        background-color: #FFFFFF !important;   
-        border: 2px solid #885D95 !important;   
+        background-color: black !important;   
+        border: 10px solid black !important;   
         border-radius: 20px !important;         
         box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important; 
         padding: 25px !important;               
