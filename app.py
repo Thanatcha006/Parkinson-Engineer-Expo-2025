@@ -5,6 +5,7 @@ from PIL import Image
 import tensorflow as tf
 from streamlit_drawable_canvas import st_canvas
 import base64
+import os
 
 # ----------------------------------
 # Page Config (Mobile First)
@@ -43,6 +44,20 @@ st.markdown("""
     """, unsafe_allow_html=True)
 st.markdown('<p class="header">Parkinson Detection</p>', unsafe_allow_html=True)
 img_cover = "parkinson cover.svg"
+if os.path.exists(img_cover):
+    with open(img_cover, "rb") as f:
+        data = f.read()
+        encoded = base64.b64encode(data).decode()
+    img_src = f"data:image/svg+xml;base64,{encoded}"
+else:
+    img_src = "" # ถ้าไม่เจอไฟล์ ให้เป็นค่าว่างไว้ก่อน
+    st.error(f"หาไฟล์ {img_cover} ไม่เจอ! ลองเช็คชื่อไฟล์ดู")
+html_code = f'''
+<div class="ipad-container">
+    <img src="{img_src}" class="inner-img">
+</div>
+'''
+st.markdown(html_code, unsafe_allow_html=True)
 
         
 st.divider()
