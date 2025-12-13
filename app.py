@@ -32,11 +32,16 @@ st.markdown("""
         font-weight: 700 !important;
     }
 
-    div[role="radiogroup"] label {
+    div[data-testid="stRadio"] label p {
+        color: #333333 !important;
+        font-weight: 600 !important;
+        font-size: 1.1rem !important;
+    }
+
+    .stFileUploader label {
         color: #333333 !important;
     }
-    
-    label {
+    div[class*="stMarkdown"] p {
         color: #333333 !important;
     }
 
