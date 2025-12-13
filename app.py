@@ -148,6 +148,14 @@ st.markdown("""
         height: 50px;
         font-size: 18px;
     }
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        border-radius: 20px !important;       
+        border: 1px solid #e0e0e0 !important; */
+        box-shadow: 0 8px 24px rgba(0,0,0,0.05) !important; 
+        background-color: white !important;
+        padding: 20px !important;             
+        margin-bottom: 30px !important;
+    }
 
 </style>
 """, unsafe_allow_html=True)
@@ -196,100 +204,104 @@ def preprocess(img):
 # =====================  BOX 1 : SPIRAL  ==================
 # =========================================================
 st.markdown('<div id="test_area"></div>', unsafe_allow_html=True)
-st.subheader("🌀 Spiral")
+c1, c2, c3 = st.columns([1, 2, 1]) 
 
-spiral_mode = st.radio(
-    "เลือกวิธีใส่ภาพ (Spiral)",
-    ["Upload", "Draw"],
-    horizontal=True,
-    key="spiral_mode"
-)
+with c2:
+    st.subheader("🌀 Spiral")
 
-spiral_image = None
-
-if spiral_mode == "Upload":
-    spiral_file = st.file_uploader(
-        "อัปโหลด Spiral",
-        type=["png", "jpg", "jpeg"],
-        key="spiral_upload"
+    spiral_mode = st.radio(
+        "เลือกวิธีใส่ภาพ (Spiral)",
+        ["Upload", "Draw"],
+        horizontal=True,
+        key="spiral_mode"
     )
-    if spiral_file:
-        spiral_image = Image.open(spiral_file).convert("RGB")
-        st.image(
-            spiral_image,
-            caption="Spiral Preview",
-            use_container_width=True
+
+    spiral_image = None
+
+    if spiral_mode == "Upload":
+        spiral_file = st.file_uploader(
+            "อัปโหลด Spiral",
+            type=["png", "jpg", "jpeg"],
+            key="spiral_upload"
         )
+        if spiral_file:
+            spiral_image = Image.open(spiral_file).convert("RGB")
+            st.image(
+                spiral_image,
+                caption="Spiral Preview",
+                use_container_width=True
+            )
 
-else:  # Draw Mode
-    spiral_canvas = st_canvas(
-        fill_color="rgba(0,0,0,0)",
-        stroke_width=6,
-        stroke_color="black",
-        background_color="white",
-        height=300,
-        width=500,     # ✅ แนวนอน
-        drawing_mode="freedraw",
-        key="spiral_draw"
-    )
-    if spiral_canvas.image_data is not None:
-        spiral_image = Image.fromarray(
-            spiral_canvas.image_data.astype("uint8")
-        ).convert("RGB")
+    else:  # Draw Mode
+        spiral_canvas = st_canvas(
+            fill_color="rgba(0,0,0,0)",
+            stroke_width=6,
+            stroke_color="black",
+            background_color="white",
+            height=300,
+            width=500,     # ✅ แนวนอน
+            drawing_mode="freedraw",
+            key="spiral_draw"
+        )
+        if spiral_canvas.image_data is not None:
+            spiral_image = Image.fromarray(
+                spiral_canvas.image_data.astype("uint8")
+            ).convert("RGB")
 
-# ✅ ช่องแสดงผล Spiral (อยู่ก่อน divider)
-spiral_result_box = st.empty()
+    # ✅ ช่องแสดงผล Spiral (อยู่ก่อน divider)
+    spiral_result_box = st.empty()
 
-st.divider()
+
 
 # =========================================================
 # =====================  BOX 2 : WAVE  =====================
 # =========================================================
-st.subheader("🌊 Wave")
+with st.container(border=True):
+    st.subheader("🌊 Wave")
 
-wave_mode = st.radio(
-    "เลือกวิธีใส่ภาพ (Wave)",
-    ["Upload", "Draw"],
-    horizontal=True,
-    key="wave_mode"
-)
-
-wave_image = None
-
-if wave_mode == "Upload":
-    wave_file = st.file_uploader(
-        "อัปโหลด Wave",
-        type=["png", "jpg", "jpeg"],
-        key="wave_upload"
+    wave_mode = st.radio(
+        "เลือกวิธีใส่ภาพ (Wave)",
+        ["Upload", "Draw"],
+        horizontal=True,
+        key="wave_mode"
     )
-    if wave_file:
-        wave_image = Image.open(wave_file).convert("RGB")
-        st.image(
-            wave_image,
-            caption="Wave Preview",
-            use_container_width=True
+
+    wave_image = None
+
+    if wave_mode == "Upload":
+        wave_file = st.file_uploader(
+            "อัปโหลด Wave",
+            type=["png", "jpg", "jpeg"],
+            key="wave_upload"
         )
+        if wave_file:
+            wave_image = Image.open(wave_file).convert("RGB")
+            st.image(
+                wave_image,
+                caption="Wave Preview",
+                use_container_width=True
+            )
 
-else:  # Draw Mode
-    wave_canvas = st_canvas(
-        fill_color="rgba(0,0,0,0)",
-        stroke_width=6,
-        stroke_color="black",
-        background_color="white",
-        height=300,
-        width=500,     # ✅ แนวนอน
-        drawing_mode="freedraw",
-        key="wave_draw"
-    )
-    if wave_canvas.image_data is not None:
-        wave_image = Image.fromarray(
-            wave_canvas.image_data.astype("uint8")
-        ).convert("RGB")
+    else:  # Draw Mode
+        wave_canvas = st_canvas(
+            fill_color="rgba(0,0,0,0)",
+            stroke_width=6,
+            stroke_color="black",
+            background_color="white",
+            height=300,
+            width=500,     # ✅ แนวนอน
+            drawing_mode="freedraw",
+            key="wave_draw"
+        )
+        if wave_canvas.image_data is not None:
+            wave_image = Image.fromarray(
+                wave_canvas.image_data.astype("uint8")
+            ).convert("RGB")
 
-# ✅ ช่องแสดงผล Wave (อยู่ก่อน divider)
-wave_result_box = st.empty()
+    # ✅ ช่องแสดงผล Wave (อยู่ก่อน divider)
+    wave_result_box = st.empty()
 
-st.divider()
+    st.divider()
 
 # =========================================================
 # =====================  PROCESS BUTTON  ==================
