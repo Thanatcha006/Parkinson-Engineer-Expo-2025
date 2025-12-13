@@ -43,6 +43,7 @@ st.markdown("""
     .hero-content {
         text-align: center;
         padding-top: 30px;
+        align-item: center;
         padding-bottom: 10px;
     }
     .hero-title {
