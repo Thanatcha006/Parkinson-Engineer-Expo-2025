@@ -21,12 +21,25 @@ st.markdown("""
         scroll-behavior: smooth;
     }
 
-    /* พื้นหลังสีเดียวกับรูปภาพของคุณ */
     .stApp {
         background-color: white; 
     }
 
     header, footer {visibility: hidden;}
+
+    h1, h2, h3, h4, h5, h6 {
+        color: #4A4A4A !important;
+        font-weight: 700 !important;
+    }
+
+    div[role="radiogroup"] label {
+        color: #333333 !important;
+    }
+    
+    label {
+        color: #333333 !important;
+    }
+
 
     /* Navbar */
     .navbar {
