@@ -148,28 +148,40 @@ st.markdown("""
         height: 50px;
         font-size: 18px;
     }
-    .streamlit-expander {
-        border: 2px solid #885D95 !important;  /* เส้นขอบสีม่วง */
-        border-radius: 20px !important;
-        background-color: white !important;
-        box-shadow: 0 8px 20px rgba(136, 93, 149, 0.15) !important;
-        margin-bottom: 25px !important;
-        overflow: hidden !important;
+    details[data-testid="stExpander"] {
+        background-color: #ffffff !important;
+        border: 3px solid #885D95 !important;  /* ขอบสีม่วง หนา 3px */
+        border-radius: 20px !important;        /* มุมโค้ง */
+        box-shadow: 0 10px 30px rgba(136, 93, 149, 0.2) !important;
+        padding: 0px !important;               /* รีเซ็ต Padding */
+        overflow: hidden !important;           /* ตัดมุมโค้งให้เนียน */
     }
+
     
-    .streamlit-expanderHeader {
-        background-color: #fcfcfc !important;
-        border-bottom: 1px solid #f0f0f0 !important;
-        pointer-events: none !important; /* ล็อกไม่ให้พับ */
-    }
-    
-    .streamlit-expanderHeader svg {
-        display: none !important; /* ซ่อนลูกศร */
-    }
-    
-    .streamlit-expanderHeader p {
+    details[data-testid="stExpander"] > summary {
+        background-color: #f8f0fc !important;  /* พื้นหลังหัวข้อสีม่วงอ่อนๆ จางๆ */
+        color: #885D95 !important;             /* ตัวหนังสือสีม่วงเข้ม */
         font-size: 1.5rem !important;
-        color: #885D95 !important; /* หัวข้อสีม่วง */
+        font-weight: 700 !important;
+        border-bottom: 2px solid #885D95 !important; /* เส้นคั่น header กับ content */
+        pointer-events: none !important;     
+        cursor: default !important;
+    }
+    
+    
+    details[data-testid="stExpander"] > summary svg {
+        display: none !important;
+    }
+
+   
+    details[data-testid="stExpander"] > summary span {
+        color: #885D95 !important;
+    }
+
+  
+    div[data-testid="stExpanderDetails"] {
+        background-color: #ffffff !important;
+        color: #333333 !important;
     }
 
 </style>
