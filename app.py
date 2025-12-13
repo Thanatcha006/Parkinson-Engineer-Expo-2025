@@ -40,7 +40,7 @@ st.markdown("""
     }
 
     /* Hero Text */
-    .hero-container {
+    .hero-content {
         text-align: center;
         padding-top: 30px;
         padding-bottom: 10px;
