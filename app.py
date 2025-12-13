@@ -15,7 +15,6 @@ st.markdown("""
         font-family: 'Times New Roman', Times, serif;
         font-size: 80px !important;
         font-weight: 500;
-        text-color
         color: #000000;
         text-align: center;
         margin-bottom: 10px;
