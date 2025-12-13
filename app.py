@@ -4,6 +4,7 @@ import cv2
 from PIL import Image
 import tensorflow as tf
 from streamlit_drawable_canvas import st_canvas
+import base64
 
 # ----------------------------------
 # Page Config (Mobile First)
@@ -20,17 +21,34 @@ st.markdown("""
         margin-bottom: 10px;
         margin-top: -50px;
     }
+    .blue-container {
+        background-color: #FCECE4;
+        background-image: linear-gradient(to right, #FCECE4, #E8F0F8); 
+        padding: 40px;            
+        border-radius: 20px;    
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: center;
+    }
+    .inner-image {
+        width: 100%;
+        max-width: 700px;      
+        border-radius: 15px;
+        display: block;
+    }
     .stApp {
         background-color: white;
     }
     </style>
     """, unsafe_allow_html=True)
 st.markdown('<p class="header">Parkinson Detection</p>', unsafe_allow_html=True)
-col1, col2, col3 = st.columns([1, 10, 1]) 
-
-with col2:
-    st.image("parkinson cover.svg", use_container_width=True)
-
+img-cover = "parkinson cover.svg"
+st.markdown(f""
+    <div class="ipad-container">
+        <img src="{image-cover}" class="inner-img" >
+    </div>
+    "", unsafe_allow_html=True)
+        
 st.divider()
 
 # ----------------------------------
