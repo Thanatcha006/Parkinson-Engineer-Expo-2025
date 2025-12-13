@@ -23,8 +23,7 @@ st.markdown("""
         margin-top: -50px;
     }
     .blue-container {
-        background-color: #FCECE4;
-        background-image: linear-gradient(to right, #FCECE4, #E8F0F8); 
+        background-color: #A4BBE5;
         padding: 40px;            
         border-radius: 20px;    
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
