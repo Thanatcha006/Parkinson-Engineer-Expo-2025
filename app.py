@@ -20,8 +20,13 @@ st.markdown("""
         scroll-behavior: smooth;
     }
     .stApp {
-        background-color: white; 
+        background-color: white;
+        padding: 60px 20px;
+        max-width: 1000px;
+        margin: 0 auto;
     }
+    header {{visibility: hidden;}}
+    footer {{visibility: hidden;}}
     .navbar {
         position: relative;
         z-index: 100;
@@ -41,20 +46,22 @@ st.markdown("""
         height: 80px;
     }
     .hero-bg-box {
-        position: absolute;
-        top: 80px; 
-        left: 0;
-        width: 100%;
-        height: 850px; 
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        text-align: center;
+        padding-top: 100px; /* เผื่อที่ให้ Navbar */
+        position: relative;
+        overflow: hidden;
         background-color: #FFDFD0;
-        z-index: 0;
     }
     .hero-content {
-        position: relative;
         z-index: 10; 
         text-align: center;
-        padding-top: 60px;
-        color: #4A4A4A;
+        max-width: 800px;
+        padding: 0 20px;
     }
     .hero-title {
         color: black;
@@ -68,6 +75,19 @@ st.markdown("""
         font-size: 1.2rem;
         font-weight: 300;
         margin-bottom: 30px;
+    }
+    .hero-img-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+    }
+    .hero-img {
+        width: 100%;
+        max-width: 1100px; 
+        height: auto;
+        display: block;
+        margin-bottom: -5px;
     }
     .cta-button {
         background-color: #A4BBE5;
@@ -167,10 +187,7 @@ col_img1, col_img2, col_img3 = st.columns([1, 8, 1])
 with col_img2:
     image_path = "parkinson cover.svg" 
     if os.path.exists(image_path):
-        st.image(image_path, use_container_width=True)
-
-# [D] Test Section (เริ่มพื้นที่สีขาว)
-st.markdown('<div id="test_area" class="white-section">', unsafe_allow_html=True)
+        st.markdown(image_path, use_container_width=True)
 
 # ----------------------------------
 # Load Spiral Model
