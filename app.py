@@ -4,7 +4,8 @@ import cv2
 from PIL import Image
 import tensorflow as tf
 from streamlit_drawable_canvas import st_canvas
-
+import base64
+import os
 
 # ----------------------------------
 # Page Config (Mobile First)
@@ -58,46 +59,7 @@ st.markdown("""
         margin-bottom: 40px;
         line-height: 1.6;
     }
-    .center-hero {
-        min-height: 90vh;         
-        display: flex;
-        flex-direction: column;
-        justify-content: center;     
-        align-items: center;         
-        text-align: center;
-        padding: 20px;
-    }
-    .center-hero .hero-title {
-        font-size: 3.5rem;
-        font-weight: 700;
-        color: #4A4A4A;
-        margin-bottom: 20px;
-        line-height: 1.2;
-    }
 
-    .center-hero .hero-sub {
-        font-size: 1.3rem;
-        color: #757575;
-        font-weight: 300;
-        line-height: 1.6;
-        max-width: 800px;
-        margin-bottom: 40px;
-    }
-
-    .center-hero .cta-button {
-        background-color: #885D95;
-        color: white !important;
-        padding: 18px 60px;
-        border-radius: 50px;
-        font-size: 1.3rem;
-        font-weight: 600;
-        text-decoration: none;
-        box-shadow: 0 4px 15px rgba(136, 93, 149, 0.4);
-    }
-    .center-hero .cta-button:hover {
-        background-color: #724C7F;
-        transform: translateY(-3px);
-    }
     /* ปุ่มกดแบบ Link (CTA) */
     .cta-button {
         background-color: #885D95; 
@@ -157,24 +119,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Hero Content
+st.markdown('<div class="hero-bg-box"></div>', unsafe_allow_html=True)
 with st.container():
-    st.markdown("""
-    <div class="center-hero">
-        <div class="hero-title">
-            “Early detection changes everything.”
-        </div>
-
-        <div class="hero-sub">
-            ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>
-            เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ
-        </div>
-
-        <a href="#test_area" class="cta-button">
-            เริ่มทำแบบทดสอบ ➝
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
-
+    st.markdown('<div class="hero-content">', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">“Early detection changes everything.”</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>', unsafe_allow_html=True)
+    st.markdown('<a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>', unsafe_allow_html=True)
+    st.markdown('<br><br>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ----------------------------------
