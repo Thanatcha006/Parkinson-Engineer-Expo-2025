@@ -23,18 +23,38 @@ st.markdown("""
         background-color: white; 
     }
     .navbar {
+        position: relative;
+        z-index: 100;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 10px 20px;
+        padding: 10px 40px;
+        background-color: white; 
+        border-bottom: 1px solid #eee; 
         color: #555;
         font-weight: 600;
-        margin-bottom: 20px;
+        margin-top: -50px; 
+        margin-left: -5rem;
+        margin-right: -5rem;
+        padding-left: 5rem;
+        padding-right: 5rem;
+        height: 80px;
     }
-    .hero-container {
+    .hero-bg-box {
+        position: absolute;
+        top: 80px; 
+        left: 0;
+        width: 100%;
+        height: 850px; 
+        background-color: #F7E3D6;
+        z-index: 0;
+    }
+    .hero-content {
+        position: relative;
+        z-index: 10; 
         text-align: center;
-        padding-top: 20px;
-        padding-bottom: 40px;
+        padding-top: 60px;
+        color: #4A4A4A;
     }
     .hero-title {
         color: black;
@@ -66,7 +86,14 @@ st.markdown("""
         transform: translateY(-3px);
         background-color: #724C7F;
     }
-    
+    .white-section {
+        position: relative;
+        z-index: 10;
+        background-color: white; 
+        padding-top: 60px;
+        border-radius: 40px 40px 0 0; 
+        margin-top: -40px; 
+    }
     .input-card {
         background-color: white;
         padding: 25px;
@@ -118,29 +145,33 @@ st.markdown("""
 # Navbar
 st.markdown("""
 <div class="navbar">
-    <div style="font-size: 1.2rem;">🧬 Parkinson AI</div>
+    <div style="font-size: 1.3rem; color: #885D95; font-weight:700;">🧬 Parkinson AI</div>
     <div>
-        <a href="#info_section" style="text-decoration:none; color:#555; margin-right:15px;">เกี่ยวกับโรค</a>
-        <a href="https://github.com/" style="text-decoration:none; color:#555;">Github</a>
+        <a href="#info_section" style="text-decoration:none; color:#555; margin-right:20px;">เกี่ยวกับโรค</a>
+        <a href="#test_area" style="text-decoration:none; color:#885D95; font-weight:600;">เริ่มใช้งาน</a>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
 # Hero Content
-st.markdown('<div class="hero-container">', unsafe_allow_html=True)
+st.markdown('<div class="hero-bg-box"></div>', unsafe_allow_html=True)
+with st.container():
+st.markdown('<div class="hero-content">', unsafe_allow_html=True)
 st.markdown('<div class="hero-title">“Early detection changes everything.”</div>', unsafe_allow_html=True)
 st.markdown('<div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>', unsafe_allow_html=True)
 
 st.markdown('<a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>', unsafe_allow_html=True)
+st.markdown('<br><br>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
-col_img1, col_img2, col_img3 = st.columns([1, 2, 1])
+col_img1, col_img2, col_img3 = st.columns([1, 8, 1])
 with col_img2:
     image_path = "parkinson cover.svg" 
     if os.path.exists(image_path):
         st.image(image_path, use_container_width=True)
 
-st.divider()
+# [D] Test Section (เริ่มพื้นที่สีขาว)
+st.markdown('<div id="test_area" class="white-section">', unsafe_allow_html=True)
 
 # ----------------------------------
 # Load Spiral Model
