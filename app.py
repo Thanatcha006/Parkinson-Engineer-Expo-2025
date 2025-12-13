@@ -148,40 +148,21 @@ st.markdown("""
         height: 50px;
         font-size: 18px;
     }
-    details[data-testid="stExpander"] {
+    div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
-        border: 3px solid #885D95 !important;  /* ขอบสีม่วง หนา 3px */
-        border-radius: 20px !important;        /* มุมโค้ง */
-        box-shadow: 0 10px 30px rgba(136, 93, 149, 0.2) !important;
-        padding: 0px !important;               /* รีเซ็ต Padding */
-        overflow: hidden !important;           /* ตัดมุมโค้งให้เนียน */
+        border: 2px solid #885D95 !important;  /* เส้นขอบสีม่วง หนา 2px */
+        border-radius: 20px !important;
+        padding: 25px !important;
+        box-shadow: 0 4px 15px rgba(136, 93, 149, 0.2) !important; /* เงาสีม่วงจางๆ */
+        margin-bottom: 30px !important;
     }
-
     
-    details[data-testid="stExpander"] > summary {
-        background-color: #f8f0fc !important;  /* พื้นหลังหัวข้อสีม่วงอ่อนๆ จางๆ */
-        color: #885D95 !important;             /* ตัวหนังสือสีม่วงเข้ม */
+    /* แก้ไขหัวข้อ (H3) ภายในการ์ดให้เป็นสีม่วงเข้ม */
+    div[data-testid="stVerticalBlockBorderWrapper"] h3 {
+        color: #4A4A4A !important;
         font-size: 1.5rem !important;
         font-weight: 700 !important;
-        border-bottom: 2px solid #885D95 !important; /* เส้นคั่น header กับ content */
-        pointer-events: none !important;     
-        cursor: default !important;
-    }
-    
-    
-    details[data-testid="stExpander"] > summary svg {
-        display: none !important;
-    }
-
-   
-    details[data-testid="stExpander"] > summary span {
-        color: #885D95 !important;
-    }
-
-  
-    div[data-testid="stExpanderDetails"] {
-        background-color: #ffffff !important;
-        color: #333333 !important;
+        margin-bottom: 20px !important;
     }
 
 </style>
@@ -237,11 +218,9 @@ st.markdown('<div id="test_area"></div>', unsafe_allow_html=True)
 c1, c2, c3 = st.columns([1, 2, 1]) 
 
 with c2: 
-    # =====================  การ์ด 1 : SPIRAL (ใช้ Expander แทน) ==================
-    # expanded=True คือสั่งให้มันเปิดตลอดเวลา
-    with st.expander("🌀 Spiral", expanded=True): 
-        
-        # (ไม่ต้องใส่ st.subheader แล้ว เพราะชื่อมันไปอยู่ที่หัว Expander แล้ว)
+    # =====================  การ์ด 1 : SPIRAL  ==================
+    with st.container(border=True): 
+        st.subheader("🌀 Spiral")
         
         spiral_mode = st.radio("เลือกวิธีใส่ภาพ (Spiral)", ["Upload", "Draw"], horizontal=True, key="spiral_mode")
         
@@ -252,16 +231,16 @@ with c2:
                 spiral_image = Image.open(spiral_file).convert("RGB")
                 st.image(spiral_image, caption="Spiral Preview", use_container_width=True)
         else:
-            # Draw Mode
-            col_draw_1, col_draw_2, col_draw_3 = st.columns([0.2, 5, 0.2])
-            with col_draw_2:
+            # Draw Mode - จัดกึ่งกลาง
+            dc1, dc2, dc3 = st.columns([0.05, 1, 0.05])
+            with dc2:
                 spiral_canvas = st_canvas(
                     fill_color="rgba(255, 255, 255, 0)",
                     stroke_width=6,
                     stroke_color="black",
                     background_color="#ffffff",
                     height=300,
-                    width=500,     
+                    width=450,     
                     drawing_mode="freedraw",
                     key="spiral_draw"
                 )
@@ -271,8 +250,12 @@ with c2:
         st.markdown("<br>", unsafe_allow_html=True)
         spiral_result_box = st.empty()
 
-    # =====================  การ์ด 2 : WAVE (ใช้ Expander แทน) =====================
-    with st.expander("🌊 Wave", expanded=True): 
+
+    # =================================================
+    # 🌊 การ์ดใบที่ 2 : WAVE
+    # =================================================
+    with st.container(border=True): 
+        st.subheader("🌊 Wave")
 
         wave_mode = st.radio("เลือกวิธีใส่ภาพ (Wave)", ["Upload", "Draw"], horizontal=True, key="wave_mode")
         
@@ -284,15 +267,15 @@ with c2:
                 st.image(wave_image, caption="Wave Preview", use_container_width=True)
         else:
             # Draw Mode
-            w_col_1, w_col_2, w_col_3 = st.columns([0.2, 5, 0.2])
-            with w_col_2:
+            wc1, wc2, wc3 = st.columns([0.05, 1, 0.05])
+            with wc2:
                 wave_canvas = st_canvas(
                     fill_color="rgba(255, 255, 255, 0)",
                     stroke_width=6,
                     stroke_color="black",
                     background_color="#ffffff",
                     height=300,
-                    width=500,
+                    width=450,
                     drawing_mode="freedraw",
                     key="wave_draw"
                 )
@@ -302,12 +285,15 @@ with c2:
         st.markdown("<br>", unsafe_allow_html=True)
         wave_result_box = st.empty()
 
-    # =====================  BUTTON  ==================
+
+    # =================================================
+    # ปุ่มประมวลผล
+    # =================================================
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("🔍 ประมวลผลทั้งหมด", use_container_width=True):
         
-        # (Logic เหมือนเดิม)
-        if spiral_image is not None:
+        # Spiral
+        if spiral_image is not None and spiral_model is not None:
             try:
                 input_tensor = preprocess(spiral_image)
                 pred = spiral_model.predict(input_tensor)[0][0]
@@ -317,10 +303,13 @@ with c2:
                     spiral_result_box.success(f"🌀 Spiral : ปกติ ({pred:.3f})")
             except Exception as e:
                 spiral_result_box.error(f"Error: {e}")
-        else:
+        elif spiral_image is None:
             spiral_result_box.warning("🌀 Spiral : ยังไม่ได้ใส่ภาพ")
+        elif spiral_model is None:
+            spiral_result_box.error("❌ ไม่พบไฟล์โมเดล")
 
+        # Wave
         if wave_image is not None:
-            wave_result_box.info("🌊 Wave : มีภาพแล้ว รอโมเดล")
+            wave_result_box.info("🌊 Wave : มีภาพแล้ว (รอโมเดล)")
         else:
             wave_result_box.warning("🌊 Wave : ยังไม่ได้ใส่ภาพ")
