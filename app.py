@@ -150,7 +150,7 @@ st.markdown("""
     }
     div[data-testid="stVerticalBlockBorderWrapper"] {
         border-radius: 20px !important;       
-        border: 1px solid #e0e0e0 !important; */
+        border: 1px solid #885D95 !important; */
         box-shadow: 0 8px 24px rgba(0,0,0,0.05) !important; 
         background-color: white !important;
         padding: 20px !important;             
