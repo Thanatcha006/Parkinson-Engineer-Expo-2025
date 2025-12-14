@@ -84,30 +84,30 @@ st.markdown("""
         position: relative;
         z-index: 100;
     }
-    .hero-purple-container {
-        background-color: #885D95;
+    .hero-seamless-container {
+        background-color: #885D95; 
         
         /* ขยายเต็มจอซ้ายขวา */
-        margin-left: -5rem; 
-        margin-right: -5rem;
-        padding-left: 5rem; 
-        padding-right: 5rem;
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        margin-right: calc(-50vw + 50%);
         
-        /* ระยะห่างภายใน */
-        padding-top: 60px; 
-        padding-bottom: 80px; /* ยืดด้านล่างให้คลุมปุ่ม */
-        margin-bottom: 40px; 
+        padding-top: 60px;
+        margin-bottom: 40px;
         
-        /* จัดเนื้อหาตรงกลาง */
-        text-align: center;
         display: flex;
         flex-direction: column;
         align-items: center;
         
-        /* เส้นขอบล่าง */
-        border-bottom: 1px solid #E0D0E8;
+        /* ลบขอบล่างของรูปภาพ */
+        line-height: 0; 
     }
-    
+    .hero-text-wrapper {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 0 20px;
+        line-height: normal; /* คืนค่า line-height ให้ตัวหนังสือ */
+    }
     .hero-title {
         color: white;
         font-size: clamp(2.2rem, 4vw, 2.5rem); 
@@ -126,12 +126,10 @@ st.markdown("""
     }
 
     .hero-img-full {
-        width: 100%;             /* กว้าง 100% ของ Container (ซึ่ง Container กว้าง 100vw) */
-        height: auto;            /* สูงตามสัดส่วน */
-        display: block;
-        object-fit: cover;       /* ครอบคลุมพื้นที่ */
-        margin: 0;
-        padding: 0;
+        width: 100%;       /* กว้างเต็ม 100% ของหน้าจอ */
+        height: auto;      /* สูงตามสัดส่วน */
+        display: block;    /* แก้บั๊กช่องว่างด้านล่าง */
+        object-fit: cover;
     }
 
     .cta-button {
@@ -202,10 +200,13 @@ st.markdown("""
 
 # Hero Content
 st.markdown(f"""
-<div class="hero-purple-container">
-    <div class="hero-title">“Early detection changes everything.”</div>
-    <div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>
-    <a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>
+<div class="hero-seamless-container">
+    <div class="hero-text-wrapper">
+        <div class="hero-title">“Early detection changes everything.”</div>
+        <div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>
+        <a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>
+    </div>
+    
     <img src="{hero_img_base64}" class="hero-img-full">
 </div>
 """, unsafe_allow_html=True)
