@@ -37,7 +37,6 @@ st.markdown("""
 
     header, footer {visibility: hidden;}
 
-    div.block-container { padding-top: 0rem !important; padding-bottom: 0rem !important; }
 
     /*  HERO SECTION:  */
     .hero-purple-container {
