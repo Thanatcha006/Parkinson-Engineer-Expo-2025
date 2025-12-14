@@ -211,13 +211,14 @@ st.markdown('''
 # ----------------------------------
 # UI Content: Navbar
 # ----------------------------------
+# --- แก้ไขตรงนี้: เปลี่ยน href เป็น ?start=true เพื่อให้ทำงานเหมือนปุ่มด้านล่าง ---
 st.markdown('<div id="top"></div>', unsafe_allow_html=True)
 st.markdown("""
 <div class="navbar">
     <div style="font-size: 1.5rem; color: #885D95; font-weight:700;">🧬 Parkinson AI</div>
     <div class="nav-links">
         <a href="#about_area" style="color:#67ACC3;">เกี่ยวกับโรค</a>
-        <a href="?start=true"a" style="color:#885D95;">เริ่มใช้งาน</a>
+        <a href="?start=true" target="_self" style="color:#885D95;">เริ่มใช้งาน</a>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -244,10 +245,9 @@ def load_spiral_model():
     return None
 spiral_model = load_spiral_model()
 
-# --- LOAD WAVE MODEL (เพิ่มใหม่) ---
+# --- LOAD WAVE MODEL ---
 @st.cache_resource
 def load_wave_model():
-    # ใส่ชื่อไฟล์ Model ของ Wave ตรงนี้
     if os.path.exists("effnet_wave_model.keras"):
         return tf.keras.models.load_model("effnet_wave_model.keras")
     return None
@@ -402,7 +402,7 @@ if is_started or st.session_state.consent_accepted:
             elif spiral_image is None: 
                 spiral_result_box.warning("🌀 Spiral : ยังไม่ได้ใส่ภาพ")
 
-            # --- PART 2: WAVE PROCESSING (Logic เหมือน Spiral เป๊ะ) ---
+            # --- PART 2: WAVE PROCESSING ---
             if wave_image is not None and wave_model is not None:
                 try:
                     # 1. Preprocess
@@ -449,7 +449,7 @@ if is_started or st.session_state.consent_accepted:
                 except Exception as e:
                     wave_result_box.error(f"Error Wave: {e}")
             
-            # กรณีมีภาพแต่ยังไม่มีไฟล์โมเดล (ให้ขึ้นข้อความเดิมรอไว้)
+            # กรณีมีภาพแต่ยังไม่มีไฟล์โมเดล
             elif wave_image is not None and wave_model is None: 
                 wave_result_box.info("🌊 Wave : มีภาพแล้ว (รอไฟล์ Model สำหรับ Wave)")
             
