@@ -109,7 +109,7 @@ st.markdown('''
     .hero-title { font-weight: 700; margin-bottom: 15px; color: white !important; }
     .hero-sub { font-weight: 300; margin-bottom: 25px; max-width: 800px; color: #f0f0f0 !important; }
     
-    /* ปุ่ม HTML <a> เดิม */
+    /* ปุ่ม HTML <a> เดิมของคุณ 100% */
     .cta-button {
         background-color: white; color: #885D95 !important;
         border-radius: 50px; font-weight: 700; text-decoration: none;
@@ -169,6 +169,7 @@ st.markdown("""
 # ----------------------------------
 # UI Content: Hero
 # ----------------------------------
+# ปุ่มลิงก์ HTML ปกติ กดแล้ว Reload หน้าพร้อมพารามิเตอร์ ?start=true
 st.markdown(f"""
 <div class="hero-purple-container">
     <div class="hero-title">“Early detection changes everything.”</div>
@@ -234,35 +235,31 @@ def preprocess(img):
 # Logic Gate: โชว์ก็ต่อเมื่อกด Link (?start=true) หรือเคยยอมรับแล้ว
 if is_started or st.session_state.consent_accepted:
 
-    # 1. ฝัง Anchor Point
+    # 1. สร้าง Anchor Point สำหรับให้ JavaScript หาเจอ
     st.markdown('<div id="disclaimer_anchor" style="padding-top: 20px;"></div>', unsafe_allow_html=True)
 
-    # 2. ฝัง JavaScript เพื่อ Force Scroll ลงมาหา Anchor แบบ Polling (ตรวจสอบซ้ำๆ จนกว่าจะเจอ)
-    # วิธีนี้แก้ปัญหาเบราว์เซอร์หาตำแหน่งไม่เจอกรณีโหลดช้าได้
+    # 2. ฝัง Script เลื่อนหน้าจอ (ทำงานตื๊อๆ จนกว่าจะหา element เจอ)
     st.markdown("""
         <script>
-            var targetId = 'disclaimer_anchor';
-            var attempts = 0;
-            var maxAttempts = 50; // ลองหา 50 ครั้ง (5 วินาที)
-            
-            var checkExist = setInterval(function() {
-                var element = document.getElementById(targetId);
-                // ถ้าไม่เจอใน document หลัก ลองหาใน iframe parent (กรณี Streamlit iframe)
-                if (!element && window.parent.document) {
-                    element = window.parent.document.getElementById(targetId);
-                }
+            // ฟังก์ชันสำหรับค้นหาและเลื่อนหน้าจอ
+            function forceScrollToDisclaimer() {
+                // พยายามหา Element เป้าหมายในหน้าเว็บ
+                var target = window.parent.document.getElementById('disclaimer_anchor');
                 
-                if (element) {
-                    console.log("Found anchor, scrolling...");
-                    element.scrollIntoView({behavior: "smooth", block: "start"});
-                    clearInterval(checkExist);
+                if (target) {
+                    // ถ้าเจอแล้ว สั่งให้เลื่อนลงมาหาทันที
+                    target.scrollIntoView({behavior: 'smooth', block: 'center'});
                 } else {
-                    attempts++;
-                    if (attempts >= maxAttempts) {
-                        clearInterval(checkExist);
-                    }
+                    // ถ้ายังไม่เจอ ให้ลองใหม่ในอีก 100ms (0.1 วินาที)
+                    setTimeout(forceScrollToDisclaimer, 100);
                 }
-            }, 100); // เช็คทุกๆ 0.1 วินาที
+            }
+            
+            // เรียกใช้งานฟังก์ชัน
+            forceScrollToDisclaimer();
+            
+            // กันเหนียว: สั่งเลื่อนอีกครั้งหลังจากผ่านไป 1 วินาที เผื่อรูปโหลดช้าแล้ว layout ขยับ
+            setTimeout(forceScrollToDisclaimer, 1000);
         </script>
     """, unsafe_allow_html=True)
 
