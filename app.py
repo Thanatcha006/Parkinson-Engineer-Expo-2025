@@ -25,10 +25,6 @@ st.markdown("""
         color: #333333;
     }
 
-    /* บังคับพื้นหลังสีขาว */
-    .stApp {
-        background-color: white !important;
-    }
 
     /* ซ่อน Header/Footer ของระบบ */
     header, footer {visibility: hidden;}
@@ -57,10 +53,9 @@ st.markdown("""
         align-items: center;
         padding: 10px 40px;
         background-color: white; 
-        border-bottom: 1px solid #eee; 
+        border-bottom: 1px solid #f0f0f0; 
         color: #555;
         font-weight: 600;
-        /* ปรับตำแหน่งให้ติดขอบบน */
         margin-top: -50px; 
         margin-left: -5rem;
         margin-right: -5rem;
@@ -70,7 +65,18 @@ st.markdown("""
         position: relative;
         z-index: 100;
     }
-
+    .hero-white-stripe {
+        background-color: #ffffff; /* พื้นหลังสีขาว */
+        
+        /* ขยายเต็มจอ */
+        margin-left: -5rem; margin-right: -5rem;
+        padding-left: 5rem; padding-right: 5rem;
+        
+        padding-top: 50px; padding-bottom: 50px;
+        margin-bottom: 30px; 
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        position: relative; z-index: 50;
+    }
     .hero-content {
         text-align: center;
         padding-top: 30px;
@@ -164,7 +170,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Hero Content
-st.markdown('<div class="hero-bg-box"></div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-white-stripe"></div>', unsafe_allow_html=True)
 with st.container():
     st.markdown('<div class="hero-content">', unsafe_allow_html=True)
     st.markdown('<div class="hero-title">“Early detection changes everything.”</div>', unsafe_allow_html=True)
