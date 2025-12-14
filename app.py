@@ -271,7 +271,7 @@ if is_started or st.session_state.consent_accepted:
                 st.write("ระบบอาจไม่สามารถแยกแยะสาเหตุของอาการมือสั่นได้อย่างสมบูรณ์")
                 st.write("ผลลัพธ์จึงควรใช้ประกอบการพิจารณาเท่านั้น")
                 st.write("") 
-                accepted = st.checkbox("ข้าพเจ้ารับทราบและยินยอมตามเงื่อนไขข้างต้น")
+                accepted = st.checkbox("รับทราบและยอมรับตามเงื่อนไขข้างต้น")
                 st.write("")
                 if st.button("ตกลง / เริ่มทำแบบทดสอบ", disabled=not accepted, type="primary", use_container_width=True):
                     st.session_state.consent_accepted = True
@@ -337,7 +337,7 @@ if is_started or st.session_state.consent_accepted:
                     else:
                         status_text = "✅ ไม่พบความผิดปกติเด่นชัด (Normal)"
                         status_color = "#388E3C"
-                        card_bg = "#67ACC3"
+                        card_bg = "#86B264"
                         confidence = (1 - pred) * 100
                         desc_text = "รูปแบบการวาดมีความใกล้เคียงกับกลุ่มตัวอย่างทั่วไป ไม่พบอาการสั่นที่ผิดปกติชัดเจน"
                         rec_list = "<li>หากยังมีความกังวล หรือผลการทดสอบไม่ชัดเจน สามารถทำการทดสอบซ้ำได้</li><li>ควรทำในสภาวะที่ผ่อนคลาย ไม่เกร็งข้อมือ</li><li>หากผลระบุว่ามีความเสี่ยง ควรปรึกษาแพทย์เพื่อรับการตรวจวินิจฉัยอย่างละเอียด</li>"
