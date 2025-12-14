@@ -22,7 +22,7 @@ query_params = st.query_params
 is_started = query_params.get("start") == "true"
 
 # ----------------------------------
-# Helper Function: แปลงรูปภาพเป็น Base64 เพื่อแสดงใน HTML
+# Helper Function: แปลงรูปภาพเป็น Base64
 # ----------------------------------
 def get_image_base64(image_path):
     try:
@@ -36,7 +36,7 @@ def get_image_base64(image_path):
 # ----------------------------------
 st.markdown('''
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Open+Sans:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&family=Open+Sans:wght@400;600;700&display=swap');
     
     html, body, [class*="css"], .stMarkdown { 
         font-family: 'Kanit', sans-serif !important; 
@@ -63,12 +63,11 @@ st.markdown('''
     .nav-links a { font-weight: 600; text-decoration: none; }
 
     /* -------------------------------------------------------
-       RESPONSIVE TYPOGRAPHY
+       RESPONSIVE LAYOUT & TYPOGRAPHY (HERO & GENERAL)
        ------------------------------------------------------- */
     @media (min-width: 992px) {
         .hero-title { font-size: 4rem !important; }
         .hero-sub { font-size: 1.6rem !important; }
-        .about-text { font-size: 1.5rem !important; }
         .cta-button { font-size: 1.6rem !important; padding: 20px 70px; }
         
         div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 2.5rem !important; }
@@ -85,7 +84,6 @@ st.markdown('''
     @media (max-width: 991px) {
         .hero-title { font-size: 2.2rem !important; }
         .hero-sub { font-size: 1.1rem !important; }
-        .about-text { font-size: 1.1rem !important; line-height: 1.6 !important; }
         .cta-button { font-size: 1.1rem !important; padding: 12px 30px; }
 
         div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 1.6rem !important; }
@@ -134,24 +132,100 @@ st.markdown('''
         background-color: #f8f8f8;
     }
     
-    /* About Section Styles */
+    /* -------------------------------------------------------
+       ABOUT SECTION STYLES (NEW RESPONSIVE GRID)
+       ------------------------------------------------------- */
     .about-section {
-        background-color: #67ACC3; width: 100%; padding: 50px 20px; color: white;
-        display: flex; flex-direction: column; align-items: center;
+        background-color: #67ACC3; /* สีพื้นหลังเดิม */
+        width: 100%; 
+        padding: 60px 20px; 
+        color: white;
+        display: flex; 
+        justify-content: center;
     }
-    .about-content { max-width: 1000px; width: 100%; }
     
-    /* Quote Box Style */
+    /* คอนเทนเนอร์หลักของ About */
+    .about-container {
+        max-width: 1200px;
+        width: 100%;
+        display: grid;
+        gap: 40px; /* ระยะห่างระหว่างคอลัมน์ */
+        align-items: center; /* จัดให้อยู่กึ่งกลางแนวตั้ง */
+    }
+    
+    /* Header ใหญ่ */
+    .about-header-large {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 30px;
+        text-align: center;
+        grid-column: 1 / -1; /* ให้ Header กินพื้นที่เต็มความกว้างเสมอ */
+    }
+
+    /* รูปภาพ */
+    .about-img-responsive {
+        width: 100%;
+        height: auto;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        border: 3px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    /* เนื้อหาข้อความ */
+    .about-text-content {
+        font-size: 1.2rem;
+        line-height: 1.8;
+        font-weight: 300;
+    }
+    
+    /* Quote Box สวยๆ */
     .quote-box {
-        background-color: rgba(255, 255, 255, 0.15);
-        border-left: 5px solid #ffffff;
-        padding: 20px;
-        margin-top: 30px;
-        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.15); /* พื้นหลังจางๆ */
+        border-left: 6px solid #ffffff; /* เส้นขอบซ้ายสีขาว */
+        padding: 25px;
+        margin-top: 40px;
+        border-radius: 8px;
+        font-size: 1.3rem;
         font-style: italic;
         font-weight: 500;
-        line-height: 1.8;
+        line-height: 1.6;
+        text-align: center; /* จัด Quote กึ่งกลาง */
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
+
+    /* --- RESPONSIVE RULES FOR ABOUT SECTION --- */
+    /* Desktop (PC) > 992px: 2 คอลัมน์ (ซ้ายรูป ขวาข้อความ) */
+    @media (min-width: 992px) {
+        .about-container {
+            grid-template-columns: 1fr 1fr; /* แบ่งเป็น 2 ส่วนเท่ากัน */
+        }
+        .about-header-large {
+            text-align: left; /* Header ชิดซ้ายบน PC */
+        }
+        .about-text-content {
+             font-size: 1.35rem; /* ขยาย font บน PC */
+        }
+        .quote-box {
+             font-size: 1.5rem; /* ขยาย quote บน PC */
+        }
+    }
+
+    /* Mobile/Tablet < 991px: 1 คอลัมน์ (เรียงซ้อนกัน) */
+    @media (max-width: 991px) {
+        .about-container {
+            grid-template-columns: 1fr; /* คอลัมน์เดียว */
+            text-align: center; /* จัดทุกอย่างกึ่งกลางบนมือถือ */
+        }
+        .about-header-large {
+            font-size: 2rem; /* ลดขนาด Header ลงหน่อย */
+        }
+        .about-img-responsive {
+            max-width: 80%; /* รูปไม่เต็มจอเกินไปบนมือถือ */
+            margin: 0 auto; /* จัดรูปกึ่งกลาง */
+        }
+    }
+    /* ------------------------------------------------------- */
+
 
     /* Cards */
     div[data-testid="stVerticalBlockBorderWrapper"] {
@@ -223,14 +297,13 @@ if is_started or st.session_state.consent_accepted:
     # 1. Anchor Point
     st.markdown('<div id="test_content_anchor" style="padding-top: 20px;"></div>', unsafe_allow_html=True)
 
-    # 2. JS Auto-scroll (ตื๊อจนกว่าจะเจอ)
+    # 2. JS Auto-scroll
     st.markdown("""
         <script>
             var targetId = 'test_content_anchor';
             var scrollInterval = setInterval(function() {
                 var element = window.parent.document.getElementById(targetId);
                 if (element) {
-                    // หน่วงเวลาเล็กน้อยเพื่อให้แน่ใจว่า layout นิ่งแล้วค่อยเลื่อน
                     setTimeout(function(){
                          element.scrollIntoView({behavior: "smooth", block: "center"});
                     }, 300);
@@ -363,29 +436,35 @@ else:
     pass
 
 # =========================================================
-# 6. ABOUT SECTION (Updated Content & Local Image)
+# 6. ABOUT SECTION (Updated Layout & Content)
 # =========================================================
 st.markdown('<div id="about_area" style="padding-top: 40px;"></div>', unsafe_allow_html=True) 
 
 # แปลงไฟล์รูปในเครื่องเป็น Base64
 img_b64 = get_image_base64("parkinson cover.png")
 
-# เช็คว่ามีรูปไหม ถ้ามีให้แสดง ถ้าไม่มีให้แสดงข้อความเตือน (หรือเว้นว่างไว้)
+# เช็คว่ามีรูปไหม
 if img_b64:
-    img_tag = f'<img src="data:image/png;base64,{img_b64}" class="about-img" alt="Parkinson Cover">'
+    img_tag = f'<img src="data:image/png;base64,{img_b64}" class="about-img-responsive" alt="Parkinson Cover">'
 else:
-    img_tag = '<div style="background:#eee; padding:20px; color:#333; border-radius:10px;">⚠️ ไม่พบไฟล์ parkinson cover.png ในโฟลเดอร์</div>'
+    img_tag = '<div style="background:rgba(255,255,255,0.2); padding:40px; color:white; border-radius:15px; text-align:center; border: 2px dashed white;">⚠️ ไม่พบไฟล์ parkinson cover.png<br>กรุณาวางไฟล์รูปภาพไว้ในโฟลเดอร์เดียวกับไฟล์โค้ด</div>'
 
+# สร้าง HTML สำหรับ About Section แบบใหม่ (ใช้ CSS Grid)
 about_html = f'''
 <div class="about-section">
-    <div class="about-content">
-        <div class="about-header">โรคพาร์กินสัน (Parkinson’s Disease)</div>
-        <div style="text-align:center;">{img_tag}</div>
-        <div class="about-text">
-            โรคพาร์กินสันเป็นโรคความเสื่อมของระบบประสาทที่พบได้บ่อยเป็นอันดับต้น ๆ ของโลก มักพบในผู้ที่มีอายุ 60 ปีขึ้นไป แต่ในปัจจุบันเริ่มพบผู้ป่วยในวัยที่อายุน้อยลงมากขึ้น สาเหตุหลักเกิดจากการเสื่อมของเซลล์สมองที่สร้างสาร โดพามีน (Dopamine) ซึ่งมีบทบาทสำคัญในการควบคุมการเคลื่อนไหวของร่างกาย เมื่อระดับโดพามีนลดลง จะส่งผลให้การเคลื่อนไหวผิดปกติ
-            <br><br>
-            อาการที่พบบ่อย ได้แก่ มือสั่นขณะอยู่นิ่ง การเคลื่อนไหวช้า กล้ามเนื้อแข็งเกร็ง การทรงตัวไม่ดี รวมถึงอาการอื่น ๆ เช่น การรับรู้กลิ่นลดลง ท้องผูก หรือความผิดปกติของการนอนหลับ ซึ่งอาจเกิดขึ้นก่อนอาการสั่น
-            
+    <div class="about-container">
+        <div class="about-header-large">โรคพาร์กินสัน (Parkinson’s Disease)</div>
+        
+        <div class="about-image-container">
+            {img_tag}
+        </div>
+        
+        <div class="about-text-container">
+            <div class="about-text-content">
+                โรคพาร์กินสันเป็นโรคความเสื่อมของระบบประสาทที่พบได้บ่อยเป็นอันดับต้น ๆ ของโลก มักพบในผู้ที่มีอายุ 60 ปีขึ้นไป แต่ในปัจจุบันเริ่มพบผู้ป่วยในวัยที่อายุน้อยลงมากขึ้น สาเหตุหลักเกิดจากการเสื่อมของเซลล์สมองที่สร้างสาร โดพามีน (Dopamine) ซึ่งมีบทบาทสำคัญในการควบคุมการเคลื่อนไหวของร่างกาย เมื่อระดับโดพามีนลดลง จะส่งผลให้การเคลื่อนไหวผิดปกติ
+                <br><br>
+                อาการที่พบบ่อย ได้แก่ มือสั่นขณะอยู่นิ่ง การเคลื่อนไหวช้า กล้ามเนื้อแข็งเกร็ง การทรงตัวไม่ดี รวมถึงอาการอื่น ๆ เช่น การรับรู้กลิ่นลดลง ท้องผูก หรือความผิดปกติของการนอนหลับ ซึ่งอาจเกิดขึ้นก่อนอาการสั่น
+            </div>
             <div class="quote-box">
                 “แม้โรคพาร์กินสันจะยังไม่สามารถรักษาให้หายขาดได้ แต่การตรวจพบตั้งแต่ระยะเริ่มต้นจะช่วยให้สามารถควบคุมอาการ ชะลอความเสื่อมของโรค และช่วยให้ผู้ป่วยมีคุณภาพชีวิตที่ดีขึ้น”
             </div>
