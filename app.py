@@ -243,7 +243,7 @@ st.markdown('''
 
     div[data-testid="stVerticalBlockBorderWrapper"] { background-color: #ffffff !important; border: 1px solid #E0D0E8 !important; border-radius: 20px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important; margin-bottom: 30px; }
     div[data-testid="stVerticalBlockBorderWrapper"] h3 { color: #885D95 !important; text-align: center !important; font-weight: 700 !important; }
-    div.stButton > button[kind="primary"] { background-color: #86B264 !important; border: none !important; color: white !important; height: auto; padding: 15px; width: 100%; font-size: 1.3rem; border-radius: 10px; }
+    div.stButton > button[kind="primary"] { background-color: #DF6456 !important; border: none !important; color: white !important; height: auto; padding: 15px; width: 100%; font-size: 1.3rem; border-radius: 10px; }
     div[role="radiogroup"] { gap: 15px; }
 </style>
 ''', unsafe_allow_html=True)
