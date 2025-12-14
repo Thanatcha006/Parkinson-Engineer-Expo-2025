@@ -39,10 +39,10 @@ def show_demo_clip(file_root_name):
             st.video(f"{file_root_name}.mp4")
             st.caption("🎥 ตัวอย่างการวาด")
     # 2. ลองหา .mov (ตามไฟล์ของคุณ)
-    elif os.path.exists(f"{file_root_name}.mov"):
+    elif os.path.exists(f"{file_root_name}.MOV"):
         c1, c2, c3 = st.columns([1, 1, 1])
         with c2:
-            st.video(f"{file_root_name}.mov")
+            st.video(f"{file_root_name}.MOV")
             st.caption("🎥 ตัวอย่างการวาด")
     # 3. ลองหา .gif
     elif os.path.exists(f"{file_root_name}.gif"):
@@ -52,7 +52,7 @@ def show_demo_clip(file_root_name):
             st.caption("🎥 ตัวอย่างการวาด")
     else:
         # แจ้งเตือนถ้าหาไฟล์ไม่เจอ
-        st.info(f"💡 (ยังไม่มีไฟล์ตัวอย่าง {file_root_name}.mov ในโฟลเดอร์)")
+        st.info(f"💡 (ยังไม่มีไฟล์ตัวอย่าง {file_root_name}.MOV ในโฟลเดอร์)")
 
 # ----------------------------------
 # CSS Styles
