@@ -201,7 +201,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Hero Content
-st.markdown("""
+st.markdown(f"""
 <div class="hero-purple-container">
     <div class="hero-title">“Early detection changes everything.”</div>
     <div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>
