@@ -240,7 +240,7 @@ st.markdown("""
 <div class="navbar">
     <div style="font-size: 1.5rem; color: #885D95; font-weight:700;">🧬 Parkinson AI</div>
     <div class="nav-links">
-        <a href="#about_area" style="color:#67ACC3;">about Parkinson</a>
+        <a href="#about_area" style="color:#67ACC3;">About Parkinson</a>
         <a href="?start=true" target="_self" style="color:#885D95;">Take the test</a>
     </div>
 </div>
