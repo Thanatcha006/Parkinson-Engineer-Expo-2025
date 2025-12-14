@@ -4,5 +4,6 @@ opencv-python-headless
 Pillow
 tensorflow
 scikit-image
-streamlit-drawable-canvas
+scikit-learn
 joblib
+streamlit-drawable-canvas
