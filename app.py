@@ -339,6 +339,12 @@ if is_started or st.session_state.consent_accepted:
         # SPIRAL CARD
         with st.container(border=True): 
             st.subheader("🌀 Spiral")
+            
+            # --- [แสดงคลิป spiral_demo.mov] ---
+            st.write("วาดเส้นวนออกจากกึ่งกลางด้วยความเร็วสม่ำเสมอ")
+            show_demo_clip("spiral_demo")
+            st.markdown("---")
+            # --------------------------------
 
             spiral_mode = st.radio("เลือกวิธีใส่ภาพ (Spiral)", ["Upload", "Draw"], horizontal=True, key="spiral_mode")
             st.markdown("---")
@@ -357,16 +363,16 @@ if is_started or st.session_state.consent_accepted:
             st.markdown("<br>", unsafe_allow_html=True)
             spiral_result_box = st.empty()
 
-            # --- [แสดงคลิป demo] ---
-            st.write("วาดเส้นวนออกจากกึ่งกลางด้วยความเร็วสม่ำเสมอ")
-            show_demo_clip("spiral_demo")
-            st.markdown("---")
-            # --------------------------------
-
         # WAVE CARD
         st.markdown("<br>", unsafe_allow_html=True)
         with st.container(border=True): 
             st.subheader("🌊 Wave")
+            
+            # --- [แสดงคลิป wave_demo.mov] ---
+            st.write("วาดเส้นคลื่นจากบนลงล่างด้วยความเร็วสม่ำเสมอ")
+            show_demo_clip("wave_demo")
+            st.markdown("---")
+            # -----------------------------
 
             wave_mode = st.radio("เลือกวิธีใส่ภาพ (Wave)", ["Upload", "Draw"], horizontal=True, key="wave_mode")
             st.markdown("---")
@@ -384,12 +390,6 @@ if is_started or st.session_state.consent_accepted:
                     wave_image = Image.fromarray(wave_canvas.image_data.astype("uint8")).convert("RGB")
             st.markdown("<br>", unsafe_allow_html=True)
             wave_result_box = st.empty()
-
-            # --- [แสดงคลิป demo] ---
-            st.write("วาดเส้นคลื่นจากบนลงล่างด้วยความเร็วสม่ำเสมอ")
-            show_demo_clip("wave_demo")
-            st.markdown("---")
-            # -----------------------------
 
         # PROCESS BUTTON
         st.markdown("<br>", unsafe_allow_html=True)
