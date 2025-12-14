@@ -11,33 +11,27 @@ import os
 # ----------------------------------
 st.set_page_config(page_title="Parkinson Tester", layout="wide", initial_sidebar_state="collapsed")
 
-# Initialize Session State
 if "consent_accepted" not in st.session_state:
     st.session_state.consent_accepted = False
 
 # ----------------------------------
-# CSS Styles (Responsive & Canvas Fix)
+# CSS Styles
 # ----------------------------------
 st.markdown('''
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Open+Sans:wght@400;600;700&display=swap');
     
-    /* Global Settings */
     html, body, [class*="css"], .stMarkdown, div[data-testid="stDialog"] { 
         font-family: 'Kanit', sans-serif !important; 
         scroll-behavior: smooth;
     }
     .stApp { background-color: #ffffff !important; color: #333333 !important; }
 
-    /* -----------------------------------------------------------
-       1. REMOVE SIDEBAR COMPLETELY
-       ----------------------------------------------------------- */
+    /* Remove Sidebar */
     section[data-testid="stSidebar"] { display: none !important; }
     button[kind="header"] { display: none !important; }
     
-    /* -----------------------------------------------------------
-       2. NAVBAR (Fixed Top)
-       ----------------------------------------------------------- */
+    /* Navbar */
     .navbar {
         display: flex !important;
         justify-content: space-between; align-items: center;
@@ -51,17 +45,17 @@ st.markdown('''
     .nav-links { display: flex; gap: 20px; }
     .nav-links a { font-weight: 600; text-decoration: none; }
 
-    /* -----------------------------------------------------------
-       3. RESPONSIVE TEXT SIZES
-       ----------------------------------------------------------- */
-    
-    /* >>> PC (Desktop) <<< */
+    /* --- Responsive Typography --- */
     @media (min-width: 992px) {
         .hero-title { font-size: 4rem !important; }
         .hero-sub { font-size: 1.6rem !important; }
         .about-text { font-size: 1.5rem !important; }
-        .cta-button { font-size: 1.6rem !important; padding: 20px 70px; }
         
+        /* ปุ่ม Start Test (Styled Streamlit Button) บน PC */
+        div.stButton.hero-cta > button {
+            font-size: 1.6rem !important; padding: 20px 70px !important;
+        }
+
         div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 2.5rem !important; }
         div[data-testid="stVerticalBlockBorderWrapper"] p,
         div[data-testid="stVerticalBlockBorderWrapper"] label,
@@ -73,53 +67,43 @@ st.markdown('''
         .nav-links a { font-size: 1.4rem; }
     }
 
-    /* >>> Mobile / Tablet (ปรับให้เล็กลงตามขอ) <<< */
     @media (max-width: 991px) {
-        /* ลดขนาด Font ให้พอดีมือถือ */
         .hero-title { font-size: 2rem !important; }
         .hero-sub { font-size: 1rem !important; }
         .about-text { font-size: 1rem !important; line-height: 1.5 !important; }
-        .cta-button { font-size: 1rem !important; padding: 12px 30px; }
+        
+        /* ปุ่ม Start Test บน Mobile */
+        div.stButton.hero-cta > button {
+            font-size: 1.2rem !important; padding: 12px 40px !important;
+        }
 
         div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 1.4rem !important; }
         div[data-testid="stVerticalBlockBorderWrapper"] p,
         div[data-testid="stVerticalBlockBorderWrapper"] label,
         div[data-testid="stVerticalBlockBorderWrapper"] li { font-size: 0.95rem !important; }
 
-        /* ปุ่มเครื่องมือวาด เล็กลง */
         div[data-testid="stCanvas"] button {
             width: 40px !important; height: 40px !important; transform: scale(1.0); margin: 5px !important;
         }
-        
         .navbar { flex-direction: column; gap: 10px; padding: 10px; }
         .nav-links a { font-size: 0.9rem; }
-        
         div[data-testid="stVerticalBlockBorderWrapper"] { padding: 20px !important; }
     }
 
-    /* -----------------------------------------------------------
-       4. FIX CANVAS OVERFLOW (แก้ปัญหา Canvas ล้นจอ)
-       ----------------------------------------------------------- */
-    /* บังคับให้ Canvas หดตัวตามความกว้างหน้าจอ */
+    /* --- Canvas Fix (Responsive) --- */
     div[data-testid="stCanvas"] canvas {
-        max-width: 100% !important; /* ห้ามกว้างเกินจอ */
-        width: 100% !important;     /* ให้กว้างเต็มพื้นที่ที่มี */
-        height: auto !important;    /* ปรับสูงตามสัดส่วน */
+        max-width: 100% !important;
+        width: 100% !important;
+        height: auto !important;
         border: 1px solid #ddd;
         border-radius: 8px;
-        touch-action: none; /* ป้องกันการเลื่อนหน้าจอขณะวาดบนมือถือ */
+        touch-action: none;
     }
-    
-    /* จัดกลาง Container */
     div[data-testid="stCanvas"] {
-        display: flex; flex-direction: column; align-items: center; justify-content: center; 
-        width: 100%;
-        overflow: hidden; /* ซ่อนส่วนเกินถ้ามี */
+        display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; overflow: hidden;
     }
 
-    /* -----------------------------------------------------------
-       5. COMPONENT STYLES
-       ----------------------------------------------------------- */
+    /* --- Hero Section Styling --- */
     .hero-purple-container {
         background-color: #885D95; width: 100%; 
         padding: 60px 20px; margin-bottom: 40px; 
@@ -129,12 +113,22 @@ st.markdown('''
     .hero-title { font-weight: 700; margin-bottom: 15px; color: white !important; }
     .hero-sub { font-weight: 300; margin-bottom: 25px; max-width: 800px; color: #f0f0f0 !important; }
     
-    .cta-button {
-        background-color: white; color: #885D95 !important;
-        border-radius: 50px; font-weight: 700; text-decoration: none;
-        display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    /* แปลงปุ่ม Streamlit ให้สวยเหมือน CSS Button เดิม */
+    div.stButton.hero-cta > button {
+        background-color: #ffffff !important;
+        color: #885D95 !important;
+        border-radius: 50px !important;
+        font-weight: 700 !important;
+        border: none !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
+        transition: all 0.3s ease !important;
     }
-    
+    div.stButton.hero-cta > button:hover {
+        transform: translateY(-5px) !important;
+        background-color: #f8f8f8 !important;
+    }
+
+    /* --- General Styles --- */
     .about-section {
         background-color: #67ACC3; width: 100%; padding: 50px 20px; color: white;
         display: flex; flex-direction: column; align-items: center;
@@ -154,11 +148,11 @@ st.markdown('''
     }
     div[data-testid="stVerticalBlockBorderWrapper"] h3 { color: #885D95 !important; text-align: center !important; font-weight: 700 !important; }
 
+    /* Process Button */
     div.stButton > button[kind="primary"] {
         background-color: #86B264 !important; border: none !important; color: white !important;
         height: auto; padding: 15px; width: 100%; font-size: 1.3rem; border-radius: 10px;
     }
-    
     div[role="radiogroup"] { gap: 15px; }
 
 </style>
@@ -167,30 +161,38 @@ st.markdown('''
 # ----------------------------------
 # POPUP (DIALOG) LOGIC
 # ----------------------------------
-@st.dialog("⚠️ ข้อควรทราบก่อนทำการทดสอบ")
+@st.dialog(" ") # ใส่ Title ว่างไว้ เพื่อใช้ HTML ด้านในจัดการหัวข้อเองให้สวยงาม
 def show_consent_dialog():
-    st.write("ระบบนี้เป็นเครื่องมือคัดกรองเบื้องต้นโดยใช้ปัญญาประดิษฐ์ (AI)")
-    st.error("ไม่สามารถใช้แทนการวินิจฉัยของแพทย์ผู้เชี่ยวชาญได้")
-    st.write("หากมีอาการผิดปกติหรือความกังวล กรุณาปรึกษาแพทย์เพื่อรับการตรวจเพิ่มเติม")
-    
-    st.markdown("---")
-    st.markdown("**📝 คำแนะนำเพื่อให้ผลลัพธ์แม่นยำขึ้น**")
+    # ใช้ HTML Structure ที่คุณต้องการ + เนื้อหาเดิมครบถ้วน
     st.markdown("""
-    * นั่งในท่าที่สบาย แขนวางบนพื้นราบ
-    * ทำจิตใจให้สงบ หลีกเลี่ยงความเครียด
-    * วาดเส้นด้วยความเร็วและแรงกดตามธรรมชาติ
-    """)
-    st.markdown("---")
-    st.write("อาการมือสั่นอาจเกิดจากหลายสาเหตุ เช่น ความเครียด ภาวะวิตกกังวล หรือโรคอื่นที่ไม่ใช่พาร์กินสัน ผลลัพธ์จึงควรใช้ประกอบการพิจารณาเท่านั้น")
+    <div class="modal-box" style="font-family: 'Kanit', sans-serif;">
+        <h3 style="text-align:center; margin-bottom:15px; color:#885D95; font-weight:700;">⚠️ ข้อควรทราบก่อนทำการทดสอบ</h3>
+        
+        <p style="font-size:1.1rem;">ระบบนี้เป็นเครื่องมือคัดกรองเบื้องต้นโดยใช้ปัญญาประดิษฐ์ (AI)</p> 
+        <div style="background-color:#ffe6e6; padding:10px; border-radius:8px; border:1px solid #ffcccc; margin-bottom:15px;">
+            <b style="color:#cc0000;">⛔ ไม่สามารถใช้แทนการวินิจฉัยของแพทย์ผู้เชี่ยวชาญได้</b>
+        </div>
+        <p style="font-size:1.1rem;">หากมีอาการผิดปกติหรือความกังวล กรุณาปรึกษาแพทย์เพื่อรับการตรวจเพิ่มเติม</p>
+        
+        <hr style="margin: 20px 0; border-top: 1px solid #eee;">
+        
+        <b style="font-size:1.2rem; color:#333;">📝 คำแนะนำเพื่อให้ผลลัพธ์แม่นยำขึ้น</b>
+        <ul style="margin-top:10px; font-size:1.1rem; line-height:1.6;">
+            <li>นั่งในท่าที่สบาย แขนวางบนพื้นราบ</li>
+            <li>ทำจิตใจให้สงบ หลีกเลี่ยงความเครียด</li>
+            <li>วาดเส้นด้วยความเร็วและแรงกดตามธรรมชาติ</li>
+        </ul>
+
+        <div style="font-size:0.95rem; color:#666; margin-top:20px; font-style:italic;">
+            * อาการมือสั่นอาจเกิดจากหลายสาเหตุ เช่น ความเครียด ภาวะวิตกกังวล หรือโรคอื่นที่ไม่ใช่พาร์กินสัน ผลลัพธ์จึงควรใช้ประกอบการพิจารณาเท่านั้น
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     
     st.write("")
     if st.button("ข้าพเจ้ารับทราบและยินยอม (เริ่มทำแบบทดสอบ)", type="primary", use_container_width=True):
         st.session_state.consent_accepted = True
         st.rerun()
-
-# ถ้ายังไม่กด Consent ให้เด้ง Popup ขึ้นมา
-if not st.session_state.consent_accepted:
-    show_consent_dialog()
 
 # ----------------------------------
 # UI Content: Navbar
@@ -208,19 +210,22 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ----------------------------------
-# UI Content: Hero & Main
+# UI Content: Hero
 # ----------------------------------
+st.markdown('<div class="hero-purple-container">', unsafe_allow_html=True)
+st.markdown('<div class="hero-title">“Early detection changes everything.”</div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>', unsafe_allow_html=True)
 
-# Hero Section
-st.markdown(f"""
-<div class="hero-purple-container">
-    <div class="hero-title">“Early detection changes everything.”</div>
-    <div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>
-    <a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>
-</div>
-""", unsafe_allow_html=True)
+# ปุ่ม Start Test ที่หน้าตาเหมือน CTA Button แต่เป็น Streamlit Button เพื่อเรียก Python Function
+st.markdown('<div class="stButton hero-cta">', unsafe_allow_html=True)
+if st.button("เริ่มทำแบบทดสอบ ➝"):
+    show_consent_dialog() # เรียก Popup ขึ้นมาเมื่อกด
+st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
-# About Section
+# ----------------------------------
+# UI Content: About
+# ----------------------------------
 st.markdown('<div id="about_area" style="padding-top: 20px;"></div>', unsafe_allow_html=True) 
 
 image_url = "https://kcmh.chulalongkornhospital.go.th/ec/wp-content/uploads/2019/02/Parkinson-Cover-1024x683.jpg"
