@@ -16,13 +16,12 @@ st.set_page_config(page_title="Parkinson Tester", layout="wide", initial_sidebar
 if "consent_accepted" not in st.session_state:
     st.session_state.consent_accepted = False
 
-# ตรวจสอบ URL Parameter ว่ามีการกดปุ่มเริ่มมาหรือไม่
-# ถ้า URL มี ?start=true แสดงว่าผู้ใช้กดปุ่มมาแล้ว
+# เช็ค Query Params
 query_params = st.query_params
 is_started = query_params.get("start") == "true"
 
 # ----------------------------------
-# CSS Styles
+# CSS Styles (Original + Responsive + New Green Horizontal Loader)
 # ----------------------------------
 st.markdown('''
 <style>
@@ -52,15 +51,73 @@ st.markdown('''
     .nav-links { display: flex; gap: 20px; }
     .nav-links a { font-weight: 600; text-decoration: none; }
 
-    /* -----------------------------------------------------------
+    /* -------------------------------------------------------
+       NEW LOADING OVERLAY STYLES (Green Horizontal Bar)
+       ------------------------------------------------------- */
+    /* ฉากหลังสีขาวจางๆ บังหน้าจอ */
+    #loading-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(255, 255, 255, 0.95); /* พื้นหลังขาวจางๆ */
+        z-index: 999999;
+        display: none; /* ซ่อนไว้ก่อน จะแสดงเมื่อกดปุ่ม */
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(5px);
+    }
+    
+    /* รางของแท่งโหลด */
+    .loader-track {
+        width: 80%; /* ความยาวของแท่ง (80% ของจอ) */
+        max-width: 600px; /* ยาวสูงสุดไม่เกิน 600px */
+        height: 8px; /* ความหนาของแท่ง */
+        background-color: #e0e0e0; /* สีพื้นหลังรางเทาๆ */
+        border-radius: 10px;
+        overflow: hidden; /* ซ่อนส่วนที่เกิน */
+        margin-bottom: 25px;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    }
+    
+    /* ตัวแท่งสีเขียวที่วิ่งไปมา */
+    .loader-bar {
+        width: 30%; /* ความยาวของตัววิ่ง */
+        height: 100%;
+        background-color: #86B264; /* สีเขียวเดียวกับปุ่มของคุณ */
+        border-radius: 10px;
+        position: relative;
+        animation: horizontal-move 2s infinite ease-in-out; /* แอนิเมชันวิ่งไปมา */
+    }
+    
+    /* แอนิเมชันการวิ่ง */
+    @keyframes horizontal-move {
+        0% { left: -30%; }
+        50% { left: 100%; }
+        100% { left: -30%; }
+    }
+    
+    /* ข้อความ Loading */
+    .loading-text {
+        font-family: 'Kanit', sans-serif;
+        font-size: 1.5rem;
+        color: #86B264; /* ใช้สีเขียวเดียวกับแท่ง */
+        font-weight: 600;
+        letter-spacing: 1px;
+        animation: pulse-text 1.5s infinite ease-in-out;
+    }
+    @keyframes pulse-text {
+        0%, 100% { opacity: 0.8; }
+        50% { opacity: 1; }
+    }
+
+
+    /* -------------------------------------------------------
        RESPONSIVE TYPOGRAPHY
-       ----------------------------------------------------------- */
+       ------------------------------------------------------- */
     @media (min-width: 992px) {
         .hero-title { font-size: 4rem !important; }
         .hero-sub { font-size: 1.6rem !important; }
         .about-text { font-size: 1.5rem !important; }
-        
-        /* สไตล์ปุ่มเดิมของคุณ */
         .cta-button { font-size: 1.6rem !important; padding: 20px 70px; }
         
         div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 2.5rem !important; }
@@ -78,7 +135,6 @@ st.markdown('''
         .hero-title { font-size: 2.2rem !important; }
         .hero-sub { font-size: 1.1rem !important; }
         .about-text { font-size: 1.1rem !important; line-height: 1.6 !important; }
-        
         .cta-button { font-size: 1.1rem !important; padding: 12px 30px; }
 
         div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 1.6rem !important; }
@@ -89,7 +145,6 @@ st.markdown('''
         div[data-testid="stCanvas"] button {
             width: 40px !important; height: 40px !important; transform: scale(1.0); margin: 5px !important;
         }
-        
         .navbar { flex-direction: column; gap: 10px; padding: 10px; }
         .nav-links a { font-size: 1rem; }
         div[data-testid="stVerticalBlockBorderWrapper"] { padding: 20px !important; }
@@ -116,17 +171,14 @@ st.markdown('''
     .hero-title { font-weight: 700; margin-bottom: 15px; color: white !important; }
     .hero-sub { font-weight: 300; margin-bottom: 25px; max-width: 800px; color: #f0f0f0 !important; }
     
-    /* ปุ่ม HTML <a> Class เดิม 100% */
+    /* ปุ่ม HTML <a> เดิม */
     .cta-button {
-        background-color: #ffffff;
-        color: #885D95 !important;
-        border-radius: 50px; 
-        font-weight: 700;
-        text-decoration: none;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-        display: inline-block; transition: all 0.3s ease;
+        background-color: white; color: #885D95 !important;
+        border-radius: 50px; font-weight: 700; text-decoration: none;
+        display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        cursor: pointer; /* เพิ่ม cursor pointer */
     }
-    .cta-button:hover { 
+    .cta-button:hover {
         transform: translateY(-5px); 
         background-color: #f8f8f8;
     }
@@ -163,6 +215,18 @@ st.markdown('''
 ''', unsafe_allow_html=True)
 
 # ----------------------------------
+# UI Content: Loading Overlay (แท่งเขียวแนวนอน)
+# ----------------------------------
+st.markdown("""
+<div id="loading-overlay">
+    <div class="loader-track">
+        <div class="loader-bar"></div>
+    </div>
+    <div class="loading-text">กำลังเข้าสู่แบบทดสอบ...</div>
+</div>
+""", unsafe_allow_html=True)
+
+# ----------------------------------
 # UI Content: Navbar
 # ----------------------------------
 st.markdown('<div id="top"></div>', unsafe_allow_html=True)
@@ -180,12 +244,12 @@ st.markdown("""
 # ----------------------------------
 # UI Content: Hero
 # ----------------------------------
-# ปุ่ม <a> ที่เมื่อกดจะ Reload หน้าพร้อมพารามิเตอร์ ?start=true
+# ปุ่ม <a> เพิ่ม onclick เพื่อโชว์ Loading Overlay ก่อน Reload
 st.markdown(f"""
 <div class="hero-purple-container">
     <div class="hero-title">“Early detection changes everything.”</div>
     <div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>
-    <a href="?start=true" class="cta-button" target="_self">เริ่มทำแบบทดสอบ ➝</a>
+    <a href="?start=true" class="cta-button" target="_self" onclick="document.getElementById('loading-overlay').style.display = 'flex';">เริ่มทำแบบทดสอบ ➝</a>
 </div>
 """, unsafe_allow_html=True)
 
@@ -207,24 +271,25 @@ def preprocess(img):
     return img
 
 # =========================================================
-# 5. TEST AREA (แทรกเนื้อหาระหว่าง Hero และ About)
+# 5. TEST AREA
 # =========================================================
-# เนื้อหาจะถูกสร้างขึ้นเมื่อกดปุ่ม (is_started = True) หรือเคยยอมรับเงื่อนไขแล้ว
-
+# Logic Gate: โชว์ก็ต่อเมื่อกด Link (?start=true) หรือเคยยอมรับแล้ว
 if is_started or st.session_state.consent_accepted:
 
-    # 1. จุด Anchor ที่จะให้เลื่อนลงมาหา
+    # 1. Anchor Point
     st.markdown('<div id="test_content_anchor" style="padding-top: 20px;"></div>', unsafe_allow_html=True)
 
-    # 2. JavaScript เพื่อเลื่อนหน้าจออัตโนมัติ (Auto-scroll)
-    # สคริปต์นี้จะ "ตามหา" ID test_content_anchor ทุกๆ 0.1 วินาที จนกว่าจะเจอ แล้วเลื่อนลงมา
+    # 2. JS Auto-scroll (ตื๊อจนกว่าจะเจอ)
     st.markdown("""
         <script>
             var targetId = 'test_content_anchor';
             var scrollInterval = setInterval(function() {
                 var element = window.parent.document.getElementById(targetId);
                 if (element) {
-                    element.scrollIntoView({behavior: "smooth", block: "center"});
+                    // หน่วงเวลาเล็กน้อยเพื่อให้แน่ใจว่า layout นิ่งแล้วค่อยเลื่อน
+                    setTimeout(function(){
+                         element.scrollIntoView({behavior: "smooth", block: "center"});
+                    }, 300);
                     clearInterval(scrollInterval);
                 }
             }, 100);
@@ -264,8 +329,9 @@ if is_started or st.session_state.consent_accepted:
                     st.rerun()
 
     else:
-        # Testing Tool Section (Spiral / Wave)
-        
+        # Testing Tool Section
+        st.markdown('<div id="test_area" style="padding-top: 40px;"></div>', unsafe_allow_html=True)
+
         # SPIRAL CARD
         with st.container(border=True): 
             st.subheader("🌀 Spiral")
@@ -357,13 +423,13 @@ else:
 # =========================================================
 st.markdown('<div id="about_area" style="padding-top: 40px;"></div>', unsafe_allow_html=True) 
 
-image = "parkinson cover.png"
+image_url = "https://kcmh.chulalongkornhospital.go.th/ec/wp-content/uploads/2019/02/Parkinson-Cover-1024x683.jpg"
 
 about_html = f'''
 <div class="about-section">
 <div class="about-content">
 <div class="about-header">ศูนย์ความเป็นเลิศทางการแพทย์<br>โรคพาร์กินสัน และกลุ่มโรคความเคลื่อนไหวผิดปกติ</div>
-<div style="text-align:center;"><img src="{image}" class="about-img" alt="Parkinson Info"></div>
+<div style="text-align:center;"><img src="{image_url}" class="about-img" alt="Parkinson Info"></div>
 <div class="about-text">
 โรคพาร์กินสัน (Parkinson’s Disease) ถือเป็นโรคความเสื่อมของระบบประสาทที่พบได้บ่อยเป็นอันดับที่ 2 รองจากโรคอัลไซเมอร์ มักพบในผู้ที่มีอายุ 60 ปีขึ้นไป แต่ในปัจจุบันเริ่มพบผู้ป่วยที่มีอายุน้อยลงเรื่อยๆ สาเหตุหลักเกิดจากการที่เซลล์สมองในส่วนที่สร้างสารสื่อประสาทชื่อ <b>"โดพามีน (Dopamine)"</b> เกิดการเสื่อมสลาย ทำให้สมองไม่สามารถควบคุมการเคลื่อนไหวของร่างกายได้อย่างปกติ
 <br><br>
