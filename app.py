@@ -16,7 +16,6 @@ if "consent_accepted" not in st.session_state:
     st.session_state.consent_accepted = False
 
 # เช็ค Query Params (เพื่อดูว่าผู้ใช้กด Link "เริ่มทำแบบทดสอบ" มาหรือยัง)
-# การใช้ st.query_params เป็นวิธีเดียวที่จะทำให้ <a> tag ควบคุม Logic ของ Python ได้
 query_params = st.query_params
 is_started = query_params.get("start") == "true"
 
@@ -171,12 +170,12 @@ st.markdown("""
 # ----------------------------------
 # UI Content: Hero
 # ----------------------------------
-# Link นี้จะ Reload หน้าเว็บพร้อม parameter ?start=true และเลื่อนไปที่ #test_area
+# แก้ไข Link: เมื่อกดจะ Reload (?start=true) และเลื่อนลงไปหา #disclaimer_anchor
 st.markdown(f"""
 <div class="hero-purple-container">
     <div class="hero-title">“Early detection changes everything.”</div>
     <div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>
-    <a href="?start=true#test_area" class="cta-button" target="_self">เริ่มทำแบบทดสอบ ➝</a>
+    <a href="?start=true#disclaimer_anchor" class="cta-button" target="_self">เริ่มทำแบบทดสอบ ➝</a>
 </div>
 """, unsafe_allow_html=True)
 
@@ -237,9 +236,10 @@ def preprocess(img):
 # Logic Gate: โชว์ก็ต่อเมื่อกด Link (?start=true) หรือเคยยอมรับแล้ว
 if is_started or st.session_state.consent_accepted:
 
-    st.markdown('<div id="test_area" style="padding-top: 40px;"></div>', unsafe_allow_html=True) 
-
     if not st.session_state.consent_accepted:
+        # ฝังหมุด Anchor ไว้ตรงนี้เพื่อให้หน้าจอเลื่อนมาเจอ Disclaimer
+        st.markdown('<div id="disclaimer_anchor" style="padding-top: 40px;"></div>', unsafe_allow_html=True)
+
         # Disclaimer Section
         c1, c2, c3 = st.columns([1, 8, 1]) 
         with c2:
@@ -272,8 +272,9 @@ if is_started or st.session_state.consent_accepted:
                     st.rerun()
 
     else:
-        # Testing Tool Section
-        
+        # Testing Tool Section (Anchor for general testing area)
+        st.markdown('<div id="test_area" style="padding-top: 40px;"></div>', unsafe_allow_html=True)
+
         # SPIRAL CARD
         with st.container(border=True): 
             st.subheader("🌀 Spiral")
