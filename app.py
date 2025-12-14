@@ -192,16 +192,16 @@ st.markdown(f"""
     <div class="hero-title">“Early detection changes everything.”</div>
     <div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>
     st.markdown('<a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>', unsafe_allow_html=True)
-    if st.button("เริ่มทำแบบทดสอบ ➝", key="start_test"):
+    st.markdown('<br><br>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+</div>
+""", unsafe_allow_html=True)
+
+if st.button("เริ่มทำแบบทดสอบ ➝", key="start_test"):
         st.session_state.show_disclaimer = True
         st.markdown(
             '<script>document.getElementById("test_area");</script>',
             unsafe_allow_html=True
-    )
-
-    )
-</div>
-""", unsafe_allow_html=True)
 
 
 # ----------------------------------
