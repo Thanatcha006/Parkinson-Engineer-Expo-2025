@@ -341,7 +341,6 @@ if is_started or st.session_state.consent_accepted:
             st.subheader("🌀 Spiral")
             
             # --- [แสดงคลิป spiral_demo.mov] ---
-            st.write("วาดเส้นวนออกจากกึ่งกลางด้วยความเร็วสม่ำเสมอ")
             show_demo_clip("spiral_demo")
             st.markdown("---")
             # --------------------------------
@@ -369,7 +368,6 @@ if is_started or st.session_state.consent_accepted:
             st.subheader("🌊 Wave")
             
             # --- [แสดงคลิป wave_demo.mov] ---
-            st.write("วาดเส้นคลื่นจากบนลงล่างด้วยความเร็วสม่ำเสมอ")
             show_demo_clip("wave_demo")
             st.markdown("---")
             # -----------------------------
