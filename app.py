@@ -115,7 +115,7 @@ st.markdown("""
     /* CARD STYLE */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
-        border: 2px solid #885D95 !important;
+        border-width: 5px !important;
         border-radius: 20px;
         padding: 25px;
         box-shadow: 0 8px 20px rgba(136, 93, 149, 0.15);
