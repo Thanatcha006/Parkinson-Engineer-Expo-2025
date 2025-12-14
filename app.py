@@ -137,23 +137,31 @@ st.markdown("""
 
    div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        background-color: #ffffff !important;
         border: 1px solid #E0D0E8 !important; 
-        border-radius: 24px !important;  /* มุมโค้งเยอะๆ */
-        padding: 40px !important;        /* พื้นที่ภายในกว้างๆ */
-        box-shadow: 0 20px 50px rgba(0,0,0,0.1) !important; /* เงาฟุ้งๆ ลอยๆ */
-        margin-bottom: 30px;
+        border-radius: 24px !important;
+        padding: 40px !important;
+        /* 🔥 เงาแบบ Popup (Deep Shadow) */
+        box-shadow: 0 24px 64px rgba(0,0,0,0.15) !important; 
+        margin-bottom: 40px;
     }
+
+    /* --- จัด Text ในการ์ด --- */
     div[data-testid="stVerticalBlockBorderWrapper"] h3 {
-        text-align: center; /* จัดหัวข้อกลาง */
+        text-align: center !important;
         color: #885D95 !important;
         font-size: 1.8rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 25px !important;
     }
-    /* สีตัวหนังสือข้างใน */
-    div[data-testid="stVerticalBlockBorderWrapper"] p,
+    
+    div[data-testid="stVerticalBlockBorderWrapper"] p, 
     div[data-testid="stVerticalBlockBorderWrapper"] li,
     div[data-testid="stVerticalBlockBorderWrapper"] label {
         color: #333333 !important;
-        font-size: 1.05rem;
+        font-size: 1.1rem !important;
+        line-height: 1.7 !important;
     }
 </style>
 """, unsafe_allow_html=True)
