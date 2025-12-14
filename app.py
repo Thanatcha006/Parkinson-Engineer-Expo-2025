@@ -156,44 +156,10 @@ st.markdown('''
     }
     .cta-button:hover { transform: translateY(-5px); background-color: #f8f8f8; }
     
-    /* -------------------------------------------------------
-       ABOUT SECTION STYLES (RESPONSIVE FIX)
-       ------------------------------------------------------- */
-    .about-section {
-        background-color: #67ACC3;
-        width: 100vw;
-        margin-left: calc(-50vw + 50%); /* เทคนิค Full Width */
-        margin-right: calc(-50vw + 50%);
-        padding: 60px 20px;
-        color: white;
-        display: flex;
-        justify-content: center;
-        box-sizing: border-box; /* สำคัญ: ป้องกัน padding ดันล้น */
-    }
-    
-    .about-container {
-        max-width: 1200px;
-        width: 100%;
-        /* ป้องกันคอนเทนเนอร์ภายในล้น */
-        box-sizing: border-box; 
-    }
-    
-    .about-header-large {
-        font-size: 2.8rem;
-        font-weight: 700;
-        text-align: center;
-        border-bottom: 2px solid rgba(255,255,255,0.3);
-        padding-bottom: 20px;
-        margin-bottom: 40px;
-    }
-
-    .about-body-grid {
-        display: grid;
-        grid-template-columns: 1fr; /* Default Mobile */
-        gap: 30px;
-        align-items: center;
-        width: 100%; /* บังคับไม่ให้เกิน */
-    }
+    .about-section { background-color: #67ACC3; width: 100%; padding: 60px 20px; color: white; display: flex; justify-content: center; }
+    .about-container { max-width: 1200px; width: 100%; }
+    .about-header-large { font-size: 2.8rem; font-weight: 700; text-align: center; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 20px; margin-bottom: 40px; }
+    .about-body-grid { display: grid; grid-template-columns: 1fr; gap: 40px; align-items: center; }
     
     @media (min-width: 992px) {
         .about-body-grid { grid-template-columns: 45% 55%; }
