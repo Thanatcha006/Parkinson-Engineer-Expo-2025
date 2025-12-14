@@ -12,23 +12,6 @@ import base64
 # ----------------------------------
 st.set_page_config(page_title="Parkinson Tester", layout="wide", initial_sidebar_state="collapsed")
 
-def get_img_as_base64(file_path):
-    try:
-        with open(file_path, "rb") as f:
-            data = f.read()
-        return base64.b64encode(data).decode()
-    except Exception:
-        return ""
-
-# เตรียมโหลดรูปภาพ
-hero_image_path = "parkinson cover.png"
-hero_img_base64 = ""
-
-if os.path.exists(hero_image_path):
-    hero_img_base64 = f"data:image/png;base64,{get_img_as_base64(hero_image_path)}"
-else:
-    # รูปสำรองออนไลน์ (ถ้าไม่มีไฟล์)
-    hero_img_base64 = "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&q=80&w=800"
 
 # ----------------------------------
 # CSS Styles
@@ -208,7 +191,7 @@ st.markdown("""
     <a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>
 </div>
 """, unsafe_allow_html=True)
-st.image({hero_img_base64}, width=1000, height=1500)
+st.image("parkinson cover.png", width=1000, height=1500)
 
 
 # ----------------------------------
