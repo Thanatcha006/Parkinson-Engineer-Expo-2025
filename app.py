@@ -89,13 +89,13 @@ st.markdown('''
     /* --- [แก้ไข] Styling สำหรับ Expander ให้เป็นสี #DF6456 และข้อความสีขาว --- */
     div[data-testid="stExpander"] details > summary {
         background-color: #F5BA9F !important; /* เปลี่ยนสีพื้นหลัง */
-        color: white !important; /* เปลี่ยนสีข้อความ */
+        color: black !important; /* เปลี่ยนสีข้อความ */
         border-radius: 10px !important;
         font-weight: 600 !important;
         border: 1px solid #DF6456 !important; /* เปลี่ยนสีขอบให้เข้ากัน */
     }
     div[data-testid="stExpander"] details > summary:hover {
-        color: white !important; /* ให้ข้อความยังคงเป็นสีขาวตอนเอาเมาส์ไปวาง */
+        color: black !important;
         opacity: 0.9;
     }
     /* ----------------------------------------------------- */
