@@ -65,31 +65,30 @@ st.markdown("""
         position: relative;
         z-index: 100;
     }
-    .hero-purple-stripe {
-        background-color: #F8F0FC; /* สีม่วงพาสเทล */
+    .hero-purple-container {
+        background-color: #885D95;
         
-        /* ขยายเต็มจอ (ทะลุขอบซ้ายขวา) */
+        /* ขยายเต็มจอซ้ายขวา */
         margin-left: -5rem; 
         margin-right: -5rem;
         padding-left: 5rem; 
         padding-right: 5rem;
         
-        padding-top: 50px; 
-        padding-bottom: 60px;
-        margin-bottom: 30px; 
+        /* ระยะห่างภายใน */
+        padding-top: 60px; 
+        padding-bottom: 80px; /* ยืดด้านล่างให้คลุมปุ่ม */
+        margin-bottom: 40px; 
+        
+        /* จัดเนื้อหาตรงกลาง */
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         
         /* เส้นขอบล่าง */
         border-bottom: 1px solid #E0D0E8;
     }
-    .hero-content {
-        text-align: center;
-        padding-top: 30px;
-        padding-bottom: 10px;
-        display: flex;            
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
+    
     .hero-title {
         color: #4A4A4A;
         font-size: clamp(2.2rem, 4vw, 2.5rem); 
@@ -108,8 +107,8 @@ st.markdown("""
     }
 
     .cta-button {
-        background-color: #885D95; 
-        color: white !important;
+        background-color: white; 
+        color: #885D95 !important;
         padding: 18px 60px;
         border-radius: 50px;
         font-size: 1.2rem;
@@ -174,9 +173,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Hero Content
-st.markdown('<div class="hero-purple-stripe"></div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-purple-container"></div>', unsafe_allow_html=True)
 with st.container():
-    st.markdown('<div class="hero-content">', unsafe_allow_html=True)
     st.markdown('<div class="hero-title">“Early detection changes everything.”</div>', unsafe_allow_html=True)
     st.markdown('<div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>', unsafe_allow_html=True)
     st.markdown('<a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>', unsafe_allow_html=True)
