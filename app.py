@@ -9,55 +9,54 @@ import os
 # ----------------------------------
 # 1. Page Config
 # ----------------------------------
-# ซ่อน Sidebar โดย Default
 st.set_page_config(page_title="Parkinson Tester", layout="wide", initial_sidebar_state="collapsed")
 
+# Initialize Session State
 if "consent_accepted" not in st.session_state:
     st.session_state.consent_accepted = False
 
 # ----------------------------------
-# CSS Styles (Responsive System)
+# CSS Styles (Responsive & Canvas Fix)
 # ----------------------------------
 st.markdown('''
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Open+Sans:wght@400;600;700&display=swap');
     
     /* Global Settings */
-    html, body, [class*="css"], .stMarkdown { 
+    html, body, [class*="css"], .stMarkdown, div[data-testid="stDialog"] { 
         font-family: 'Kanit', sans-serif !important; 
         scroll-behavior: smooth;
     }
     .stApp { background-color: #ffffff !important; color: #333333 !important; }
 
     /* -----------------------------------------------------------
-       1. REMOVE SIDEBAR COMPLETELY (ลบ Sidebar ทิ้งถาวร)
+       1. REMOVE SIDEBAR COMPLETELY
        ----------------------------------------------------------- */
     section[data-testid="stSidebar"] { display: none !important; }
-    button[kind="header"] { display: none !important; } /* ซ่อนปุ่ม Hamburger */
+    button[kind="header"] { display: none !important; }
     
     /* -----------------------------------------------------------
-       2. NAVBAR (Show on ALL Devices)
+       2. NAVBAR (Fixed Top)
        ----------------------------------------------------------- */
     .navbar {
-        display: flex !important; /* บังคับโชว์ตลอด */
+        display: flex !important;
         justify-content: space-between; align-items: center;
         padding: 15px 20px; 
         background-color: #ffffff; 
         border-bottom: 1px solid #eee;
         width: 100%;
         position: relative; z-index: 999;
-        margin-top: -60px; /* ดึงขึ้นไปทับ Header ของ Streamlit */
+        margin-top: -60px; 
     }
     .nav-links { display: flex; gap: 20px; }
     .nav-links a { font-weight: 600; text-decoration: none; }
 
     /* -----------------------------------------------------------
-       3. RESPONSIVE TYPOGRAPHY & LAYOUT (แยกขนาดตามอุปกรณ์)
+       3. RESPONSIVE TEXT SIZES
        ----------------------------------------------------------- */
     
-    /* >>> สำหรับ PC (หน้าจอใหญ่กว่า 992px) <<< */
+    /* >>> PC (Desktop) <<< */
     @media (min-width: 992px) {
-        /* Fonts ใหญ่สะใจสำหรับ PC */
         .hero-title { font-size: 4rem !important; }
         .hero-sub { font-size: 1.6rem !important; }
         .about-text { font-size: 1.5rem !important; }
@@ -68,59 +67,59 @@ st.markdown('''
         div[data-testid="stVerticalBlockBorderWrapper"] label,
         div[data-testid="stVerticalBlockBorderWrapper"] li { font-size: 1.5rem !important; }
         
-        /* ปุ่ม Toolbar ใหญ่ */
         div[data-testid="stCanvas"] button {
             width: 60px !important; height: 60px !important; transform: scale(1.4); margin: 10px 15px !important;
         }
         .nav-links a { font-size: 1.4rem; }
     }
 
-    /* >>> สำหรับ iPad/Tablet และ Mobile (หน้าจอเล็กกว่า 991px) <<< */
+    /* >>> Mobile / Tablet (ปรับให้เล็กลงตามขอ) <<< */
     @media (max-width: 991px) {
-        /* Fonts ขนาดปกติ อ่านง่าย ไม่ล้นจอ */
-        .hero-title { font-size: 2.2rem !important; }
-        .hero-sub { font-size: 1.1rem !important; }
-        .about-text { font-size: 1.1rem !important; line-height: 1.6 !important; }
-        .cta-button { font-size: 1.1rem !important; padding: 12px 30px; }
+        /* ลดขนาด Font ให้พอดีมือถือ */
+        .hero-title { font-size: 2rem !important; }
+        .hero-sub { font-size: 1rem !important; }
+        .about-text { font-size: 1rem !important; line-height: 1.5 !important; }
+        .cta-button { font-size: 1rem !important; padding: 12px 30px; }
 
-        div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 1.6rem !important; }
+        div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 1.4rem !important; }
         div[data-testid="stVerticalBlockBorderWrapper"] p,
         div[data-testid="stVerticalBlockBorderWrapper"] label,
-        div[data-testid="stVerticalBlockBorderWrapper"] li { font-size: 1.1rem !important; }
+        div[data-testid="stVerticalBlockBorderWrapper"] li { font-size: 0.95rem !important; }
 
-        /* ปุ่ม Toolbar ย่อลงมาหน่อย */
+        /* ปุ่มเครื่องมือวาด เล็กลง */
         div[data-testid="stCanvas"] button {
             width: 40px !important; height: 40px !important; transform: scale(1.0); margin: 5px !important;
         }
         
-        /* Navbar ปรับให้เล็กลง */
         .navbar { flex-direction: column; gap: 10px; padding: 10px; }
-        .nav-links a { font-size: 1rem; }
+        .nav-links a { font-size: 0.9rem; }
         
-        /* Card Padding ลดลง */
         div[data-testid="stVerticalBlockBorderWrapper"] { padding: 20px !important; }
     }
 
     /* -----------------------------------------------------------
-       4. FIX CANVAS DISAPPEARING (แก้ปัญหา Canvas ตกขอบ)
+       4. FIX CANVAS OVERFLOW (แก้ปัญหา Canvas ล้นจอ)
        ----------------------------------------------------------- */
     /* บังคับให้ Canvas หดตัวตามความกว้างหน้าจอ */
-    canvas {
-        max-width: 100% !important;
-        height: auto !important;
-        border: 1px solid #ddd; /* เพิ่มขอบให้เห็นชัดเจน */
+    div[data-testid="stCanvas"] canvas {
+        max-width: 100% !important; /* ห้ามกว้างเกินจอ */
+        width: 100% !important;     /* ให้กว้างเต็มพื้นที่ที่มี */
+        height: auto !important;    /* ปรับสูงตามสัดส่วน */
+        border: 1px solid #ddd;
         border-radius: 8px;
+        touch-action: none; /* ป้องกันการเลื่อนหน้าจอขณะวาดบนมือถือ */
     }
     
-    /* จัดกลาง Canvas Container */
+    /* จัดกลาง Container */
     div[data-testid="stCanvas"] {
-        display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; 
+        width: 100%;
+        overflow: hidden; /* ซ่อนส่วนเกินถ้ามี */
     }
 
     /* -----------------------------------------------------------
-       5. COMPONENT STYLES (Common)
+       5. COMPONENT STYLES
        ----------------------------------------------------------- */
-    /* Hero Section */
     .hero-purple-container {
         background-color: #885D95; width: 100%; 
         padding: 60px 20px; margin-bottom: 40px; 
@@ -136,7 +135,6 @@ st.markdown('''
         display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
     
-    /* About Section */
     .about-section {
         background-color: #67ACC3; width: 100%; padding: 50px 20px; color: white;
         display: flex; flex-direction: column; align-items: center;
@@ -149,7 +147,6 @@ st.markdown('''
         border-radius: 30px; font-weight: 700; text-decoration: none; margin-top: 20px; display: inline-block;
     }
 
-    /* Cards */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
         border: 1px solid #E0D0E8 !important; border-radius: 20px !important;
@@ -157,20 +154,46 @@ st.markdown('''
     }
     div[data-testid="stVerticalBlockBorderWrapper"] h3 { color: #885D95 !important; text-align: center !important; font-weight: 700 !important; }
 
-    /* Button Primary */
     div.stButton > button[kind="primary"] {
         background-color: #86B264 !important; border: none !important; color: white !important;
         height: auto; padding: 15px; width: 100%; font-size: 1.3rem; border-radius: 10px;
     }
     
-    /* Radio Group Spacing */
     div[role="radiogroup"] { gap: 15px; }
 
 </style>
 ''', unsafe_allow_html=True)
 
 # ----------------------------------
-# UI Content: Navbar (ใช้แทน Sidebar ทุกอุปกรณ์)
+# POPUP (DIALOG) LOGIC
+# ----------------------------------
+@st.dialog("⚠️ ข้อควรทราบก่อนทำการทดสอบ")
+def show_consent_dialog():
+    st.write("ระบบนี้เป็นเครื่องมือคัดกรองเบื้องต้นโดยใช้ปัญญาประดิษฐ์ (AI)")
+    st.error("ไม่สามารถใช้แทนการวินิจฉัยของแพทย์ผู้เชี่ยวชาญได้")
+    st.write("หากมีอาการผิดปกติหรือความกังวล กรุณาปรึกษาแพทย์เพื่อรับการตรวจเพิ่มเติม")
+    
+    st.markdown("---")
+    st.markdown("**📝 คำแนะนำเพื่อให้ผลลัพธ์แม่นยำขึ้น**")
+    st.markdown("""
+    * นั่งในท่าที่สบาย แขนวางบนพื้นราบ
+    * ทำจิตใจให้สงบ หลีกเลี่ยงความเครียด
+    * วาดเส้นด้วยความเร็วและแรงกดตามธรรมชาติ
+    """)
+    st.markdown("---")
+    st.write("อาการมือสั่นอาจเกิดจากหลายสาเหตุ เช่น ความเครียด ภาวะวิตกกังวล หรือโรคอื่นที่ไม่ใช่พาร์กินสัน ผลลัพธ์จึงควรใช้ประกอบการพิจารณาเท่านั้น")
+    
+    st.write("")
+    if st.button("ข้าพเจ้ารับทราบและยินยอม (เริ่มทำแบบทดสอบ)", type="primary", use_container_width=True):
+        st.session_state.consent_accepted = True
+        st.rerun()
+
+# ถ้ายังไม่กด Consent ให้เด้ง Popup ขึ้นมา
+if not st.session_state.consent_accepted:
+    show_consent_dialog()
+
+# ----------------------------------
+# UI Content: Navbar
 # ----------------------------------
 st.markdown('<div id="top"></div>', unsafe_allow_html=True)
 
@@ -253,39 +276,8 @@ def preprocess(img):
 # =========================================================
 st.markdown('<div id="test_area" style="padding-top: 40px;"></div>', unsafe_allow_html=True) 
 
-if not st.session_state.consent_accepted:
-    # Disclaimer
-    c1, c2, c3 = st.columns([1, 8, 1]) # ปรับคอลัมน์ให้อ่านง่ายขึ้นบนมือถือ
-    with c2:
-       with st.container(border=True):
-            st.markdown('<div class="disclaimer-header"><h3 style="text-align:center;">⚠️ ข้อควรทราบก่อนทำการทดสอบ</h3></div>', unsafe_allow_html=True)
-            
-            st.write("ระบบนี้เป็นเครื่องมือคัดกรองเบื้องต้นโดยใช้ปัญญาประดิษฐ์ (AI)")
-            st.error("ไม่สามารถใช้แทนการวินิจฉัยของแพทย์ผู้เชี่ยวชาญได้")
-            st.write("หากมีอาการผิดปกติหรือความกังวล กรุณาปรึกษาแพทย์เพื่อรับการตรวจเพิ่มเติม")
-            
-            st.markdown("---")
-            st.markdown("**📝 คำแนะนำเพื่อให้ผลลัพธ์แม่นยำขึ้น**")
-            st.markdown("""
-            * นั่งในท่าที่สบาย แขนวางบนพื้นราบ
-            * ทำจิตใจให้สงบ หลีกเลี่ยงความเครียด
-            * วาดเส้นด้วยความเร็วและแรงกดตามธรรมชาติ
-            """)
-            st.markdown("---")
-            
-            st.write("อาการมือสั่นอาจเกิดจากหลายสาเหตุ เช่น ความเครียด ภาวะวิตกกังวล หรือโรคอื่นที่ไม่ใช่พาร์กินสัน")
-            st.write("ระบบอาจไม่สามารถแยกแยะสาเหตุของอาการมือสั่นได้อย่างสมบูรณ์")
-            st.write("ผลลัพธ์จึงควรใช้ประกอบการพิจารณาเท่านั้น")
-            
-            st.write("") 
-            accepted = st.checkbox("ข้าพเจ้ารับทราบและยินยอมตามเงื่อนไขข้างต้น")
-            st.write("")
-            
-            if st.button("ตกลง / เริ่มทำแบบทดสอบ", disabled=not accepted, type="primary", use_container_width=True):
-                st.session_state.consent_accepted = True
-                st.rerun()
-
-else:
+# แสดงเนื้อหาหลัก (การ์ดทดสอบ) ต่อเมื่อยอมรับ Consent แล้ว
+if st.session_state.consent_accepted:
     # -----------------------------------
     # SPIRAL CARD
     # -----------------------------------
@@ -304,7 +296,7 @@ else:
                     spiral_image = Image.open(spiral_file).convert("RGB")
                     st.image(spiral_image, caption="Preview", use_container_width=True)
         else:
-            # ตั้งค่า width 700 ไว้สำหรับ PC แต่ CSS จะบีบให้ max-width 100% บนมือถือ
+            # 700px width เป็นค่าเริ่มต้น แต่ CSS จะบีบให้ไม่เกิน 100% ของจอ
             spiral_canvas = st_canvas(
                 fill_color="rgba(255, 255, 255, 0)",
                 stroke_width=6,
