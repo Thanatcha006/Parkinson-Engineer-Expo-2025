@@ -125,16 +125,13 @@ st.markdown("""
         text-align: center;
     }
 
-    .hero-img-responsive {
-        width: 100%;             /* ขยายเต็มความกว้าง Container */
-        max-width: 1000px;       /* จำกัดความกว้างสูงสุดไว้ที่ 1000px (จะได้ไม่ใหญ่เกินไปในจอคอมยักษ์) */
-        height: auto;            /* รักษาอัตราส่วนภาพ */
-        
-        margin-top: 40px;        /* เว้นระยะห่างจากปุ่ม */
-        
-        box-shadow: 0 15px 40px rgba(0,0,0,0.3); /* เงาสวยๆ */
-        object-fit: cover;
-        border: 4px solid rgba(255,255,255,0.2); /* ขอบขาวจางๆ ให้ดูแพง */
+    .hero-img-full {
+        width: 100%;             /* กว้าง 100% ของ Container (ซึ่ง Container กว้าง 100vw) */
+        height: auto;            /* สูงตามสัดส่วน */
+        display: block;
+        object-fit: cover;       /* ครอบคลุมพื้นที่ */
+        margin: 0;
+        padding: 0;
     }
 
     .cta-button {
@@ -209,7 +206,7 @@ st.markdown(f"""
     <div class="hero-title">“Early detection changes everything.”</div>
     <div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>
     <a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>
-    <img src="{hero_img_base64}" class="hero-img-responsive">
+    <img src="{hero_img_base64}" class="hero-img-full">
 </div>
 """, unsafe_allow_html=True)
 
