@@ -42,9 +42,9 @@ st.markdown("""
         width: 100vw; 
         margin-left: calc(-50vw + 50%); 
         margin-right: calc(-50vw + 50%);
-        
         padding-top: 60px;  
-        
+        padding-bottom: 80px;
+        margin-bottom: 40px;
         text-align: center;
         display: flex;
         flex-direction: column;
