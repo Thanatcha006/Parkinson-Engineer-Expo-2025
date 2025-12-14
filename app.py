@@ -5,6 +5,7 @@ from PIL import Image
 import tensorflow as tf
 from streamlit_drawable_canvas import st_canvas
 import os
+import time
 
 # ----------------------------------
 # 1. Page Config
@@ -15,12 +16,12 @@ st.set_page_config(page_title="Parkinson Tester", layout="wide", initial_sidebar
 if "consent_accepted" not in st.session_state:
     st.session_state.consent_accepted = False
 
-# เช็ค Query Params (เพื่อดูว่าผู้ใช้กด Link "เริ่มทำแบบทดสอบ" มาหรือยัง)
+# เช็ค Query Params
 query_params = st.query_params
 is_started = query_params.get("start") == "true"
 
 # ----------------------------------
-# CSS Styles (Original + Responsive)
+# CSS Styles
 # ----------------------------------
 st.markdown('''
 <style>
@@ -50,9 +51,7 @@ st.markdown('''
     .nav-links { display: flex; gap: 20px; }
     .nav-links a { font-weight: 600; text-decoration: none; }
 
-    /* -------------------------------------------------------
-       RESPONSIVE TYPOGRAPHY
-       ------------------------------------------------------- */
+    /* Responsive Typography */
     @media (min-width: 992px) {
         .hero-title { font-size: 4rem !important; }
         .hero-sub { font-size: 1.6rem !important; }
@@ -110,7 +109,7 @@ st.markdown('''
     .hero-title { font-weight: 700; margin-bottom: 15px; color: white !important; }
     .hero-sub { font-weight: 300; margin-bottom: 25px; max-width: 800px; color: #f0f0f0 !important; }
     
-    /* ปุ่ม HTML <a> เดิมของคุณ 100% */
+    /* ปุ่ม HTML <a> เดิม */
     .cta-button {
         background-color: white; color: #885D95 !important;
         border-radius: 50px; font-weight: 700; text-decoration: none;
@@ -170,12 +169,12 @@ st.markdown("""
 # ----------------------------------
 # UI Content: Hero
 # ----------------------------------
-# แก้ไข Link: เมื่อกดจะ Reload (?start=true) และเลื่อนลงไปหา #disclaimer_anchor
+# ปุ่มลิงก์ธรรมดา ใส่ ?start=true เมื่อกดจะรีโหลดหน้า
 st.markdown(f"""
 <div class="hero-purple-container">
     <div class="hero-title">“Early detection changes everything.”</div>
     <div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>
-    <a href="?start=true#disclaimer_anchor" class="cta-button" target="_self">เริ่มทำแบบทดสอบ ➝</a>
+    <a href="?start=true" class="cta-button" target="_self">เริ่มทำแบบทดสอบ ➝</a>
 </div>
 """, unsafe_allow_html=True)
 
@@ -233,13 +232,26 @@ def preprocess(img):
 # =========================================================
 # 5. TEST AREA
 # =========================================================
-# Logic Gate: โชว์ก็ต่อเมื่อกด Link (?start=true) หรือเคยยอมรับแล้ว
+# เงื่อนไข: ถ้ากด Link เริ่ม (?start=true) หรือเคยยอมรับ consent แล้ว ให้โชว์เนื้อหา
 if is_started or st.session_state.consent_accepted:
 
-    if not st.session_state.consent_accepted:
-        # ฝังหมุด Anchor ไว้ตรงนี้เพื่อให้หน้าจอเลื่อนมาเจอ Disclaimer
-        st.markdown('<div id="disclaimer_anchor" style="padding-top: 40px;"></div>', unsafe_allow_html=True)
+    # 1. ฝัง Anchor Point
+    st.markdown('<div id="disclaimer_anchor" style="padding-top: 40px;"></div>', unsafe_allow_html=True)
 
+    # 2. ฝัง JavaScript เพื่อ Force Scroll ลงมาหา Anchor ทันทีที่ส่วนนี้ถูกโหลด
+    # (แก้ปัญหาต้องกด 2 รอบ)
+    st.markdown("""
+        <script>
+            setTimeout(function() {
+                const element = document.getElementById("disclaimer_anchor");
+                if (element) {
+                    element.scrollIntoView({behavior: "smooth", block: "start"});
+                }
+            }, 500); // รอ 0.5 วินาทีเพื่อให้ชัวร์ว่า element สร้างเสร็จ
+        </script>
+    """, unsafe_allow_html=True)
+
+    if not st.session_state.consent_accepted:
         # Disclaimer Section
         c1, c2, c3 = st.columns([1, 8, 1]) 
         with c2:
@@ -272,7 +284,7 @@ if is_started or st.session_state.consent_accepted:
                     st.rerun()
 
     else:
-        # Testing Tool Section (Anchor for general testing area)
+        # Testing Tool Section
         st.markdown('<div id="test_area" style="padding-top: 40px;"></div>', unsafe_allow_html=True)
 
         # SPIRAL CARD
@@ -358,5 +370,4 @@ if is_started or st.session_state.consent_accepted:
             else: wave_result_box.warning("🌊 Wave : ยังไม่ได้ใส่ภาพ")
 
 else:
-    # กรณีไม่ได้กด Link เริ่มต้น -> ไม่แสดงอะไรเลย
     pass
