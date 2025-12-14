@@ -32,6 +32,8 @@ st.markdown("""
     /* บังคับฟอนต์และสีพื้นฐาน */
     html, body, [class*="css"], .stMarkdown { 
         font-family: 'Kanit', sans-serif !important; 
+        scroll-behavior: smooth;
+
     }
     
     /* บังคับพื้นหลังแอปให้เป็นสีขาว (แก้ Dark Mode) */
@@ -192,7 +194,7 @@ st.markdown(f"""
     if st.button("เริ่มทำแบบทดสอบ ➝", key="start_test"):
         st.session_state.show_disclaimer = True
         st.markdown(
-            '<script>document.getElementById("test_area").scrollIntoView({behavior:"smooth"});</script>',
+            '<script>document.getElementById("test_area");</script>',
             unsafe_allow_html=True
     )
 
