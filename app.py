@@ -21,7 +21,7 @@ def get_img_as_base64(file_path):
         return ""
 
 # เตรียมโหลดรูปภาพ
-hero_image_path = "hero_img.png"
+hero_image_path = "parkinson cover.png"
 hero_img_base64 = ""
 
 if os.path.exists(hero_image_path):
