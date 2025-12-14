@@ -365,99 +365,97 @@ else:
     
     # ------------------ SPIRAL CARD ------------------
     with st.container(border=True): 
-        st.subheader("🌀 Spiral Task (วาดเส้นก้นหอย)")
-        
-        st.write("เลือกวิธีการนำเข้าภาพ:")
-        # ใช้ label_visibility="collapsed" เพื่อซ่อนชื่อหัวข้อ Radio ให้ดูสะอาดตา
-        spiral_mode = st.radio("Mode (Spiral)", ["Upload Image", "Draw on Canvas"], horizontal=True, key="spiral_mode", label_visibility="collapsed")
-        
-        st.markdown("---")
 
-        spiral_image = None
-        
-        if spiral_mode == "Upload":
-            # โหมดอัปโหลด: บีบให้ปุ่มอัปโหลดอยู่กลาง ไม่กว้างจนน่าเกลียด
-            uc1, uc2, uc3 = st.columns([1, 2, 1])
-            with uc2:
+            st.subheader("🌀 Spiral")
+
+            spiral_mode = st.radio("เลือกวิธีใส่ภาพ (Spiral)", ["Upload", "Draw"], horizontal=True, key="spiral_mode")
+
+            spiral_image = None
+
+            if spiral_mode == "Upload":
+
                 spiral_file = st.file_uploader("อัปโหลด Spiral", type=["png", "jpg", "jpeg"], key="spiral_upload")
+
                 if spiral_file:
+
                     spiral_image = Image.open(spiral_file).convert("RGB")
+
                     st.image(spiral_image, caption="Preview", use_container_width=True)
-        else:
-            # โหมดวาด: ใช้พื้นที่เต็มที่ แต่จัด Canvas กึ่งกลาง
-            # ปรับขนาด Canvas ให้ใหญ่ขึ้น (700x500)
-            spiral_canvas = st_canvas(
-                fill_color="rgba(255, 255, 255, 0)",
-                stroke_width=6,
-                stroke_color="black",
-                background_color="#ffffff",
-                height=500,  # สูงขึ้น
-                width=700,   # กว้างขึ้น (PC)
-                drawing_mode="freedraw",
-                key="spiral_draw",
-                display_toolbar=True
-            )
-            
-            if spiral_canvas.image_data is not None:
-                spiral_image = Image.fromarray(spiral_canvas.image_data.astype("uint8")).convert("RGB")
-        
-        st.markdown("<br>", unsafe_allow_html=True)
-        spiral_result_box = st.empty()
 
-    # ------------------ WAVE CARD ------------------
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    with st.container(border=True): 
-        st.subheader("🌊 Wave Task (วาดเส้นคลื่น)")
-        
-        st.write("เลือกวิธีการนำเข้าภาพ:")
-        wave_mode = st.radio("Mode (Wave)", ["Upload Image", "Draw on Canvas"], horizontal=True, key="wave_mode", label_visibility="collapsed")
-        
-        st.markdown("---")
+            else:
 
-        wave_image = None
-        if wave_mode == "Upload":
-            uc1, uc2, uc3 = st.columns([1, 2, 1])
-            with uc2:
+                dc1, dc2, dc3 = st.columns([0.05, 1, 0.05])
+
+                with dc2:
+
+                    spiral_canvas = st_canvas(fill_color="rgba(255, 255, 255, 0)", stroke_width=6, stroke_color="black", background_color="#ffffff", height=300, width=450, drawing_mode="freedraw", key="spiral_draw")
+
+                if spiral_canvas.image_data is not None:
+
+                    spiral_image = Image.fromarray(spiral_canvas.image_data.astype("uint8")).convert("RGB")
+
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            spiral_result_box = st.empty()
+
+
+
+        # WAVE CARD
+
+        with st.container(border=True): 
+
+            st.subheader("🌊 Wave")
+
+            wave_mode = st.radio("เลือกวิธีใส่ภาพ (Wave)", ["Upload", "Draw"], horizontal=True, key="wave_mode")
+
+            wave_image = None
+
+            if wave_mode == "Upload":
+
                 wave_file = st.file_uploader("อัปโหลด Wave", type=["png", "jpg", "jpeg"], key="wave_upload")
-                if wave_file:
-                    wave_image = Image.open(wave_file).convert("RGB")
-                    st.image(wave_image, caption="Preview", use_container_width=True)
-        else:
-            # โหมดวาด Wave
-            wave_canvas = st_canvas(
-                fill_color="rgba(255, 255, 255, 0)",
-                stroke_width=6,
-                stroke_color="black",
-                background_color="#ffffff",
-                height=500,
-                width=700,
-                drawing_mode="freedraw",
-                key="wave_draw",
-                display_toolbar=True
-            )
-            
-            if wave_canvas.image_data is not None:
-                wave_image = Image.fromarray(wave_canvas.image_data.astype("uint8")).convert("RGB")
-        
-        st.markdown("<br>", unsafe_allow_html=True)
-        wave_result_box = st.empty()
 
-    # ------------------ PROCESS BUTTON ------------------
-    st.markdown("<br>", unsafe_allow_html=True)
-    # ปุ่มกดประมวลผลใหญ่ เต็มจอ
-    if st.button("🔍 ประมวลผลทั้งหมด (Analyze All)", type="primary", use_container_width=True):
-        
-        # ตรวจสอบ Spiral
-        if spiral_image is not None and spiral_model is not None:
-            try:
-                input_tensor = preprocess(spiral_image)
-                pred = spiral_model.predict(input_tensor)[0][0]
-                if pred > 0.5: spiral_result_box.error(f"🌀 Spiral : เสี่ยง Parkinson ({pred:.3f})")
-                else: spiral_result_box.success(f"🌀 Spiral : ปกติ ({pred:.3f})")
-            except Exception as e: spiral_result_box.error(f"Error: {e}")
-        elif spiral_image is None: spiral_result_box.warning("🌀 Spiral : ยังไม่ได้ใส่ภาพ")
-        
-        # ตรวจสอบ Wave (Placeholder)
-        if wave_image is not None: wave_result_box.info("🌊 Wave : มีภาพแล้ว (รอโมเดล)")
-        else: wave_result_box.warning("🌊 Wave : ยังไม่ได้ใส่ภาพ")
+                if wave_file:
+
+                    wave_image = Image.open(wave_file).convert("RGB")
+
+                    st.image(wave_image, caption="Preview", use_container_width=True)
+
+            else:
+
+                wc1, wc2, wc3 = st.columns([0.05, 1, 0.05])
+
+                with wc2:
+
+                    wave_canvas = st_canvas(fill_color="rgba(255, 255, 255, 0)", stroke_width=6, stroke_color="black", background_color="#ffffff", height=300, width=450, drawing_mode="freedraw", key="wave_draw")
+
+                if wave_canvas.image_data is not None:
+
+                    wave_image = Image.fromarray(wave_canvas.image_data.astype("uint8")).convert("RGB")
+
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            wave_result_box = st.empty()
+
+
+
+        # PROCESS BUTTON (สีเขียว)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        if st.button("🔍 ประมวลผลทั้งหมด", type="primary", use_container_width=True):
+
+            if spiral_image is not None and spiral_model is not None:
+
+                try:
+
+                    input_tensor = preprocess(spiral_image)
+
+                    pred = spiral_model.predict(input_tensor)[0][0]
+
+                    if pred > 0.5: spiral_result_box.error(f"🌀 Spiral : เสี่ยง Parkinson ({pred:.3f})")
+
+                    else: spiral_result_box.success(f"🌀 Spiral : ปกติ ({pred:.3f})")
+
+                except Exception as e: spiral_result_box.error(f"Error: {e}")
+
+            elif spiral_image is None: spiral_result_box.warning("🌀 Spiral : ยังไม่ได้ใส่ภาพ")
