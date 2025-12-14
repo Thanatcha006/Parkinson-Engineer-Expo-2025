@@ -124,7 +124,7 @@ st.markdown("""
     }
     .cta-button:hover {
         transform: translateY(-3px);
-        background-color: #724C7F;
+        background-color: white;
     }
 
     /* ----------------------------------------------------------- */
@@ -173,13 +173,13 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Hero Content
-st.markdown('<div class="hero-purple-container"></div>', unsafe_allow_html=True)
-with st.container():
-    st.markdown('<div class="hero-title">“Early detection changes everything.”</div>', unsafe_allow_html=True)
-    st.markdown('<div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>', unsafe_allow_html=True)
-    st.markdown('<a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>', unsafe_allow_html=True)
-    st.markdown('<br><br>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="hero-purple-container">
+    <div class="hero-title">“Early detection changes everything.”</div>
+    <div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>
+    <a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>
+</div>
+""", unsafe_allow_html=True)
 
 
 # ----------------------------------
