@@ -208,7 +208,7 @@ st.markdown("""
     <a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>
 </div>
 """, unsafe_allow_html=True)
-st.image(“parkinson cover.png", width=1000, height=1500)
+st.image({hero_img_base64}, width=1000, height=1500)
 
 
 # ----------------------------------
