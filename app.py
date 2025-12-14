@@ -30,6 +30,30 @@ def get_image_base64(image_path):
     except FileNotFoundError:
         return None
 
+# --- [เพิ่ม] ฟังก์ชันแสดงคลิปตัวอย่าง (รองรับ mp4, mov, gif) ---
+def show_demo_clip(file_root_name):
+    # 1. ลองหา .mp4
+    if os.path.exists(f"{file_root_name}.mp4"):
+        c1, c2, c3 = st.columns([1, 1, 1])
+        with c2:
+            st.video(f"{file_root_name}.mp4")
+            st.caption("🎥 ตัวอย่างการวาด")
+    # 2. ลองหา .mov
+    elif os.path.exists(f"{file_root_name}.mov"):
+        c1, c2, c3 = st.columns([1, 1, 1])
+        with c2:
+            st.video(f"{file_root_name}.mov")
+            st.caption("🎥 ตัวอย่างการวาด")
+    # 3. ลองหา .gif
+    elif os.path.exists(f"{file_root_name}.gif"):
+        c1, c2, c3 = st.columns([1, 1, 1])
+        with c2:
+            st.image(f"{file_root_name}.gif", use_container_width=True)
+            st.caption("🎥 ตัวอย่างการวาด")
+    else:
+        # ถ้าไม่มีไฟล์เลย ให้แสดงข้อความแจ้งเตือนเล็กๆ (หรือจะลบ else นี้ทิ้งก็ได้ถ้าไม่อยากให้ขึ้นเตือน)
+        st.info(f"💡 (ยังไม่มีไฟล์ตัวอย่าง {file_root_name} ในโฟลเดอร์)")
+
 # ----------------------------------
 # CSS Styles
 # ----------------------------------
@@ -211,7 +235,6 @@ st.markdown('''
 # ----------------------------------
 # UI Content: Navbar
 # ----------------------------------
-# --- แก้ไขตรงนี้: เปลี่ยน href เป็น ?start=true เพื่อให้ทำงานเหมือนปุ่มด้านล่าง ---
 st.markdown('<div id="top"></div>', unsafe_allow_html=True)
 st.markdown("""
 <div class="navbar">
@@ -316,6 +339,13 @@ if is_started or st.session_state.consent_accepted:
         # SPIRAL CARD
         with st.container(border=True): 
             st.subheader("🌀 Spiral")
+            
+            # --- [เพิ่ม] ส่วนแสดงคลิป Demo (Spiral) ---
+            st.write("วาดเส้นวนออกจากกึ่งกลางด้วยความเร็วสม่ำเสมอ")
+            show_demo_clip("demo_spiral")
+            st.markdown("---")
+            # ----------------------------------------
+            
             spiral_mode = st.radio("เลือกวิธีใส่ภาพ (Spiral)", ["Upload", "Draw"], horizontal=True, key="spiral_mode")
             st.markdown("---")
             spiral_image = None
@@ -337,6 +367,13 @@ if is_started or st.session_state.consent_accepted:
         st.markdown("<br>", unsafe_allow_html=True)
         with st.container(border=True): 
             st.subheader("🌊 Wave")
+            
+            # --- [เพิ่ม] ส่วนแสดงคลิป Demo (Wave) ---
+            st.write("วาดเส้นคลื่นจากซ้ายไปขวา (หรือบนลงล่าง) ด้วยความเร็วสม่ำเสมอ")
+            show_demo_clip("demo_wave")
+            st.markdown("---")
+            # --------------------------------------
+
             wave_mode = st.radio("เลือกวิธีใส่ภาพ (Wave)", ["Upload", "Draw"], horizontal=True, key="wave_mode")
             st.markdown("---")
             wave_image = None
