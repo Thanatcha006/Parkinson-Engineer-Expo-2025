@@ -303,7 +303,7 @@ if not st.session_state.consent_accepted:
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
        with st.container(border=True):
-            st.subheader("⚠️ ข้อควรทราบก่อนทำการทดสอบ")
+            st.markdown('<h3 style="color:#E4C728; text-align:center;">⚠️ ข้อควรทราบก่อนทำการทดสอบ</h3>', unsafe_allow_html=True)
             
             st.write("ระบบนี้เป็นเครื่องมือคัดกรองเบื้องต้นโดยใช้ปัญญาประดิษฐ์ (AI)")
             st.error("ไม่สามารถใช้แทนการวินิจฉัยของแพทย์ผู้เชี่ยวชาญได้")
@@ -324,11 +324,12 @@ if not st.session_state.consent_accepted:
             
             st.write("") 
             
-            accepted = st.checkbox("ข้าพเจ้ารับทราบและยินยอมตามเงื่อนไขข้างต้น")
-            
+            accepted = st.checkbox("รับทราบและยินยอมตามเงื่อนไขข้างต้น")
+            st.markdown('<div class="gold-btn">', unsafe_allow_html=True)
             if st.button("ตกลง / เริ่มทำแบบทดสอบ", disabled=not accepted, type="primary", use_container_width=True):
                 st.session_state.consent_accepted = True
                 st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
 
 else:
     # --- ถ้า "ยอมรับแล้ว" ให้แสดงเครื่องมือทดสอบ ---
