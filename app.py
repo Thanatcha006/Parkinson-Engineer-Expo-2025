@@ -415,7 +415,7 @@ if is_started or st.session_state.consent_accepted:
                     spiral_file = st.file_uploader("อัปโหลด Spiral", type=["png", "jpg", "jpeg"], key="spiral_upload")
                     if spiral_file:
                         spiral_image = Image.open(spiral_file).convert("RGB")
-                        st.image(spiral_image, caption="Preview", use_container_width=True)
+                        st.image(spiral_image, caption="Preview", use_container_width=300)
             else:
                 spiral_canvas = st_canvas(fill_color="rgba(255, 255, 255, 0)", stroke_width=6, stroke_color="black", background_color="#ffffff", height=500, width=700, drawing_mode="freedraw", key="spiral_draw", display_toolbar=True)
                 if spiral_canvas.image_data is not None:
@@ -444,7 +444,7 @@ if is_started or st.session_state.consent_accepted:
                     wave_file = st.file_uploader("อัปโหลด Wave", type=["png", "jpg", "jpeg"], key="wave_upload")
                     if wave_file:
                         wave_image = Image.open(wave_file).convert("RGB")
-                        st.image(wave_image, caption="Preview", use_container_width=True)
+                        st.image(wave_image, caption="Preview", use_container_width=300)
             else:
                 wave_canvas = st_canvas(fill_color="rgba(255, 255, 255, 0)", stroke_width=6, stroke_color="black", background_color="#ffffff", height=500, width=700, drawing_mode="freedraw", key="wave_draw", display_toolbar=True)
                 if wave_canvas.image_data is not None:
