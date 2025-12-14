@@ -5,19 +5,25 @@ from PIL import Image
 import tensorflow as tf
 from streamlit_drawable_canvas import st_canvas
 import os
-import base64
+from datetime import datetime
 
 # ----------------------------------
 # 1. Page Config (ต้องอยู่บรรทัดแรกสุด)
 # ----------------------------------
 st.set_page_config(page_title="Parkinson Tester", layout="wide", initial_sidebar_state="collapsed")
+if "show_disclaimer" not in st.session_state:
+    st.session_state.show_disclaimer = False
+
+if "consent_accepted" not in st.session_state:
+    st.session_state.consent_accepted = False
+
+
+if st.session_state.consent_accepted and "consent_time" not in st.session_state:
+    st.session_state.consent_time = datetime.now()
+
 
 # ----------------------------------
-# 2. ฟังก์ชันแปลงรูป (ประกาศไว้ตรงนี้ กัน Error)
-# ----------------------------------
-
-# ----------------------------------
-# 4. CSS Styles (ปรับให้รูปเต็มจอ)
+# CSS Styles 
 # ----------------------------------
 st.markdown("""
 <style>
@@ -36,7 +42,7 @@ st.markdown("""
 
     header, footer {visibility: hidden;}
 
-    /* ✅ HERO SECTION: สีม่วงเข้ม เต็มจอ */
+    /*  HERO SECTION:  */
     .hero-purple-container {
         background-color: #885D95;
         width: 100vw; 
@@ -127,7 +133,42 @@ st.markdown("""
     .stFileUploader label { color: #333 !important; }
     div[class*="stMarkdown"] p { color: #333 !important; }
     div.stButton > button { width: 100%; border-radius: 30px; height: 50px; font-size: 18px; }
-    
+
+    /* ===== MODAL POPUP ===== */
+    .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 9998;
+    }
+
+    .modal-box {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        width: 90%;
+        max-width: 720px;
+        border-radius: 24px;
+        padding: 32px 36px;
+        z-index: 9999;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 16px;
+        right: 20px;
+        font-size: 1.6rem;
+        font-weight: 700;
+        cursor: pointer;
+        color: #999;
+    }
+    .modal-close:hover {
+        color: #000;
+    }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -148,7 +189,14 @@ st.markdown(f"""
 <div class="hero-purple-container">
     <div class="hero-title">“Early detection changes everything.”</div>
     <div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>
-    <a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>
+    if st.button("เริ่มทำแบบทดสอบ ➝", key="start_test"):
+        st.session_state.show_disclaimer = True
+        st.markdown(
+            '<script>document.getElementById("test_area").scrollIntoView({behavior:"smooth"});</script>',
+            unsafe_allow_html=True
+    )
+
+    )
 </div>
 """, unsafe_allow_html=True)
 
@@ -171,8 +219,52 @@ def preprocess(img):
     return img
 
 # =========================================================
+# DIACLAIMER
+# =========================================================
+if st.session_state.show_disclaimer and not st.session_state.consent_accepted:
+    st.markdown("""
+    <div class="modal-backdrop"></div>
+    <div class="modal-box">
+
+        <h3 style="text-align:center; margin-bottom:10px;">
+            ⚠️ ข้อควรทราบก่อนทำการทดสอบ
+        </h3>
+
+        <p>ระบบนี้เป็นเครื่องมือคัดกรองเบื้องต้นโดยใช้ปัญญาประดิษฐ์ (AI)</p> 
+        <b>ไม่สามารถใช้แทนการวินิจฉัยของแพทย์ผู้เชี่ยวชาญได้</b>
+        <p>หากมีอาการผิดปกติหรือความกังวล กรุณาปรึกษาแพทย์เพื่อรับการตรวจเพิ่มเติม</p>
+        
+
+        <b>📝คำแนะนำเพื่อให้ผลลัพธ์แม่นยำขึ้น</b>
+        <ul>
+            <li>นั่งในท่าที่สบาย แขนวางบนพื้นราบ</li>
+            <li>ทำจิตใจให้สงบ หลีกเลี่ยงความเครียด</li>
+            <li>หลีกเลี่ยงคาเฟอีนหรือสารกระตุ้นก่อนทำแบบทดสอบ</li>
+            <li>วาดเส้นด้วยความเร็วและแรงกดตามธรรมชาติ</li>
+        </ul>
+
+        <p style="font-size:0.9rem; color:#666;">
+        ทั้งนี้ อาการมือสั่นอาจเกิดได้จากหลายสาเหตุ เช่น ความเครียด ภาวะวิตกกังวล หรือโรคอื่นที่ไม่ใช่พาร์กินสัน 
+        ระบบอาจไม่สามารถแยกแยะสาเหตุของอาการมือสั่นได้อย่างสมบูรณ์ ผลลัพธ์จึงควรใช้ประกอบการพิจารณาเท่านั้น
+        </p>
+
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ปุ่มยอมรับ (อยู่นอก HTML เพื่อให้กดได้จริง)
+    col_a, col_b, col_c = st.columns([1,2,1])
+    with col_b:
+        if st.button("✅ ฉันรับทราบแล้ว และยินยอมทำการทดสอบ", use_container_width=True):
+            st.session_state.consent_accepted = True
+            st.session_state.show_disclaimer = False
+
+# =========================================================
 # TEST AREA
 # =========================================================
+if not st.session_state.consent_accepted:
+    st.info("ℹ️ กรุณากด “เริ่มทำแบบทดสอบ” และยอมรับเงื่อนไขก่อนใช้งาน")
+    st.stop()
+
 st.markdown('<div id="test_area"></div>', unsafe_allow_html=True) 
 
 c1, c2, c3 = st.columns([1, 2, 1]) 
