@@ -7,6 +7,7 @@ from streamlit_drawable_canvas import st_canvas
 import os
 import time
 import base64
+import textwrap  # เพิ่ม library นี้เพื่อแก้ปัญหา HTML แสดงเป็นโค้ด
 
 # ----------------------------------
 # 1. Page Config
@@ -20,6 +21,16 @@ if "consent_accepted" not in st.session_state:
 # เช็ค Query Params
 query_params = st.query_params
 is_started = query_params.get("start") == "true"
+
+# ----------------------------------
+# Helper Function
+# ----------------------------------
+def get_image_base64(image_path):
+    try:
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode()
+    except FileNotFoundError:
+        return None
 
 # ----------------------------------
 # CSS Styles
@@ -52,11 +63,9 @@ st.markdown('''
     .nav-links { display: flex; gap: 20px; }
     .nav-links a { font-weight: 600; text-decoration: none; }
 
-    /* -------------------------------------------------------
-       RESULT CARD STYLES (NEW)
-       ------------------------------------------------------- */
+    /* Result Card Styles */
     .result-card {
-        background-color: #67ACC3; /* สีฟ้าเดียวกับ About เดิม */
+        background-color: #67ACC3;
         color: white;
         border-radius: 20px;
         padding: 30px;
@@ -64,12 +73,10 @@ st.markdown('''
         box-shadow: 0 10px 30px rgba(103, 172, 195, 0.4);
         animation: fadeIn 0.8s ease;
     }
-    
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
-
     .result-header {
         font-size: 1.8rem;
         font-weight: 700;
@@ -77,23 +84,16 @@ st.markdown('''
         padding-bottom: 15px;
         margin-bottom: 20px;
     }
-
-    /* กล่องสถานะ (ขาว) */
     .status-box {
         background-color: white;
         border-radius: 12px;
         padding: 15px 20px;
-        color: #333;
         font-size: 1.4rem;
         font-weight: 700;
         margin-bottom: 25px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        display: flex; align-items: center; gap: 10px;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-
-    /* Progress Bar */
     .confidence-wrapper { margin-bottom: 20px; }
     .progress-track {
         background-color: rgba(255,255,255,0.3);
@@ -105,11 +105,9 @@ st.markdown('''
     }
     .progress-fill {
         height: 100%;
-        background-color: #fff; /* สีขาววิ่งบนพื้นฟ้า */
+        background-color: #fff;
         border-radius: 6px;
     }
-
-    /* Text Details */
     .result-label { font-weight: 600; font-size: 1.2rem; margin-top: 15px; margin-bottom: 5px; color: #e3f2fd; }
     .result-text { font-weight: 300; font-size: 1.1rem; line-height: 1.6; margin-bottom: 15px; }
     .result-list { margin-top: 5px; padding-left: 20px; font-weight: 300; line-height: 1.6; }
@@ -122,87 +120,79 @@ st.markdown('''
         font-style: italic;
     }
 
-    /* -------------------------------------------------------
-       RESPONSIVE
-       ------------------------------------------------------- */
+    /* Responsive */
     @media (min-width: 992px) {
         .hero-title { font-size: 4rem !important; }
         .hero-sub { font-size: 1.6rem !important; }
         .cta-button { font-size: 1.6rem !important; padding: 20px 70px; }
-        
         div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 2.5rem !important; }
         div[data-testid="stVerticalBlockBorderWrapper"] p, label, li { font-size: 1.5rem !important; }
-        
-        div[data-testid="stCanvas"] button {
-            width: 60px !important; height: 60px !important; transform: scale(1.4); margin: 10px 15px !important;
-        }
+        div[data-testid="stCanvas"] button { width: 60px !important; height: 60px !important; transform: scale(1.4); margin: 10px 15px !important; }
         .nav-links a { font-size: 1.4rem; }
     }
-
     @media (max-width: 991px) {
         .hero-title { font-size: 2.2rem !important; }
         .hero-sub { font-size: 1.1rem !important; }
         .cta-button { font-size: 1.1rem !important; padding: 12px 30px; }
-
         div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 1.6rem !important; }
         div[data-testid="stVerticalBlockBorderWrapper"] p, label, li { font-size: 1.1rem !important; }
-
-        div[data-testid="stCanvas"] button {
-            width: 40px !important; height: 40px !important; transform: scale(1.0); margin: 5px !important;
-        }
+        div[data-testid="stCanvas"] button { width: 40px !important; height: 40px !important; transform: scale(1.0); margin: 5px !important; }
         .navbar { flex-direction: column; gap: 10px; padding: 10px; }
         .nav-links a { font-size: 1rem; }
         div[data-testid="stVerticalBlockBorderWrapper"] { padding: 20px !important; }
     }
 
-    /* Fix Canvas Responsive */
-    canvas {
-        max-width: 100% !important;
-        height: auto !important;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-    }
-    div[data-testid="stCanvas"] {
-        display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;
-    }
+    /* Canvas Fix */
+    canvas { max-width: 100% !important; height: auto !important; border: 1px solid #ddd; border-radius: 8px; }
+    div[data-testid="stCanvas"] { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
 
-    /* Hero Section */
+    /* Hero */
     .hero-purple-container {
-        background-color: #885D95; width: 100%; 
-        padding: 60px 20px; margin-bottom: 40px; 
-        text-align: center; color: white;
-        display: flex; flex-direction: column; align-items: center;
+        background-color: #885D95; width: 100%; padding: 60px 20px; margin-bottom: 40px; 
+        text-align: center; color: white; display: flex; flex-direction: column; align-items: center;
     }
     .hero-title { font-weight: 700; margin-bottom: 15px; color: white !important; }
     .hero-sub { font-weight: 300; margin-bottom: 25px; max-width: 800px; color: #f0f0f0 !important; }
     
-    /* ปุ่ม HTML <a> เดิม */
     .cta-button {
-        background-color: white; color: #885D95 !important;
-        border-radius: 50px; font-weight: 700; text-decoration: none;
-        display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        cursor: pointer;
+        background-color: white; color: #885D95 !important; border-radius: 50px; font-weight: 700; text-decoration: none;
+        display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer;
     }
-    .cta-button:hover {
-        transform: translateY(-5px); 
-        background-color: #f8f8f8;
-    }
-
-    /* Cards */
-    div[data-testid="stVerticalBlockBorderWrapper"] {
-        background-color: #ffffff !important;
-        border: 1px solid #E0D0E8 !important; border-radius: 20px !important;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important; margin-bottom: 30px;
-    }
-    div[data-testid="stVerticalBlockBorderWrapper"] h3 { color: #885D95 !important; text-align: center !important; font-weight: 700 !important; }
-
-    div.stButton > button[kind="primary"] {
-        background-color: #86B264 !important; border: none !important; color: white !important;
-        height: auto; padding: 15px; width: 100%; font-size: 1.3rem; border-radius: 10px;
-    }
+    .cta-button:hover { transform: translateY(-5px); background-color: #f8f8f8; }
     
-    div[role="radiogroup"] { gap: 15px; }
+    /* About Section */
+    .about-section { background-color: #67ACC3; width: 100%; padding: 60px 20px; color: white; display: flex; justify-content: center; }
+    .about-container { max-width: 1200px; width: 100%; }
+    .about-header-large { font-size: 2.8rem; font-weight: 700; text-align: center; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 20px; margin-bottom: 40px; }
+    .about-body-grid { display: grid; grid-template-columns: 1fr; gap: 40px; align-items: center; }
+    
+    @media (min-width: 992px) {
+        .about-body-grid { grid-template-columns: 45% 55%; }
+        .about-text-content { font-size: 1.35rem !important; text-align: left; }
+        .about-image-container { text-align: center; }
+        .about-img-responsive { max-width: 100%; }
+        .quote-box { font-size: 1.6rem !important; }
+    }
+    @media (max-width: 991px) {
+        .about-header-large { font-size: 2rem; }
+        .about-text-content { font-size: 1.1rem !important; text-align: justify; }
+        .about-image-container { text-align: center; margin-bottom: 20px; }
+        .about-img-responsive { max-width: 80%; }
+    }
 
+    .about-img-responsive { height: auto; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 4px solid rgba(255, 255, 255, 0.3); }
+    .about-text-content { line-height: 1.8; font-weight: 300; }
+    .quote-box {
+        background-color: rgba(255, 255, 255, 0.15); border-left: 6px solid #ffffff; padding: 30px; margin-top: 50px;
+        border-radius: 10px; font-size: 1.3rem; font-style: italic; font-weight: 500; line-height: 1.6;
+        text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 100%; grid-column: 1 / -1;
+    }
+
+    /* Cards & Button */
+    div[data-testid="stVerticalBlockBorderWrapper"] { background-color: #ffffff !important; border: 1px solid #E0D0E8 !important; border-radius: 20px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important; margin-bottom: 30px; }
+    div[data-testid="stVerticalBlockBorderWrapper"] h3 { color: #885D95 !important; text-align: center !important; font-weight: 700 !important; }
+    div.stButton > button[kind="primary"] { background-color: #86B264 !important; border: none !important; color: white !important; height: auto; padding: 15px; width: 100%; font-size: 1.3rem; border-radius: 10px; }
+    div[role="radiogroup"] { gap: 15px; }
 </style>
 ''', unsafe_allow_html=True)
 
@@ -210,11 +200,11 @@ st.markdown('''
 # UI Content: Navbar
 # ----------------------------------
 st.markdown('<div id="top"></div>', unsafe_allow_html=True)
-
 st.markdown("""
 <div class="navbar">
     <div style="font-size: 1.5rem; color: #885D95; font-weight:700;">🧬 Parkinson AI</div>
     <div class="nav-links">
+        <a href="#about_area" style="color:#67ACC3;">เกี่ยวกับโรค</a>
         <a href="#test_area" style="color:#885D95;">เริ่มใช้งาน</a>
     </div>
 </div>
@@ -255,7 +245,6 @@ if is_started or st.session_state.consent_accepted:
 
     st.markdown('<div id="test_content_anchor" style="padding-top: 20px;"></div>', unsafe_allow_html=True)
 
-    # JS Auto-scroll
     st.markdown("""
         <script>
             var targetId = 'test_content_anchor';
@@ -272,7 +261,6 @@ if is_started or st.session_state.consent_accepted:
     """, unsafe_allow_html=True)
 
     if not st.session_state.consent_accepted:
-        # Disclaimer
         c1, c2, c3 = st.columns([1, 8, 1]) 
         with c2:
            with st.container(border=True):
@@ -298,9 +286,7 @@ if is_started or st.session_state.consent_accepted:
                     st.session_state.consent_accepted = True
                     st.rerun()
     else:
-        # Test Section
         st.markdown('<div id="test_area" style="padding-top: 40px;"></div>', unsafe_allow_html=True)
-
         # SPIRAL CARD
         with st.container(border=True): 
             st.subheader("🌀 Spiral")
@@ -315,17 +301,7 @@ if is_started or st.session_state.consent_accepted:
                         spiral_image = Image.open(spiral_file).convert("RGB")
                         st.image(spiral_image, caption="Preview", use_container_width=True)
             else:
-                spiral_canvas = st_canvas(
-                    fill_color="rgba(255, 255, 255, 0)",
-                    stroke_width=6,
-                    stroke_color="black",
-                    background_color="#ffffff",
-                    height=500,
-                    width=700, 
-                    drawing_mode="freedraw",
-                    key="spiral_draw",
-                    display_toolbar=True
-                )
+                spiral_canvas = st_canvas(fill_color="rgba(255, 255, 255, 0)", stroke_width=6, stroke_color="black", background_color="#ffffff", height=500, width=700, drawing_mode="freedraw", key="spiral_draw", display_toolbar=True)
                 if spiral_canvas.image_data is not None:
                     spiral_image = Image.fromarray(spiral_canvas.image_data.astype("uint8")).convert("RGB")
             st.markdown("<br>", unsafe_allow_html=True)
@@ -346,17 +322,7 @@ if is_started or st.session_state.consent_accepted:
                         wave_image = Image.open(wave_file).convert("RGB")
                         st.image(wave_image, caption="Preview", use_container_width=True)
             else:
-                wave_canvas = st_canvas(
-                    fill_color="rgba(255, 255, 255, 0)",
-                    stroke_width=6,
-                    stroke_color="black",
-                    background_color="#ffffff",
-                    height=500,
-                    width=700,
-                    drawing_mode="freedraw",
-                    key="wave_draw",
-                    display_toolbar=True
-                )
+                wave_canvas = st_canvas(fill_color="rgba(255, 255, 255, 0)", stroke_width=6, stroke_color="black", background_color="#ffffff", height=500, width=700, drawing_mode="freedraw", key="wave_draw", display_toolbar=True)
                 if wave_canvas.image_data is not None:
                     wave_image = Image.fromarray(wave_canvas.image_data.astype("uint8")).convert("RGB")
             st.markdown("<br>", unsafe_allow_html=True)
@@ -370,54 +336,47 @@ if is_started or st.session_state.consent_accepted:
                     input_tensor = preprocess(spiral_image)
                     pred = spiral_model.predict(input_tensor)[0][0]
                     
-                    # คำนวณความมั่นใจและสถานะ
                     if pred > 0.5:
-                        status_text = "มีความเสี่ยงพาร์กินสัน (Risk Detected)"
-                        status_color = "#D32F2F" # สีแดง
+                        status_text = "⚠️ พบความเสี่ยง (Risk Detected)"
+                        status_color = "#D32F2F"
                         confidence = pred * 100
                         desc_text = "รูปแบบการวาดมีความสั่นไหวหรือไม่ต่อเนื่อง ซึ่งอาจสัมพันธ์กับอาการเริ่มต้นของโรค"
                     else:
                         status_text = "✅ ไม่พบความผิดปกติเด่นชัด (Normal)"
-                        status_color = "#388E3C" # สีเขียว
+                        status_color = "#388E3C"
                         confidence = (1 - pred) * 100
                         desc_text = "รูปแบบการวาดมีความใกล้เคียงกับกลุ่มตัวอย่างทั่วไป ไม่พบอาการสั่นที่ผิดปกติชัดเจน"
                     
-                    # สร้าง HTML Result Card
-                    result_html = f"""
-                    <div class="result-card">
-                        <div class="result-header">🧪 ผลการคัดกรองเบื้องต้น (Spiral Test)</div>
-                        
-                        <div class="status-box" style="color: {status_color};">
-                            {status_text}
-                        </div>
-                        
-                        <div class="confidence-wrapper">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                                <span>ระดับความเชื่อมั่นของโมเดล (Confidence)</span>
-                                <span>{confidence:.1f}%</span>
+                    # *** แก้ไข: ใช้ textwrap.dedent เพื่อบังคับให้ HTML ชิดซ้าย แก้ปัญหาแสดงเป็นโค้ด ***
+                    result_html = textwrap.dedent(f"""
+                        <div class="result-card">
+                            <div class="result-header">🧪 ผลการคัดกรองเบื้องต้น (Spiral Test)</div>
+                            <div class="status-box" style="color: {status_color};">
+                                {status_text}
                             </div>
-                            <div class="progress-track">
-                                <div class="progress-fill" style="width: {confidence}%;"></div>
+                            <div class="confidence-wrapper">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                                    <span>ระดับความเชื่อมั่นของโมเดล (Confidence)</span>
+                                    <span>{confidence:.1f}%</span>
+                                </div>
+                                <div class="progress-track">
+                                    <div class="progress-fill" style="width: {confidence}%;"></div>
+                                </div>
+                            </div>
+                            <div class="result-label">📝 คำอธิบาย:</div>
+                            <div class="result-text">{desc_text}</div>
+                            <div class="result-label">💡 คำแนะนำ:</div>
+                            <ul class="result-list">
+                                <li>หากยังมีความกังวล หรือผลการทดสอบไม่ชัดเจน สามารถทำการทดสอบซ้ำได้</li>
+                                <li>ควรทำในสภาวะที่ผ่อนคลาย ไม่เกร็งข้อมือ</li>
+                                <li>หากผลระบุว่ามีความเสี่ยง ควรปรึกษาแพทย์เพื่อรับการตรวจวินิจฉัยอย่างละเอียด</li>
+                            </ul>
+                            <div class="disclaimer-small">
+                                ⚠️ หมายเหตุ: ผลลัพธ์นี้เกิดจากการประมวลผลด้วย AI เพื่อการคัดกรองเบื้องต้นเท่านั้น 
+                                <b>ไม่ใช่การวินิจฉัยทางการแพทย์</b> โปรดใช้วิจารณญาณ
                             </div>
                         </div>
-                        
-                        <div class="result-label">📝 คำอธิบาย:</div>
-                        <div class="result-text">{desc_text}</div>
-                        
-                        <div class="result-label">💡 คำแนะนำ:</div>
-                        <ul class="result-list">
-                            <li>หากยังมีความกังวล หรือผลการทดสอบไม่ชัดเจน สามารถทำการทดสอบซ้ำได้</li>
-                            <li>ควรทำในสภาวะที่ผ่อนคลาย ไม่เกร็งข้อมือ</li>
-                            <li>หากผลระบุว่ามีความเสี่ยง ควรปรึกษาแพทย์เพื่อรับการตรวจวินิจฉัยอย่างละเอียด</li>
-                        </ul>
-                        
-                        <div class="disclaimer-small">
-                            ⚠️ หมายเหตุ: ผลลัพธ์นี้เกิดจากการประมวลผลด้วย AI เพื่อการคัดกรองเบื้องต้นเท่านั้น 
-                            <b>ไม่ใช่การวินิจฉัยทางการแพทย์</b> โปรดใช้วิจารณญาณ
-                        </div>
-                    </div>
-                    """
-                    # แสดงผล Card
+                    """)
                     spiral_result_box.markdown(result_html, unsafe_allow_html=True)
                     
                 except Exception as e: 
@@ -425,12 +384,45 @@ if is_started or st.session_state.consent_accepted:
             elif spiral_image is None: 
                 spiral_result_box.warning("🌀 Spiral : ยังไม่ได้ใส่ภาพ")
             
-            # Wave (Placeholder logic)
             if wave_image is not None: 
                 wave_result_box.info("🌊 Wave : มีภาพแล้ว (รอโมเดล)")
             else: 
                 wave_result_box.warning("🌊 Wave : ยังไม่ได้ใส่ภาพ")
 
 else:
-    # ถ้ายังไม่กดปุ่ม -> ไม่แสดงเนื้อหา
     pass
+
+# =========================================================
+# 6. ABOUT SECTION
+# =========================================================
+st.markdown('<div id="about_area" style="padding-top: 40px;"></div>', unsafe_allow_html=True) 
+
+img_b64 = get_image_base64("parkinson cover.png")
+if img_b64:
+    img_tag = f'<img src="data:image/png;base64,{img_b64}" class="about-img-responsive" alt="Parkinson Cover">'
+else:
+    img_tag = '<div style="background:rgba(255,255,255,0.2); padding:40px; color:white; border-radius:15px; text-align:center; border: 2px dashed white;">⚠️ ไม่พบไฟล์ parkinson cover.png</div>'
+
+about_html = textwrap.dedent(f"""
+<div class="about-section">
+    <div class="about-container">
+        <div class="about-header-large">โรคพาร์กินสัน (Parkinson’s Disease)</div>
+        <div class="about-body-grid">
+            <div class="about-image-container">
+                {img_tag}
+            </div>
+            <div class="about-text-container">
+                <div class="about-text-content">
+                    โรคพาร์กินสันเป็นโรคความเสื่อมของระบบประสาทที่พบได้บ่อยเป็นอันดับต้น ๆ ของโลก มักพบในผู้ที่มีอายุ 60 ปีขึ้นไป แต่ในปัจจุบันเริ่มพบผู้ป่วยในวัยที่อายุน้อยลงมากขึ้น สาเหตุหลักเกิดจากการเสื่อมของเซลล์สมองที่สร้างสาร โดพามีน (Dopamine) ซึ่งมีบทบาทสำคัญในการควบคุมการเคลื่อนไหวของร่างกาย เมื่อระดับโดพามีนลดลง จะส่งผลให้การเคลื่อนไหวผิดปกติ
+                    <br><br>
+                    อาการที่พบบ่อย ได้แก่ มือสั่นขณะอยู่นิ่ง การเคลื่อนไหวช้า กล้ามเนื้อแข็งเกร็ง การทรงตัวไม่ดี รวมถึงอาการอื่น ๆ เช่น การรับรู้กลิ่นลดลง ท้องผูก หรือความผิดปกติของการนอนหลับ ซึ่งอาจเกิดขึ้นก่อนอาการสั่น
+                </div>
+            </div>
+            <div class="quote-box">
+                “แม้โรคพาร์กินสันจะยังไม่สามารถรักษาให้หายขาดได้ แต่การตรวจพบตั้งแต่ระยะเริ่มต้นจะช่วยให้สามารถควบคุมอาการ ชะลอความเสื่อมของโรค และช่วยให้ผู้ป่วยมีคุณภาพชีวิตที่ดีขึ้น”
+            </div>
+        </div>
+    </div>
+</div>
+""")
+st.markdown(about_html, unsafe_allow_html=True)
