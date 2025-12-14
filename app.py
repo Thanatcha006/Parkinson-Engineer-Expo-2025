@@ -21,7 +21,7 @@ query_params = st.query_params
 is_started = query_params.get("start") == "true"
 
 # ----------------------------------
-# CSS Styles
+# CSS Styles (Original + Responsive)
 # ----------------------------------
 st.markdown('''
 <style>
@@ -169,7 +169,6 @@ st.markdown("""
 # ----------------------------------
 # UI Content: Hero
 # ----------------------------------
-# ปุ่มลิงก์ธรรมดา ใส่ ?start=true เมื่อกดจะรีโหลดหน้า
 st.markdown(f"""
 <div class="hero-purple-container">
     <div class="hero-title">“Early detection changes everything.”</div>
@@ -232,22 +231,38 @@ def preprocess(img):
 # =========================================================
 # 5. TEST AREA
 # =========================================================
-# เงื่อนไข: ถ้ากด Link เริ่ม (?start=true) หรือเคยยอมรับ consent แล้ว ให้โชว์เนื้อหา
+# Logic Gate: โชว์ก็ต่อเมื่อกด Link (?start=true) หรือเคยยอมรับแล้ว
 if is_started or st.session_state.consent_accepted:
 
     # 1. ฝัง Anchor Point
-    st.markdown('<div id="disclaimer_anchor" style="padding-top: 40px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div id="disclaimer_anchor" style="padding-top: 20px;"></div>', unsafe_allow_html=True)
 
-    # 2. ฝัง JavaScript เพื่อ Force Scroll ลงมาหา Anchor ทันทีที่ส่วนนี้ถูกโหลด
-    # (แก้ปัญหาต้องกด 2 รอบ)
+    # 2. ฝัง JavaScript เพื่อ Force Scroll ลงมาหา Anchor แบบ Polling (ตรวจสอบซ้ำๆ จนกว่าจะเจอ)
+    # วิธีนี้แก้ปัญหาเบราว์เซอร์หาตำแหน่งไม่เจอกรณีโหลดช้าได้
     st.markdown("""
         <script>
-            setTimeout(function() {
-                const element = document.getElementById("disclaimer_anchor");
-                if (element) {
-                    element.scrollIntoView({behavior: "smooth", block: "start"});
+            var targetId = 'disclaimer_anchor';
+            var attempts = 0;
+            var maxAttempts = 50; // ลองหา 50 ครั้ง (5 วินาที)
+            
+            var checkExist = setInterval(function() {
+                var element = document.getElementById(targetId);
+                // ถ้าไม่เจอใน document หลัก ลองหาใน iframe parent (กรณี Streamlit iframe)
+                if (!element && window.parent.document) {
+                    element = window.parent.document.getElementById(targetId);
                 }
-            }, 500); // รอ 0.5 วินาทีเพื่อให้ชัวร์ว่า element สร้างเสร็จ
+                
+                if (element) {
+                    console.log("Found anchor, scrolling...");
+                    element.scrollIntoView({behavior: "smooth", block: "start"});
+                    clearInterval(checkExist);
+                } else {
+                    attempts++;
+                    if (attempts >= maxAttempts) {
+                        clearInterval(checkExist);
+                    }
+                }
+            }, 100); // เช็คทุกๆ 0.1 วินาที
         </script>
     """, unsafe_allow_html=True)
 
@@ -370,4 +385,5 @@ if is_started or st.session_state.consent_accepted:
             else: wave_result_box.warning("🌊 Wave : ยังไม่ได้ใส่ภาพ")
 
 else:
+    # กรณีไม่ได้กด Link เริ่มต้น -> ไม่แสดงอะไรเลย
     pass
