@@ -5,6 +5,7 @@ backgroundColor = "white"
 secondaryBackgroundColor = "#F0F2F6"
 textColor = "#333333"
 font = "sans serif"
+borderColor="#885D95"
 
 [client]
 showErrorDetails = false
