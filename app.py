@@ -30,29 +30,26 @@ def get_image_base64(image_path):
     except FileNotFoundError:
         return None
 
-# --- [ฟังก์ชันแสดงคลิปตัวอย่าง] ---
+# --- [ฟังก์ชันแสดงคลิปตัวอย่าง - ปรับให้จัดกึ่งกลาง] ---
 def show_demo_clip(file_root_name):
-    # 1. ลองหา .mp4
-    if os.path.exists(f"{file_root_name}.mp4"):
-        c1, c2, c3 = st.columns([1, 1, 1])
-        with c2:
+    # ใช้ Column เพื่อจัดกึ่งกลางและคุมขนาด
+    c1, c2, c3 = st.columns([1, 2, 1]) # ให้ตรงกลางกว้างกว่าข้างๆ
+    
+    with c2: # ใส่เนื้อหาในช่องกลาง
+        # 1. ลองหา .mp4
+        if os.path.exists(f"{file_root_name}.mp4"):
             st.video(f"{file_root_name}.mp4")
-            st.caption("🎥 ตัวอย่างการวาด")
-    # 2. ลองหา .mov (ตามไฟล์ของคุณ)
-    elif os.path.exists(f"{file_root_name}.MOV"):
-        c1, c2, c3 = st.columns([1, 1, 1])
-        with c2:
-            st.video(f"{file_root_name}.MOV")
-            st.caption("🎥 ตัวอย่างการวาด")
-    # 3. ลองหา .gif
-    elif os.path.exists(f"{file_root_name}.gif"):
-        c1, c2, c3 = st.columns([1, 1, 1])
-        with c2:
+            st.markdown('<div style="text-align: center; font-size: 0.9rem; color: gray;">🎥 ตัวอย่างการวาด</div>', unsafe_allow_html=True)
+        # 2. ลองหา .mov
+        elif os.path.exists(f"{file_root_name}.mov"):
+            st.video(f"{file_root_name}.mov")
+            st.markdown('<div style="text-align: center; font-size: 0.9rem; color: gray;">🎥 ตัวอย่างการวาด</div>', unsafe_allow_html=True)
+        # 3. ลองหา .gif
+        elif os.path.exists(f"{file_root_name}.gif"):
             st.image(f"{file_root_name}.gif", use_container_width=True)
-            st.caption("🎥 ตัวอย่างการวาด")
-    else:
-        # แจ้งเตือนถ้าหาไฟล์ไม่เจอ
-        st.info(f"💡 (ยังไม่มีไฟล์ตัวอย่าง {file_root_name}.MOV ในโฟลเดอร์)")
+            st.markdown('<div style="text-align: center; font-size: 0.9rem; color: gray;">🎥 ตัวอย่างการวาด</div>', unsafe_allow_html=True)
+        else:
+            st.info(f"💡 (ยังไม่มีไฟล์ตัวอย่าง {file_root_name}.mov ในโฟลเดอร์)")
 
 # ----------------------------------
 # CSS Styles
@@ -103,6 +100,7 @@ st.markdown('''
         border-bottom: 2px solid rgba(255,255,255,0.4);
         padding-bottom: 15px;
         margin-bottom: 20px;
+        text-align: center; /* จัดกลาง */
     }
     .status-box {
         background-color: white;
@@ -111,8 +109,10 @@ st.markdown('''
         font-size: 1.3rem;
         font-weight: 700;
         margin-bottom: 25px;
-        display: flex; align-items: center; gap: 10px;
+        display: flex; align-items: center; justify-content: center; /* จัดกลาง */
+        gap: 10px;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        text-align: center;
     }
     .confidence-wrapper { margin-bottom: 20px; }
     .progress-track {
@@ -138,6 +138,7 @@ st.markdown('''
         border-radius: 8px;
         margin-top: 20px;
         font-style: italic;
+        text-align: center;
     }
 
     /* Responsive */
@@ -146,9 +147,7 @@ st.markdown('''
         .hero-sub { font-size: 1.6rem !important; }
         .cta-button { font-size: 1.6rem !important; padding: 20px 70px; }
         div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 2.5rem !important; }
-        
         div[data-testid="stVerticalBlockBorderWrapper"] p, label { font-size: 1.5rem !important; }
-        
         div[data-testid="stCanvas"] button { width: 60px !important; height: 60px !important; transform: scale(1.4); margin: 10px 15px !important; }
         .nav-links a { font-size: 1.4rem; }
     }
@@ -164,8 +163,22 @@ st.markdown('''
         div[data-testid="stVerticalBlockBorderWrapper"] { padding: 20px !important; }
     }
 
-    canvas { max-width: 100% !important; height: auto !important; border: 1px solid #ddd; border-radius: 8px; }
-    div[data-testid="stCanvas"] { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
+    /* --- CANVAS STYLES FOR CENTERING & RESPONSIVENESS --- */
+    canvas { 
+        max-width: 100% !important; 
+        height: auto !important; 
+        border: 1px solid #ddd; 
+        border-radius: 8px; 
+    }
+    /* บังคับให้พื้นที่วาดอยู่ตรงกลาง */
+    div[data-testid="stCanvas"] { 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center; 
+        width: 100%; 
+    }
+    /* --------------------------------------------------- */
 
     .hero-purple-container {
         background-color: #885D95; width: 100%; padding: 60px 20px; margin-bottom: 40px; 
@@ -226,9 +239,20 @@ st.markdown('''
     }
 
     div[data-testid="stVerticalBlockBorderWrapper"] { background-color: #ffffff !important; border: 1px solid #E0D0E8 !important; border-radius: 20px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important; margin-bottom: 30px; }
-    div[data-testid="stVerticalBlockBorderWrapper"] h3 { color: #885D95 !important; text-align: center !important; font-weight: 700 !important; }
+    /* จัดหัวข้อในการ์ดให้อยู่ตรงกลาง */
+    div[data-testid="stVerticalBlockBorderWrapper"] h3 { 
+        color: #885D95 !important; 
+        text-align: center !important; 
+        font-weight: 700 !important; 
+    }
     div.stButton > button[kind="primary"] { background-color: #86B264 !important; border: none !important; color: white !important; height: auto; padding: 15px; width: 100%; font-size: 1.3rem; border-radius: 10px; }
-    div[role="radiogroup"] { gap: 15px; }
+    
+    /* จัด Radio Button ให้อยู่ตรงกลาง */
+    div[role="radiogroup"] { 
+        display: flex; 
+        justify-content: center; 
+        gap: 15px; 
+    }
 </style>
 ''', unsafe_allow_html=True)
 
@@ -240,8 +264,8 @@ st.markdown("""
 <div class="navbar">
     <div style="font-size: 1.5rem; color: #885D95; font-weight:700;">🧬 Parkinson AI</div>
     <div class="nav-links">
-        <a href="#about_area" style="color:#67ACC3;">About Parkinson</a>
-        <a href="?start=true" target="_self" style="color:#885D95;">Take the test</a>
+        <a href="#about_area" style="color:#67ACC3;">เกี่ยวกับโรค</a>
+        <a href="?start=true" target="_self" style="color:#885D95;">เริ่มใช้งาน</a>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -310,71 +334,90 @@ if is_started or st.session_state.consent_accepted:
         with c2:
            with st.container(border=True):
                 st.markdown('<div class="disclaimer-header"><h3 style="text-align:center;">⚠️ ข้อควรทราบก่อนทำการทดสอบ</h3></div>', unsafe_allow_html=True)
-                st.write("ระบบนี้เป็นเครื่องมือคัดกรองเบื้องต้นโดยใช้ปัญญาประดิษฐ์ (AI)")
-                st.error("ไม่สามารถใช้แทนการวินิจฉัยของแพทย์ผู้เชี่ยวชาญได้")
-                st.write("หากมีอาการผิดปกติหรือมีความกังวล กรุณาปรึกษาแพทย์เพื่อรับการตรวจเพิ่มเติม")
+                # จัดกลางข้อความ
+                st.markdown("<div style='text-align: center;'>ระบบนี้เป็นเครื่องมือคัดกรองเบื้องต้นโดยใช้ปัญญาประดิษฐ์ (AI)</div>", unsafe_allow_html=True)
+                st.markdown("<div style='text-align: center; color: #d9534f; font-weight: bold;'>ไม่สามารถใช้แทนการวินิจฉัยของแพทย์ผู้เชี่ยวชาญได้</div>", unsafe_allow_html=True)
+                st.markdown("<div style='text-align: center;'>หากมีอาการผิดปกติหรือความกังวล กรุณาปรึกษาแพทย์เพื่อรับการตรวจเพิ่มเติม</div>", unsafe_allow_html=True)
                 st.markdown("---")
                 
                 st.markdown("""
-                <div style="font-size: 1.1rem !important; font-weight: 600; margin-bottom: 10px;">📝 คำแนะนำเพื่อให้ผลลัพธ์แม่นยำขึ้น</div>
-                <ul style="margin-bottom: 20px; line-height: 1.6; padding-left: 20px;">
-                    <li style="font-size: 1.1rem !important;">นั่งในท่าที่สบาย แขนวางบนพื้นราบ</li>
-                    <li style="font-size: 1.1rem !important;">ทำจิตใจให้สงบ หลีกเลี่ยงเครื่องดื่มคาเฟอีนหรือสารกระตุ้นก่อนทำการทดสอบ</li>
-                    <li style="font-size: 1.1rem !important;">วาดเส้นด้วยความเร็วและแรงกดตามธรรมชาติ</li>
-                </ul>
+                <div style="font-size: 1.1rem !important; font-weight: 600; margin-bottom: 10px; text-align: center;">📝 คำแนะนำเพื่อให้ผลลัพธ์แม่นยำขึ้น</div>
+                <div style="display: flex; justify-content: center;">
+                    <ul style="margin-bottom: 20px; line-height: 1.6; padding-left: 20px; display: inline-block; text-align: left;">
+                        <li style="font-size: 1.1rem !important;">นั่งในท่าที่สบาย แขนวางบนพื้นราบ</li>
+                        <li style="font-size: 1.1rem !important;">ทำจิตใจให้สงบ หลีกเลี่ยงความเครียด</li>
+                        <li style="font-size: 1.1rem !important;">วาดเส้นด้วยความเร็วและแรงกดตามธรรมชาติ</li>
+                    </ul>
+                </div>
                 """, unsafe_allow_html=True)
 
                 st.markdown("---")
-                st.write("อาการมือสั่นอาจเกิดจากหลายสาเหตุ เช่น ความเครียด ภาวะวิตกกังวล หรือโรคอื่น ๆ ที่ไม่ใช่พาร์กินสัน")
-                st.write("ระบบอาจไม่สามารถแยกแยะสาเหตุของอาการมือสั่นได้อย่างสมบูรณ์")
-                st.write("ผลลัพธ์จึงควรใช้ประกอบการพิจารณาเท่านั้น")
+                st.markdown("<div style='text-align: center;'>อาการมือสั่นอาจเกิดจากหลายสาเหตุ เช่น ความเครียด ภาวะวิตกกังวล หรือโรคอื่นที่ไม่ใช่พาร์กินสัน</div>", unsafe_allow_html=True)
+                st.markdown("<div style='text-align: center;'>ระบบอาจไม่สามารถแยกแยะสาเหตุของอาการมือสั่นได้อย่างสมบูรณ์ ผลลัพธ์จึงควรใช้ประกอบการพิจารณาเท่านั้น</div>", unsafe_allow_html=True)
                 st.write("") 
-                accepted = st.checkbox("รับทราบและยอมรับตามเงื่อนไขข้างต้น")
+                
+                # Checkbox จัดกลาง
+                cb_c1, cb_c2, cb_c3 = st.columns([1, 2, 1])
+                with cb_c2:
+                    accepted = st.checkbox("ข้าพเจ้ารับทราบและยินยอมตามเงื่อนไขข้างต้น")
+                
                 st.write("")
-                if st.button("เริ่มทำแบบทดสอบ", disabled=not accepted, type="primary", use_container_width=True):
+                if st.button("ตกลง / เริ่มทำแบบทดสอบ", disabled=not accepted, type="primary", use_container_width=True):
                     st.session_state.consent_accepted = True
                     st.rerun()
     else:
         st.markdown('<div id="test_area" style="padding-top: 40px;"></div>', unsafe_allow_html=True)
-        # SPIRAL CARD
+        
+        # --- SPIRAL CARD ---
         with st.container(border=True): 
+            # หัวข้อจัดกลาง (CSS จัดการแล้ว)
             st.subheader("🌀 Spiral")
             
-            # --- [แสดงคลิป spiral_demo.mov] ---
-            st.write("วาดเส้นวนออกจากกึ่งกลางด้วยความเร็วสม่ำเสมอ")
+            # คำอธิบายและคลิป จัดกลาง
+            st.markdown("<div style='text-align: center;'>วาดเส้นวนออกจากกึ่งกลางด้วยความเร็วสม่ำเสมอ</div>", unsafe_allow_html=True)
             show_demo_clip("spiral_demo")
             st.markdown("---")
-            # --------------------------------
 
-            spiral_mode = st.radio("เลือกวิธีใส่ภาพ (Spiral)", ["Upload", "Draw"], horizontal=True, key="spiral_mode")
+            # Radio จัดกลาง (ผ่าน CSS หรือใช้ Column ช่วย)
+            rc1, rc2, rc3 = st.columns([1, 1, 1])
+            with rc2:
+                spiral_mode = st.radio("เลือกวิธีใส่ภาพ (Spiral)", ["Upload", "Draw"], horizontal=True, key="spiral_mode")
+            
             st.markdown("---")
             spiral_image = None
+            
             if spiral_mode == "Upload":
                 uc1, uc2, uc3 = st.columns([0.1, 1, 0.1])
                 with uc2:
                     spiral_file = st.file_uploader("อัปโหลด Spiral", type=["png", "jpg", "jpeg"], key="spiral_upload")
                     if spiral_file:
                         spiral_image = Image.open(spiral_file).convert("RGB")
+                        # แสดงรูป Preview ตรงกลาง
                         st.image(spiral_image, caption="Preview", use_container_width=True)
             else:
+                # CANVAS จัดกลาง (CSS data-testid="stCanvas" จัดการให้แล้ว)
+                # กำหนด width เป็น 700 เหมือนเดิม แต่ CSS จะบีบให้ max-width=100% ถ้าจอเล็ก
                 spiral_canvas = st_canvas(fill_color="rgba(255, 255, 255, 0)", stroke_width=6, stroke_color="black", background_color="#ffffff", height=500, width=700, drawing_mode="freedraw", key="spiral_draw", display_toolbar=True)
                 if spiral_canvas.image_data is not None:
                     spiral_image = Image.fromarray(spiral_canvas.image_data.astype("uint8")).convert("RGB")
+            
             st.markdown("<br>", unsafe_allow_html=True)
             spiral_result_box = st.empty()
 
-        # WAVE CARD
+        # --- WAVE CARD ---
         st.markdown("<br>", unsafe_allow_html=True)
         with st.container(border=True): 
             st.subheader("🌊 Wave")
             
-            # --- [แสดงคลิป wave_demo.mov] ---
-            st.write("วาดเส้นคลื่นจากบนลงล่างด้วยความเร็วสม่ำเสมอ")
+            st.markdown("<div style='text-align: center;'>วาดเส้นคลื่นจากซ้ายไปขวา (หรือบนลงล่าง) ด้วยความเร็วสม่ำเสมอ</div>", unsafe_allow_html=True)
             show_demo_clip("wave_demo")
             st.markdown("---")
-            # -----------------------------
 
-            wave_mode = st.radio("เลือกวิธีใส่ภาพ (Wave)", ["Upload", "Draw"], horizontal=True, key="wave_mode")
+            # Radio จัดกลาง
+            rc1, rc2, rc3 = st.columns([1, 1, 1])
+            with rc2:
+                wave_mode = st.radio("เลือกวิธีใส่ภาพ (Wave)", ["Upload", "Draw"], horizontal=True, key="wave_mode")
+            
             st.markdown("---")
             wave_image = None
             if wave_mode == "Upload":
@@ -385,9 +428,11 @@ if is_started or st.session_state.consent_accepted:
                         wave_image = Image.open(wave_file).convert("RGB")
                         st.image(wave_image, caption="Preview", use_container_width=True)
             else:
+                # CANVAS จัดกลาง
                 wave_canvas = st_canvas(fill_color="rgba(255, 255, 255, 0)", stroke_width=6, stroke_color="black", background_color="#ffffff", height=500, width=700, drawing_mode="freedraw", key="wave_draw", display_toolbar=True)
                 if wave_canvas.image_data is not None:
                     wave_image = Image.fromarray(wave_canvas.image_data.astype("uint8")).convert("RGB")
+            
             st.markdown("<br>", unsafe_allow_html=True)
             wave_result_box = st.empty()
 
@@ -407,7 +452,7 @@ if is_started or st.session_state.consent_accepted:
                         status_color = "#856404"
                         confidence = pred * 100
                         desc_text = "ตรวจพบรูปแบบการวาดที่มีความไม่สม่ำเสมอ ซึ่งอาจสัมพันธ์กับความผิดปกติของการควบคุมการเคลื่อนไหว"
-                        rec_list = "<li>ควรปรึกษาแพทย์ผู้เชี่ยวชาญเพื่อรับการตรวจและวินิจฉัยเพิ่มเติม</li><li>สามารถทำการทดสอบซ้ำเมื่ออยู่ในสภาวะที่ผ่อนคลาย</li>"
+                        rec_list = "<li>ควรปรึกษาแพทย์ผู้เชี่ยวชาญเพื่อรับการตรวจและวินิจฉัยเพิ่มเติม</li><li>สามารถทำการทดสอบซ้ำในสภาวะที่ผ่อนคลาย</li>"
                     else:
                         card_bg = "#86B264" 
                         status_text = "✅ ไม่พบความผิดปกติเด่นชัด (Normal)"
@@ -417,19 +462,19 @@ if is_started or st.session_state.consent_accepted:
                         rec_list = "<li>หากยังมีความกังวล หรือผลการทดสอบไม่ชัดเจน สามารถทำการทดสอบซ้ำได้</li><li>ควรทำในสภาวะที่ผ่อนคลาย ไม่เกร็งข้อมือ</li><li>หากผลระบุว่ามีความเสี่ยง ควรปรึกษาแพทย์เพื่อรับการตรวจวินิจฉัยอย่างละเอียด</li>"
                     
                     result_html = textwrap.dedent(f"""
-<div class="result-card" style="background-color: {card_bg};">
+<div class="result-card" style="background-color: {card_bg}; text-align: center;">
     <div class="result-header">🧪 ผลการคัดกรองเบื้องต้น (Spiral Test)</div>
-    <div class="status-box" style="color: {status_color};">{status_text}</div>
+    <div class="status-box" style="color: {status_color}; justify-content: center;">{status_text}</div>
     <div class="confidence-wrapper">
         <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
             <span>ระดับความเชื่อมั่นของโมเดล (Confidence)</span><span>{confidence:.1f}%</span>
         </div>
         <div class="progress-track"><div class="progress-fill" style="width: {confidence}%;"></div></div>
     </div>
-    <div class="result-label">📝 คำอธิบาย:</div>
-    <div class="result-text">{desc_text}</div>
-    <div class="result-label">💡 คำแนะนำ:</div>
-    <ul class="result-list">{rec_list}</ul>
+    <div class="result-label" style="text-align:center;">📝 คำอธิบาย:</div>
+    <div class="result-text" style="text-align:center;">{desc_text}</div>
+    <div class="result-label" style="text-align:center;">💡 คำแนะนำ:</div>
+    <ul class="result-list" style="text-align:left; display:inline-block;">{rec_list}</ul>
     <div class="disclaimer-small">⚠️ หมายเหตุ: ผลลัพธ์นี้เป็นการคัดกรองเบื้องต้นเท่านั้น <b>ไม่ใช่การวินิจฉัยทางการแพทย์</b> โปรดใช้วิจารณญาณ</div>
 </div>
 """).strip()
@@ -465,19 +510,19 @@ if is_started or st.session_state.consent_accepted:
                     
                     # 4. Create HTML Result
                     result_html_w = textwrap.dedent(f"""
-<div class="result-card" style="background-color: {card_bg_w};">
+<div class="result-card" style="background-color: {card_bg_w}; text-align: center;">
     <div class="result-header">🧪 ผลการคัดกรองเบื้องต้น (Wave Test)</div>
-    <div class="status-box" style="color: {status_color_w};">{status_text_w}</div>
+    <div class="status-box" style="color: {status_color_w}; justify-content: center;">{status_text_w}</div>
     <div class="confidence-wrapper">
         <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
             <span>ระดับความเชื่อมั่นของโมเดล (Confidence)</span><span>{confidence_w:.1f}%</span>
         </div>
         <div class="progress-track"><div class="progress-fill" style="width: {confidence_w}%;"></div></div>
     </div>
-    <div class="result-label">📝 คำอธิบาย:</div>
-    <div class="result-text">{desc_text_w}</div>
-    <div class="result-label">💡 คำแนะนำ:</div>
-    <ul class="result-list">{rec_list_w}</ul>
+    <div class="result-label" style="text-align:center;">📝 คำอธิบาย:</div>
+    <div class="result-text" style="text-align:center;">{desc_text_w}</div>
+    <div class="result-label" style="text-align:center;">💡 คำแนะนำ:</div>
+    <ul class="result-list" style="text-align:left; display:inline-block;">{rec_list_w}</ul>
     <div class="disclaimer-small">⚠️ หมายเหตุ: ผลลัพธ์นี้เป็นการคัดกรองเบื้องต้นเท่านั้น <b>ไม่ใช่การวินิจฉัยทางการแพทย์</b> โปรดใช้วิจารณญาณ</div>
 </div>
 """).strip()
@@ -511,7 +556,7 @@ else:
 about_html = textwrap.dedent(f"""
 <div class="about-section">
     <div class="about-container">
-        <div class="about-header-large">ทำความรู้จักกับ โรคพาร์กินสัน (Parkinson’s Disease)</div>
+        <div class="about-header-large">โรคพาร์กินสัน (Parkinson’s Disease)</div>
         <div class="about-body-grid">
             <div class="about-image-container">{img_tag}</div>
             <div class="about-text-container">
