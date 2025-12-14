@@ -9,7 +9,7 @@ from datetime import datetime
 import streamlit.components.v1 as components
 
 # ----------------------------------
-# 1. Page Config (ต้องอยู่บรรทัดแรกสุด)
+# 1. Page Config
 # ----------------------------------
 st.set_page_config(page_title="Parkinson Tester", layout="wide", initial_sidebar_state="collapsed")
 
@@ -23,13 +23,11 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Open+Sans:wght@400;600;700&display=swap');
     
-    /* บังคับฟอนต์และสีพื้นฐาน */
     html, body, [class*="css"], .stMarkdown { 
         font-family: 'Kanit', sans-serif !important; 
         scroll-behavior: smooth;
     }
     
-    /* บังคับพื้นหลังแอปให้เป็นสีขาว */
     .stApp {
         background-color: #ffffff !important;
         color: #333333 !important;
@@ -37,7 +35,7 @@ st.markdown("""
 
     header, footer {visibility: hidden;}
 
-    /* HERO SECTION:  */
+    /* HERO SECTION */
     .hero-purple-container {
         background-color: #885D95;
         width: 100vw; 
@@ -45,7 +43,7 @@ st.markdown("""
         margin-right: calc(-50vw + 50%);
         padding-top: 60px;  
         padding-bottom: 40px;
-        margin-bottom: 0px; /* ลด margin ล่างเพื่อให้ติดกับ About */
+        margin-bottom: 60px; 
         text-align: center;
         display: flex;
         flex-direction: column;
@@ -55,7 +53,6 @@ st.markdown("""
         padding-right: 20px;
     }
 
-    /* Text Styles */
     .hero-title {
         color: #ffffff !important;
         font-size: clamp(2rem, 5vw, 3.5rem); 
@@ -73,7 +70,6 @@ st.markdown("""
         max-width: 800px;
     }
     
-    /* Button Style (ปุ่มใน Hero) */
     .cta-button {
         background-color: #ffffff;
         color: #885D95 !important;
@@ -105,10 +101,13 @@ st.markdown("""
         margin-top: -60px; 
         position: relative; z-index: 100;
     }
+    
+    .nav-links {
+        display: flex;
+        gap: 25px;
+    }
 
-    /* ------------------------------------------------------------- */
-    /* ✅ About Section */
-    /* ------------------------------------------------------------- */
+    /* ABOUT SECTION */
     .about-section {
         background-color: #67ACC3;
         width: 100vw;
@@ -125,9 +124,7 @@ st.markdown("""
     .about-header { font-size: 2.2rem; font-weight: 700; margin-bottom: 20px; }
     .about-text { font-size: 1.1rem; line-height: 1.8; font-weight: 300; }
 
-    /* ------------------------------------------------------------- */
-    /* ✅ CARD STYLE & General UI */
-    /* ------------------------------------------------------------- */
+    /* CARD STYLE */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
         border: 1px solid #E0D0E8 !important; 
@@ -137,12 +134,10 @@ st.markdown("""
         margin-bottom: 40px;
     }
     
-    /* บังคับสีตัวหนังสือในการ์ด */
     div[data-testid="stVerticalBlockBorderWrapper"] * {
         color: #333333 !important;
     }
     
-    /* Header ในการ์ด */
     div[data-testid="stVerticalBlockBorderWrapper"] h3 {
         text-align: center !important;
         color: #885D95 !important;
@@ -151,17 +146,12 @@ st.markdown("""
         margin-bottom: 25px !important;
     }
 
-    /* UI Elements Colors */
     div[data-testid="stRadio"] label p { color: #333 !important; font-weight: 600; font-size: 1.1rem !important; }
     .stFileUploader label { color: #333 !important; }
     div[class*="stMarkdown"] p { color: #333 !important; }
-    
-    /* Style สำหรับปุ่มทั่วไป */
     div.stButton > button { width: 100%; border-radius: 30px; height: 50px; font-size: 18px; }
 
-    /* ------------------------------------------------------------- */
-    /* Custom Button Color: #86B264 (สำหรับปุ่ม Primary/ประมวลผล) */
-    /* ------------------------------------------------------------- */
+    /* Custom Button Color (Green) */
     div.stButton > button[kind="primary"] {
         background-color: #86B264 !important;
         border: none !important;
@@ -170,13 +160,13 @@ st.markdown("""
         box-shadow: 0 4px 15px rgba(134, 178, 100, 0.3);
     }
     div.stButton > button[kind="primary"]:hover {
-        background-color: #759e56 !important; /* เข้มขึ้นเล็กน้อยตอน Hover */
+        background-color: #759e56 !important;
         transform: scale(1.02);
         box-shadow: 0 6px 20px rgba(134, 178, 100, 0.5);
     }
 
-    /* หัวข้อ Disclaimer (สีเหลือง) */
-    .yellow-header h3 {
+    /* ✅ เปลี่ยนสี Header Disclaimer เป็นสีเขียว (#86B264) */
+    .disclaimer-header h3 {
         color: #86B264 !important; 
     }
     
@@ -191,7 +181,10 @@ st.markdown("""
 st.markdown("""
 <div class="navbar">
     <div style="font-size: 1.3rem; color: #885D95; font-weight:700;">🧬 Parkinson AI</div>
-    <div><a href="#test_area" style="text-decoration:none; color:#885D95; font-weight:600;">เริ่มใช้งาน</a></div>
+    <div class="nav-links">
+        <a href="#about_area" style="text-decoration:none; color:#67ACC3; font-weight:600;">เกี่ยวกับโรค</a>
+        <a href="#test_area" style="text-decoration:none; color:#885D95; font-weight:600;">เริ่มใช้งาน</a>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -206,8 +199,10 @@ st.markdown(f"""
 
 
 # =========================================================
-# ABOUT SECTION (สีฟ้า #67ACC3)
+# ABOUT SECTION
 # =========================================================
+st.markdown('<div id="about_area" style="padding-top: 20px;"></div>', unsafe_allow_html=True) 
+
 st.markdown("""
 <div class="about-section">
     <div class="about-content">
@@ -244,17 +239,15 @@ def preprocess(img):
 # =========================================================
 # DISCLAIMER / TEST AREA
 # =========================================================
-# ✅ เพิ่ม Spacer (padding) ตรงนี้อีกชั้นเพื่อความชัวร์ ให้ห่างจาก About
 st.markdown('<div id="test_area" style="padding-top: 50px;"></div>', unsafe_allow_html=True) 
 
-# --- Logic: เช็คว่ายอมรับข้อตกลงหรือยัง ---
 if not st.session_state.consent_accepted:
-    # ถ้ายังไม่ยอมรับ ให้แสดง Disclaimer
+    # --- Disclaimer Section ---
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
        with st.container(border=True):
-            # ใช้ Div ครอบเพื่อบังคับ CSS เฉพาะส่วนหัวข้อ
-            st.markdown('<div class="yellow-header"><h3 style="color:#E4C728; text-align:center;">⚠️ ข้อควรทราบก่อนทำการทดสอบ</h3></div>', unsafe_allow_html=True)
+            # ✅ ใช้ Class ใหม่ที่เปลี่ยนสีเป็นเขียวแล้ว
+            st.markdown('<div class="disclaimer-header"><h3 style="text-align:center;">⚠️ ข้อควรทราบก่อนทำการทดสอบ</h3></div>', unsafe_allow_html=True)
             
             st.write("ระบบนี้เป็นเครื่องมือคัดกรองเบื้องต้นโดยใช้ปัญญาประดิษฐ์ (AI)")
             st.error("ไม่สามารถใช้แทนการวินิจฉัยของแพทย์ผู้เชี่ยวชาญได้")
@@ -284,7 +277,7 @@ if not st.session_state.consent_accepted:
                 st.rerun()
 
 else:
-    # --- ถ้า "ยอมรับแล้ว" ให้แสดงเครื่องมือทดสอบ ---
+    # --- Testing Tool Section ---
     c1, c2, c3 = st.columns([1, 2, 1]) 
     with c2: 
         # SPIRAL CARD
@@ -325,7 +318,7 @@ else:
             st.markdown("<br>", unsafe_allow_html=True)
             wave_result_box = st.empty()
 
-        # PROCESS BUTTON
+        # PROCESS BUTTON (สีเขียว)
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("🔍 ประมวลผลทั้งหมด", type="primary", use_container_width=True):
             if spiral_image is not None and spiral_model is not None:
