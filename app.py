@@ -12,14 +12,24 @@ import base64
 # ----------------------------------
 st.set_page_config(page_title="Parkinson Tester", layout="wide", initial_sidebar_state="collapsed")
 
-hero_image_path = "parkinson cover.png" 
+def get_img_as_base64(file_path):
+    try:
+        with open(file_path, "rb") as f:
+            data = f.read()
+        return base64.b64encode(data).decode()
+    except Exception:
+        return ""
+
+# เตรียมโหลดรูปภาพ
+hero_image_path = "hero_img.png"
 hero_img_base64 = ""
 
 if os.path.exists(hero_image_path):
     hero_img_base64 = f"data:image/png;base64,{get_img_as_base64(hero_image_path)}"
 else:
-    # รูปสำรอง (Placeholder) เผื่อหาไฟล์ไม่เจอ
-    hero_img_base64 = "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&q=80&w=2000"
+    # รูปสำรองออนไลน์ (ถ้าไม่มีไฟล์)
+    hero_img_base64 = "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&q=80&w=800"
+
 # ----------------------------------
 # CSS Styles
 # ----------------------------------
@@ -117,9 +127,7 @@ st.markdown("""
 
     .hero-img-responsive {
         width: 100%;             /* กว้างเต็มพื้นที่ container 100% */
-        max-width: 600px;        /* แต่ไม่เกิน 600px (สำหรับจอคอมจะได้ไม่ใหญ่ยักษ์) */
         height: auto;            /* สูงอัตโนมัติ รักษาทรงภาพ */
-        border-radius: 15px;     /* มุมมน */
         margin-top: 20px;
         margin-bottom: 30px;
         box-shadow: 0 8px 30px rgba(0,0,0,0.3); /* เงาลอยๆ */
