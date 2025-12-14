@@ -65,17 +65,21 @@ st.markdown("""
         position: relative;
         z-index: 100;
     }
-    .hero-white-stripe {
-        background-color: #885D95; 
+    .hero-purple-stripe {
+        background-color: #F8F0FC; /* สีม่วงพาสเทล */
         
-        /* ขยายเต็มจอ */
-        margin-left: -5rem; margin-right: -5rem;
-        padding-left: 5rem; padding-right: 5rem;
+        /* ขยายเต็มจอ (ทะลุขอบซ้ายขวา) */
+        margin-left: -5rem; 
+        margin-right: -5rem;
+        padding-left: 5rem; 
+        padding-right: 5rem;
         
-        padding-top: 50px; padding-bottom: 50px;
+        padding-top: 50px; 
+        padding-bottom: 60px;
         margin-bottom: 30px; 
-        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        position: relative; z-index: 50;
+        
+        /* เส้นขอบล่าง */
+        border-bottom: 1px solid #E0D0E8;
     }
     .hero-content {
         text-align: center;
@@ -170,7 +174,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Hero Content
-st.markdown('<div class="hero-white-stripe"></div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-purple-stripe"></div>', unsafe_allow_html=True)
 with st.container():
     st.markdown('<div class="hero-content">', unsafe_allow_html=True)
     st.markdown('<div class="hero-title">“Early detection changes everything.”</div>', unsafe_allow_html=True)
