@@ -53,7 +53,7 @@ st.markdown("""
         align-items: center;
         padding: 10px 40px;
         background-color: white; 
-        border-bottom: 1px solid #f0f0f0; 
+        border-bottom: 1px solid #eee; 
         color: #555;
         font-weight: 600;
         margin-top: -50px; 
@@ -66,7 +66,7 @@ st.markdown("""
         z-index: 100;
     }
     .hero-white-stripe {
-        background-color: #ffffff; /* พื้นหลังสีขาว */
+        background-color: #885D95; 
         
         /* ขยายเต็มจอ */
         margin-left: -5rem; margin-right: -5rem;
