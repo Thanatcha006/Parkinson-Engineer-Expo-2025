@@ -17,6 +17,7 @@ if "consent_accepted" not in st.session_state:
 # ----------------------------------
 # CSS Styles 
 # ----------------------------------
+# ใช้ ''' เพื่อป้องกันปัญหากับ docstring ทั่วไป
 st.markdown('''
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Open+Sans:wght@400;600;700&display=swap');
@@ -140,6 +141,7 @@ st.markdown('''
         font-size: 1.8rem; font-weight: 600;
         margin-top: 30px; margin-bottom: 15px; color: #e3f2fd;
     }
+    /* ปรับฟอนต์เฉพาะใน about-text */
     .about-text, .about-text li { 
         font-size: 1.3rem !important; 
         line-height: 1.9; 
@@ -164,10 +166,7 @@ st.markdown('''
         color: #558a9e !important;
     }
 
-    /* -----------------------------------------------------------
-       CARD & BUTTONS & CANVAS CUSTOMIZATION
-       (ส่วนที่ปรับปรุงใหม่เพื่อขยายเต็มจอและจัดกลาง)
-       ----------------------------------------------------------- */
+    /* CARD & BUTTONS */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
         border: 1px solid #E0D0E8 !important; 
@@ -175,7 +174,6 @@ st.markdown('''
         padding: 40px !important;
         box-shadow: 0 20px 50px rgba(0,0,0,0.1) !important;
         margin-bottom: 40px;
-        width: 100% !important; /* บังคับเต็มจอแนวกว้าง */
     }
     div[data-testid="stVerticalBlockBorderWrapper"] * { color: #333333 !important; }
     
@@ -185,38 +183,14 @@ st.markdown('''
         margin-bottom: 25px !important;
     }
 
-    /* ปุ่ม Primary (Process) */
     div.stButton > button[kind="primary"] {
         background-color: #86B264 !important;
         border: none !important; color: white !important;
         box-shadow: 0 4px 15px rgba(134, 178, 100, 0.3);
         height: 60px; font-size: 1.3rem;
-        width: 100%;
     }
     div.stButton > button[kind="primary"]:hover {
         background-color: #759e56 !important; transform: scale(1.02);
-    }
-
-    /* จัดกึ่งกลาง Canvas */
-    div[data-testid="stCanvas"] {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 0 auto;
-        width: 100%;
-    }
-    
-    /* พยายามจัด Toolbar ของ Canvas */
-    div[data-testid="stCanvas"] > div {
-        display: flex;
-        flex-direction: column;
-        align-items: center; 
-    }
-    
-    /* Hack: เพิ่มระยะห่างระหว่างปุ่มใน Toolbar (อาจผลขึ้นอยู่กับ Browser) */
-    div[data-testid="stCanvas"] button {
-        margin: 5px !important;
-        transform: scale(1.2); /* ขยายปุ่มให้ใหญ่ขึ้นเล็กน้อย */
     }
 
     .disclaimer-header h3 { color: #86B264 !important; }
@@ -270,6 +244,7 @@ st.markdown('<div id="about_area" style="padding-top: 20px;"></div>', unsafe_all
 
 image_url = "https://kcmh.chulalongkornhospital.go.th/ec/wp-content/uploads/2019/02/Parkinson-Cover-1024x683.jpg"
 
+# ✅ เปลี่ยนเป็น f-string แบบ Single Quote สามตัว (''') เพื่อให้ Highlighter ไม่เอ๋อ
 about_html = f'''
 <div class="about-section">
 <div class="about-content">
@@ -308,7 +283,6 @@ st.markdown(about_html, unsafe_allow_html=True)
 # ----------------------------------
 @st.cache_resource
 def load_spiral_model():
-    # ตรวจสอบชื่อไฟล์โมเดลให้ถูกต้องตามที่มีในเครื่อง
     if os.path.exists("(Test_naja)effnet_parkinson_model.keras"):
         return tf.keras.models.load_model("(Test_naja)effnet_parkinson_model.keras")
     return None
@@ -316,7 +290,7 @@ spiral_model = load_spiral_model()
 
 def preprocess(img):
     img = np.array(img.convert("RGB"))
-    img = cv2.resize(img, (256, 256))    
+    img = cv2.resize(img, (256, 256))   
     img = img / 255.0
     img = np.expand_dims(img, axis=0)
     return img
@@ -328,7 +302,6 @@ st.markdown('<div id="test_area" style="padding-top: 50px;"></div>', unsafe_allo
 
 if not st.session_state.consent_accepted:
     # --- Disclaimer Section ---
-    # ใช้ Columns บีบเฉพาะหน้า Disclaimer เพื่อให้อ่านง่าย
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
        with st.container(border=True):
@@ -361,101 +334,57 @@ if not st.session_state.consent_accepted:
 
 else:
     # --- Testing Tool Section ---
-    # หมายเหตุ: ไม่ใช้ st.columns บีบข้าง เพื่อให้การ์ดขยายเต็มจอ
-    
-    # ------------------ SPIRAL CARD ------------------
-    with st.container(border=True): 
-
+    c1, c2, c3 = st.columns([1, 2, 1]) 
+    with c2: 
+        # SPIRAL CARD
+        with st.container(border=True): 
             st.subheader("🌀 Spiral")
-
             spiral_mode = st.radio("เลือกวิธีใส่ภาพ (Spiral)", ["Upload", "Draw"], horizontal=True, key="spiral_mode")
-
             spiral_image = None
-
             if spiral_mode == "Upload":
-
                 spiral_file = st.file_uploader("อัปโหลด Spiral", type=["png", "jpg", "jpeg"], key="spiral_upload")
-
                 if spiral_file:
-
                     spiral_image = Image.open(spiral_file).convert("RGB")
-
                     st.image(spiral_image, caption="Preview", use_container_width=True)
-
             else:
-
                 dc1, dc2, dc3 = st.columns([0.05, 1, 0.05])
-
                 with dc2:
-
                     spiral_canvas = st_canvas(fill_color="rgba(255, 255, 255, 0)", stroke_width=6, stroke_color="black", background_color="#ffffff", height=300, width=450, drawing_mode="freedraw", key="spiral_draw")
-
                 if spiral_canvas.image_data is not None:
-
                     spiral_image = Image.fromarray(spiral_canvas.image_data.astype("uint8")).convert("RGB")
-
             st.markdown("<br>", unsafe_allow_html=True)
-
             spiral_result_box = st.empty()
 
-
-
         # WAVE CARD
-
         with st.container(border=True): 
-
             st.subheader("🌊 Wave")
-
             wave_mode = st.radio("เลือกวิธีใส่ภาพ (Wave)", ["Upload", "Draw"], horizontal=True, key="wave_mode")
-
             wave_image = None
-
             if wave_mode == "Upload":
-
                 wave_file = st.file_uploader("อัปโหลด Wave", type=["png", "jpg", "jpeg"], key="wave_upload")
-
                 if wave_file:
-
                     wave_image = Image.open(wave_file).convert("RGB")
-
                     st.image(wave_image, caption="Preview", use_container_width=True)
-
             else:
-
                 wc1, wc2, wc3 = st.columns([0.05, 1, 0.05])
-
                 with wc2:
-
                     wave_canvas = st_canvas(fill_color="rgba(255, 255, 255, 0)", stroke_width=6, stroke_color="black", background_color="#ffffff", height=300, width=450, drawing_mode="freedraw", key="wave_draw")
-
                 if wave_canvas.image_data is not None:
-
                     wave_image = Image.fromarray(wave_canvas.image_data.astype("uint8")).convert("RGB")
-
             st.markdown("<br>", unsafe_allow_html=True)
-
             wave_result_box = st.empty()
 
-
-
         # PROCESS BUTTON (สีเขียว)
-
         st.markdown("<br>", unsafe_allow_html=True)
-
         if st.button("🔍 ประมวลผลทั้งหมด", type="primary", use_container_width=True):
-
             if spiral_image is not None and spiral_model is not None:
-
                 try:
-
                     input_tensor = preprocess(spiral_image)
-
                     pred = spiral_model.predict(input_tensor)[0][0]
-
                     if pred > 0.5: spiral_result_box.error(f"🌀 Spiral : เสี่ยง Parkinson ({pred:.3f})")
-
                     else: spiral_result_box.success(f"🌀 Spiral : ปกติ ({pred:.3f})")
-
                 except Exception as e: spiral_result_box.error(f"Error: {e}")
-
             elif spiral_image is None: spiral_result_box.warning("🌀 Spiral : ยังไม่ได้ใส่ภาพ")
+            
+            if wave_image is not None: wave_result_box.info("🌊 Wave : มีภาพแล้ว (รอโมเดล)")
+            else: wave_result_box.warning("🌊 Wave : ยังไม่ได้ใส่ภาพ")
