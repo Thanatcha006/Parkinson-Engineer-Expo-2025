@@ -3,12 +3,13 @@ import numpy as np
 import cv2
 from PIL import Image
 import tensorflow as tf
+from skimage.feature import hog # เพิ่ม import hog ตามที่ขอ
 from streamlit_drawable_canvas import st_canvas
 import os
 import time
 import base64
 import textwrap
-import joblib # เพิ่ม import joblib เพื่อให้โหลดไฟล์ .joblib ได้
+import joblib
 
 # ----------------------------------
 # 1. Page Config
@@ -33,24 +34,18 @@ def get_image_base64(image_path):
 
 # --- [ฟังก์ชันแสดงคลิปตัวอย่างแบบ Expander] ---
 def show_demo_clip(file_root_name):
-    # ใช้ st.expander เพื่อซ่อนคลิปไว้ในแถบเมนู
     with st.expander(f"🎥 คลิกเพื่อดูตัวอย่างการวาด ({file_root_name})"):
-        # จัด Layout ข้างใน Expander ให้คลิปอยู่กึ่งกลางพอดีๆ
         c1, c2, c3 = st.columns([1, 2, 1])
-        
         with c2:
-            # 1. ลองหา .mp4
             if os.path.exists(f"{file_root_name}.mp4"):
                 st.video(f"{file_root_name}.mp4")
                 st.caption("ตัวอย่างการวาด")
-            # 2. ลองหา .mov (รองรับทั้งตัวเล็กและตัวใหญ่)
             elif os.path.exists(f"{file_root_name}.mov"):
                 st.video(f"{file_root_name}.mov")
                 st.caption("ตัวอย่างการวาด")
             elif os.path.exists(f"{file_root_name}.MOV"):
                 st.video(f"{file_root_name}.MOV")
                 st.caption("ตัวอย่างการวาด")
-            # 3. ลองหา .gif
             elif os.path.exists(f"{file_root_name}.gif"):
                 st.image(f"{file_root_name}.gif", use_container_width=True)
                 st.caption("ตัวอย่างการวาด")
@@ -87,21 +82,18 @@ st.markdown('''
     .nav-links { display: flex; gap: 20px; }
     .nav-links a { font-weight: 600; text-decoration: none; }
 
-    /* --- [แก้ไข] Styling สำหรับ Expander ให้เป็นสี #DF6456 และข้อความสีขาว --- */
     div[data-testid="stExpander"] details > summary {
-        background-color: #F5BA9F !important; /* เปลี่ยนสีพื้นหลัง */
-        color: black !important; /* เปลี่ยนสีข้อความ */
+        background-color: #F5BA9F !important;
+        color: black !important;
         border-radius: 10px !important;
         font-weight: 600 !important;
-        border: 1px solid #DF6456 !important; /* เปลี่ยนสีขอบให้เข้ากัน */
+        border: 1px solid #DF6456 !important;
     }
     div[data-testid="stExpander"] details > summary:hover {
         color: black !important;
         opacity: 0.9;
     }
-    /* ----------------------------------------------------- */
 
-    /* Result Card Styles */
     .result-card {
         color: white;
         border-radius: 20px;
@@ -157,15 +149,12 @@ st.markdown('''
         font-style: italic;
     }
 
-    /* Responsive */
     @media (min-width: 992px) {
         .hero-title { font-size: 4rem !important; }
         .hero-sub { font-size: 1.6rem !important; }
         .cta-button { font-size: 1.6rem !important; padding: 20px 70px; }
         div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 2.5rem !important; }
-        
         div[data-testid="stVerticalBlockBorderWrapper"] p, label { font-size: 1.5rem !important; }
-        
         div[data-testid="stCanvas"] button { width: 60px !important; height: 60px !important; transform: scale(1.4); margin: 10px 15px !important; }
         .nav-links a { font-size: 1.4rem; }
     }
@@ -281,7 +270,6 @@ st.markdown(f"""
 @st.cache_resource
 def load_spiral_model():
     if os.path.exists("model_spiral_final_production.joblib"):
-        # แก้ไข: ใช้ joblib.load สำหรับไฟล์ .joblib
         return joblib.load("model_spiral_final_production.joblib")
     return None
 spiral_model = load_spiral_model()
@@ -290,17 +278,41 @@ spiral_model = load_spiral_model()
 @st.cache_resource
 def load_wave_model():
     if os.path.exists("model_wave_final_production.joblib"):
-        # แก้ไข: ใช้ joblib.load สำหรับไฟล์ .joblib
         return joblib.load("model_wave_final_production.joblib")
     return None
 wave_model = load_wave_model()
 
-def preprocess(img):
-    img = np.array(img.convert("RGB"))
-    img = cv2.resize(img, (256, 256))    
-    img = img / 255.0
-    img = np.expand_dims(img, axis=0)
-    return img
+# --- เพิ่มฟังก์ชัน HOG ตามที่ระบุ ---
+def HOG_img(img):
+    hog_img = hog(img,
+                orientations=9,            # 9 ทิศทาง
+                pixels_per_cell=(12, 12),    # ขนาดของช่อง ยิ่งค่าน้อยยิ่งละเอียด
+                cells_per_block=(2, 2),    # รวมกลุ่มกัน 2*2 ช่อง เพื่อปรับแสง
+                block_norm='L2-Hys',           # Normalization using L1-norm.
+                feature_vector=True)       # Return the data as a feature vector
+    return hog_img
+
+# --- ปรับแก้ฟังก์ชัน Preprocess เพื่อใช้ Threshold + HOG ---
+def preprocess(img_pil):
+    # 1. แปลง PIL Image เป็น Numpy Array (RGB)
+    img = np.array(img_pil.convert("RGB"))
+    
+    # 2. แปลง RGB เป็น BGR (เพราะ cv2.cvtColor ด้านล่างใช้ CODE BGR2GRAY)
+    img = img[:, :, ::-1].copy()
+    
+    # 3. เริ่มกระบวนการตามโค้ดที่ให้มา
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img = cv2.resize(img, (200, 200))
+    img = cv2.threshold(img,
+                          0, # ค่าเริ่มต้น cv2.THRESH_OTSU จะคำนวณทับ
+                          255, 
+                          cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1] ## [1] เอาเฉพาะค่าที่จะนำไปใช้ train
+    
+    # 4. ส่งเข้า HOG
+    feature_vector = HOG_img(img)
+    
+    # 5. Reshape ให้เป็น 2D array (1, n_features) เพื่อให้ Model Predict ได้
+    return feature_vector.reshape(1, -1)
 
 # =========================================================
 # 5. TEST AREA
