@@ -17,12 +17,12 @@ st.set_page_config(page_title="Parkinson Tester", layout="wide", initial_sidebar
 if "consent_accepted" not in st.session_state:
     st.session_state.consent_accepted = False
 
-# เช็ค Query Params
+# เช็ค Query Params (Logic เดิม: ปุ่ม <a> กดแล้วรีโหลด)
 query_params = st.query_params
 is_started = query_params.get("start") == "true"
 
 # ----------------------------------
-# Helper Function: แปลงรูปภาพเป็น Base64
+# Helper Function: แปลงรูปภาพ
 # ----------------------------------
 def get_image_base64(image_path):
     try:
@@ -63,7 +63,7 @@ st.markdown('''
     .nav-links a { font-weight: 600; text-decoration: none; }
 
     /* -------------------------------------------------------
-       RESPONSIVE LAYOUT & TYPOGRAPHY
+       RESPONSIVE TYPOGRAPHY (General)
        ------------------------------------------------------- */
     @media (min-width: 992px) {
         .hero-title { font-size: 4rem !important; }
@@ -133,7 +133,7 @@ st.markdown('''
     }
     
     /* -------------------------------------------------------
-       ABOUT SECTION STYLES (NEW LAYOUT)
+       ABOUT SECTION STYLES (NEW LAYOUT GRID)
        ------------------------------------------------------- */
     .about-section {
         background-color: #67ACC3;
@@ -149,7 +149,7 @@ st.markdown('''
         width: 100%;
     }
     
-    /* Header ใหญ่เหมือนเดิม */
+    /* Header ใหญ่ (เต็มความกว้าง) */
     .about-header-large {
         font-size: 2.8rem;
         font-weight: 700;
@@ -159,63 +159,86 @@ st.markdown('''
         margin-bottom: 40px;
     }
 
-    /* Grid สำหรับแบ่งซ้ายขวาใน PC */
+    /* Grid Layout Container */
     .about-body-grid {
         display: grid;
-        grid-template-columns: 1fr; /* ค่าเริ่มต้น Mobile: 1 คอลัมน์ */
+        grid-template-columns: 1fr; /* Default Mobile: 1 Column */
         gap: 40px;
-        align-items: center;
+        align-items: start; /* จัดชิดบน */
     }
 
-    /* รูปภาพ */
+    /* Desktop Rules (> 992px): แบ่งซ้ายขวา */
+    @media (min-width: 992px) {
+        .about-body-grid {
+            grid-template-columns: 45% 55%; /* แบ่งซ้าย 45% ขวา 55% */
+            align-items: center; /* จัดกึ่งกลางแนวตั้ง */
+        }
+        .about-text-content {
+            font-size: 1.35rem !important;
+            text-align: left;
+        }
+        .about-image-container {
+            text-align: center;
+        }
+        .about-img-responsive {
+            max-width: 100%;
+        }
+        .quote-box {
+            font-size: 1.6rem !important;
+        }
+    }
+
+    /* Mobile/Tablet Rules (< 991px): เรียงซ้อน */
+    @media (max-width: 991px) {
+        .about-body-grid {
+            grid-template-columns: 1fr; /* คอลัมน์เดียว */
+        }
+        .about-header-large {
+            font-size: 2rem;
+        }
+        .about-text-content {
+            font-size: 1.1rem !important;
+            text-align: justify;
+        }
+        .about-image-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .about-img-responsive {
+            max-width: 80%; /* ไม่ให้รูปเต็มจอเกินไปในมือถือ */
+        }
+    }
+
+    /* Image Styling */
     .about-img-responsive {
-        width: 100%;
         height: auto;
         border-radius: 15px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        border: 4px solid rgba(255, 255, 255, 0.2);
+        border: 4px solid rgba(255, 255, 255, 0.3);
     }
     
-    /* เนื้อหาข้อความ */
+    /* Text Content */
     .about-text-content {
-        font-size: 1.1rem;
         line-height: 1.8;
         font-weight: 300;
-        text-align: justify;
     }
     
-    /* Quote Box */
+    /* Quote Box (Bottom Center) */
     .quote-box {
         background-color: rgba(255, 255, 255, 0.15);
         border-left: 6px solid #ffffff;
         padding: 30px;
         margin-top: 50px;
         border-radius: 10px;
-        font-size: 1.4rem;
+        font-size: 1.3rem;
         font-style: italic;
         font-weight: 500;
         line-height: 1.6;
         text-align: center;
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         width: 100%;
+        grid-column: 1 / -1; /* ให้ Quote กินพื้นที่เต็มความกว้างใน Grid */
     }
-
-    /* >>> Desktop Only Rules (แบ่งซ้ายขวา) <<< */
-    @media (min-width: 992px) {
-        .about-body-grid {
-            grid-template-columns: 1fr 1.2fr; /* แบ่ง 2 คอลัมน์ (รูป 1 : ข้อความ 1.2) */
-        }
-        .about-text-content {
-            font-size: 1.35rem; /* ขยายตัวหนังสือ */
-        }
-        .about-header-large {
-            font-size: 3.5rem; /* ขยายหัวข้อ */
-        }
-        .quote-box {
-            font-size: 1.6rem;
-        }
-    }
-    /* ------------------------------------------------------- */
 
     /* Cards */
     div[data-testid="stVerticalBlockBorderWrapper"] {
@@ -281,6 +304,7 @@ def preprocess(img):
 # =========================================================
 # 5. TEST AREA
 # =========================================================
+# Logic Gate: โชว์ก็ต่อเมื่อกด Link (?start=true) หรือเคยยอมรับแล้ว
 if is_started or st.session_state.consent_accepted:
 
     # 1. Anchor Point
@@ -425,19 +449,20 @@ else:
     pass
 
 # =========================================================
-# 6. ABOUT SECTION (New Layout & Content)
+# 6. ABOUT SECTION (New Layout with Grid)
 # =========================================================
 st.markdown('<div id="about_area" style="padding-top: 40px;"></div>', unsafe_allow_html=True) 
 
-# ดึงรูปจากเครื่อง
+# แปลงไฟล์รูปในเครื่องเป็น Base64
 img_b64 = get_image_base64("parkinson cover.png")
 
+# ถ้ามีรูป ให้สร้าง Tag รูป, ถ้าไม่มีให้สร้าง Placeholder
 if img_b64:
     img_tag = f'<img src="data:image/png;base64,{img_b64}" class="about-img-responsive" alt="Parkinson Cover">'
 else:
-    img_tag = '<div style="background:rgba(255,255,255,0.2); padding:40px; color:white; border-radius:15px; text-align:center; border: 2px dashed white;">⚠️ ไม่พบไฟล์ parkinson cover.png<br>กรุณาวางไฟล์รูปภาพไว้ในโฟลเดอร์เดียวกับไฟล์โค้ด</div>'
+    img_tag = '<div style="background:rgba(255,255,255,0.2); padding:40px; color:white; border-radius:15px; text-align:center; border: 2px dashed white;">⚠️ ไม่พบไฟล์ parkinson cover.png</div>'
 
-# HTML Layout ใหม่
+# HTML Layout ใหม่ (ใช้ CSS Grid ที่นิยามไว้ด้านบน)
 about_html = f'''
 <div class="about-section">
     <div class="about-container">
@@ -458,12 +483,11 @@ about_html = f'''
                 </div>
             </div>
             
+            <div class="quote-box">
+                “แม้โรคพาร์กินสันจะยังไม่สามารถรักษาให้หายขาดได้ แต่การตรวจพบตั้งแต่ระยะเริ่มต้นจะช่วยให้สามารถควบคุมอาการ ชะลอความเสื่อมของโรค และช่วยให้ผู้ป่วยมีคุณภาพชีวิตที่ดีขึ้น”
+            </div>
+            
         </div>
-        
-        <div class="quote-box">
-            “แม้โรคพาร์กินสันจะยังไม่สามารถรักษาให้หายขาดได้ แต่การตรวจพบตั้งแต่ระยะเริ่มต้นจะช่วยให้สามารถควบคุมอาการ ชะลอความเสื่อมของโรค และช่วยให้ผู้ป่วยมีคุณภาพชีวิตที่ดีขึ้น”
-        </div>
-        
     </div>
 </div>
 '''
