@@ -199,18 +199,26 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Hero Content
-st.markdown(f"""
+hero_html_top = """
 <div class="hero-seamless-container">
     <div class="hero-text-wrapper">
         <div class="hero-title">“Early detection changes everything.”</div>
         <div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>
         <a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>
     </div>
-    
-    <img src="{hero_img_base64}" class="hero-img-full">
-</div>
-""", unsafe_allow_html=True)
+    <img src="
+"""
 
+hero_html_bottom = """
+    " class="hero-img-full">
+</div>
+"""
+
+# เอา 3 ส่วนมาต่อกัน: [HTML ส่วนบน] + [รหัสรูป Base64] + [HTML ส่วนล่าง]
+final_hero_html = hero_html_top + hero_img_base64 + hero_html_bottom
+
+# แสดงผล
+st.markdown(final_hero_html, unsafe_allow_html=True)
 
 # ----------------------------------
 # Load Model (Add error handling)
