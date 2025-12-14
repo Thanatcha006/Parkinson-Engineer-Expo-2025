@@ -129,6 +129,23 @@ st.markdown("""
         color: #4A4A4A !important;
     }
 
+    div.stButton > button {
+        background-color: #86B264 !important;
+        color: white !important;
+        border-radius: 50px !important;
+        font-size: 1.3rem !important;
+        font-weight: 700 !important;
+        padding: 15px 40px !important;
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(134, 178, 100, 0.4) !important;
+        transition: transform 0.2s;
+        width: 100%;
+    }
+    div.stButton > button:hover {
+        transform: translateY(-3px);
+        background-color: #729c52 !important;
+    }
+
     /* UI Elements Colors */
     div[data-testid="stRadio"] label p { color: #333 !important; font-weight: 600; font-size: 1.1rem !important; }
     .stFileUploader label { color: #333 !important; }
@@ -286,34 +303,8 @@ else:
             wave_result_box = st.empty()
 
         # PROCESS BUTTON (สีเขียวแบบที่ชอบ)
-        st.markdown("""
-        <style>
-        div.stButton.process-btn > button {
-            background-color: #86B264 !important; /* สีเขียว */
-            color: white !important;
-            border: none !important;
-        
-            padding: 18px 60px !important;
-            border-radius: 50px !important;
-            font-size: 1.3rem !important;
-            font-weight: 700 !important;
-        
-            display: block !important;
-            margin: 0 auto !important;
-            width: auto !important;
-        
-            box-shadow: 0 6px 20px rgba(134, 178, 100, 0.4) !important;
-            transition: transform 0.2s !important;
-        }
-        div.stButton.process-btn > button:hover {
-            transform: translateY(-5px);
-            background-color: #729c52 !important;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-        
         st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("🔍 ประมวลผลทั้งหมด", use_container_width=True, key="process_btn"):
+        if st.button("🔍 ประมวลผลทั้งหมด", use_container_width=True):
             if spiral_image is not None and spiral_model is not None:
                 try:
                     input_tensor = preprocess(spiral_image)
@@ -322,7 +313,6 @@ else:
                     else: spiral_result_box.success(f"🌀 Spiral : ปกติ ({pred:.3f})")
                 except Exception as e: spiral_result_box.error(f"Error: {e}")
             elif spiral_image is None: spiral_result_box.warning("🌀 Spiral : ยังไม่ได้ใส่ภาพ")
-            elif spiral_model is None: spiral_result_box.error("❌ ไม่พบไฟล์โมเดล")
-
+            
             if wave_image is not None: wave_result_box.info("🌊 Wave : มีภาพแล้ว (รอโมเดล)")
             else: wave_result_box.warning("🌊 Wave : ยังไม่ได้ใส่ภาพ")
