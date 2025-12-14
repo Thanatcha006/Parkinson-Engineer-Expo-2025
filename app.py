@@ -279,8 +279,8 @@ st.markdown(f"""
 # --- LOAD SPIRAL MODEL ---
 @st.cache_resource
 def load_spiral_model():
-    if os.path.exists("(Test_naja)effnet_parkinson_model.keras"):
-        return tf.keras.models.load_model("(Test_naja)effnet_parkinson_model.keras")
+    if os.path.exists("model_spiral_final_production.joblib"):
+        return tf.joblib.models.load_model("model_spiral_final_production.joblib")
     return None
 spiral_model = load_spiral_model()
 
