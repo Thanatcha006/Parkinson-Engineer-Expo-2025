@@ -40,12 +40,14 @@ st.markdown('''
     html, body, [class*="css"], .stMarkdown { 
         font-family: 'Kanit', sans-serif !important; 
         scroll-behavior: smooth;
+        overflow-x: hidden; /* ป้องกันการล้นแนวนอน */
     }
     .stApp { background-color: #ffffff !important; color: #333333 !important; }
 
     section[data-testid="stSidebar"] { display: none !important; }
     button[kind="header"] { display: none !important; }
     
+    /* Navbar */
     .navbar {
         display: flex !important;
         justify-content: space-between; align-items: center;
@@ -115,16 +117,13 @@ st.markdown('''
         font-style: italic;
     }
 
-    /* Responsive */
+    /* Responsive General */
     @media (min-width: 992px) {
         .hero-title { font-size: 4rem !important; }
         .hero-sub { font-size: 1.6rem !important; }
         .cta-button { font-size: 1.6rem !important; padding: 20px 70px; }
         div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 2.5rem !important; }
-        
-        /* แก้ไข: ลบ li ออกจากที่นี่ เพื่อให้เราไปคุมขนาดใน HTML เอง */
-        div[data-testid="stVerticalBlockBorderWrapper"] p, label { font-size: 1.5rem !important; }
-        
+        div[data-testid="stVerticalBlockBorderWrapper"] p, label, li { font-size: 1.5rem !important; }
         div[data-testid="stCanvas"] button { width: 60px !important; height: 60px !important; transform: scale(1.4); margin: 10px 15px !important; }
         .nav-links a { font-size: 1.4rem; }
     }
@@ -133,7 +132,7 @@ st.markdown('''
         .hero-sub { font-size: 1.1rem !important; }
         .cta-button { font-size: 1.1rem !important; padding: 12px 30px; }
         div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 1.6rem !important; }
-        div[data-testid="stVerticalBlockBorderWrapper"] p, label { font-size: 1.1rem !important; }
+        div[data-testid="stVerticalBlockBorderWrapper"] p, label, li { font-size: 1.1rem !important; }
         div[data-testid="stCanvas"] button { width: 40px !important; height: 40px !important; transform: scale(1.0); margin: 5px !important; }
         .navbar { flex-direction: column; gap: 10px; padding: 10px; }
         .nav-links a { font-size: 1rem; }
@@ -156,33 +155,93 @@ st.markdown('''
     }
     .cta-button:hover { transform: translateY(-5px); background-color: #f8f8f8; }
     
-    .about-section { background-color: #67ACC3; width: 100%; padding: 60px 20px; color: white; display: flex; justify-content: center; }
-    .about-container { max-width: 1200px; width: 100%; }
-    .about-header-large { font-size: 2.8rem; font-weight: 700; text-align: center; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 20px; margin-bottom: 40px; }
-    .about-body-grid { display: grid; grid-template-columns: 1fr; gap: 40px; align-items: center; }
+    /* -------------------------------------------------------
+       ABOUT SECTION STYLES (RESPONSIVE FIX)
+       ------------------------------------------------------- */
+    .about-section {
+        background-color: #67ACC3;
+        width: 100vw;
+        margin-left: calc(-50vw + 50%); /* เทคนิค Full Width */
+        margin-right: calc(-50vw + 50%);
+        padding: 60px 20px;
+        color: white;
+        display: flex;
+        justify-content: center;
+        box-sizing: border-box; /* สำคัญ: ป้องกัน padding ดันล้น */
+    }
     
+    .about-container {
+        max-width: 1200px;
+        width: 100%;
+        /* ป้องกันคอนเทนเนอร์ภายในล้น */
+        box-sizing: border-box; 
+    }
+    
+    .about-header-large {
+        font-size: 2.8rem;
+        font-weight: 700;
+        text-align: center;
+        border-bottom: 2px solid rgba(255,255,255,0.3);
+        padding-bottom: 20px;
+        margin-bottom: 40px;
+    }
+
+    .about-body-grid {
+        display: grid;
+        grid-template-columns: 1fr; /* Default Mobile */
+        gap: 30px;
+        align-items: center;
+        width: 100%; /* บังคับไม่ให้เกิน */
+    }
+
+    /* Desktop Rules */
     @media (min-width: 992px) {
         .about-body-grid { grid-template-columns: 45% 55%; }
         .about-text-content { font-size: 1.35rem !important; text-align: left; }
         .about-image-container { text-align: center; }
-        .about-img-responsive { max-width: 100%; }
         .quote-box { font-size: 1.6rem !important; }
     }
+
+    /* Mobile/Tablet Rules (แก้ปัญหาล้นจอ) */
     @media (max-width: 991px) {
-        .about-header-large { font-size: 2rem; }
+        .about-header-large { font-size: 2rem; word-wrap: break-word; } /* ตัดคำถ้าหัวข้อยาวเกิน */
         .about-text-content { font-size: 1.1rem !important; text-align: justify; }
         .about-image-container { text-align: center; margin-bottom: 20px; }
-        .about-img-responsive { max-width: 80%; }
+        /* ให้รูปย่อขยายตามจอเสมอ */
+        .about-img-responsive { 
+            max-width: 90% !important; 
+            height: auto !important; 
+        }
+        .quote-box { font-size: 1.1rem !important; padding: 15px !important; }
     }
 
-    .about-img-responsive { height: auto; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 4px solid rgba(255, 255, 255, 0.3); }
+    .about-img-responsive {
+        width: 100%; /* ให้เต็ม grid cell ของตัวเอง */
+        height: auto;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        border: 4px solid rgba(255, 255, 255, 0.3);
+    }
+    
     .about-text-content { line-height: 1.8; font-weight: 300; }
+    
     .quote-box {
-        background-color: rgba(255, 255, 255, 0.15); border-left: 6px solid #ffffff; padding: 30px; margin-top: 50px;
-        border-radius: 10px; font-size: 1.3rem; font-style: italic; font-weight: 500; line-height: 1.6;
-        text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 100%; grid-column: 1 / -1;
+        background-color: rgba(255, 255, 255, 0.15);
+        border-left: 6px solid #ffffff;
+        padding: 30px;
+        margin-top: 50px;
+        border-radius: 10px;
+        font-size: 1.3rem;
+        font-style: italic;
+        font-weight: 500;
+        line-height: 1.6;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        width: 100%;
+        grid-column: 1 / -1;
     }
 
+    /* Cards & Button */
     div[data-testid="stVerticalBlockBorderWrapper"] { background-color: #ffffff !important; border: 1px solid #E0D0E8 !important; border-radius: 20px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important; margin-bottom: 30px; }
     div[data-testid="stVerticalBlockBorderWrapper"] h3 { color: #885D95 !important; text-align: center !important; font-weight: 700 !important; }
     div.stButton > button[kind="primary"] { background-color: #86B264 !important; border: none !important; color: white !important; height: auto; padding: 15px; width: 100%; font-size: 1.3rem; border-radius: 10px; }
@@ -193,13 +252,15 @@ st.markdown('''
 # ----------------------------------
 # UI Content: Navbar
 # ----------------------------------
-st.markdown('<div id="top"></div>', unsafe_allow_html=True)
+# ฝัง Anchor ไว้ตรงนี้เพื่อให้ลิงก์ #hero_area ทำงาน
+st.markdown('<div id="hero_area"></div>', unsafe_allow_html=True)
+
 st.markdown("""
 <div class="navbar">
     <div style="font-size: 1.5rem; color: #885D95; font-weight:700;">🧬 Parkinson AI</div>
     <div class="nav-links">
         <a href="#about_area" style="color:#67ACC3;">เกี่ยวกับโรค</a>
-        <a href="#test_area" style="color:#885D95;">เริ่มใช้งาน</a>
+        <a href="#hero_area" style="color:#885D95;">เริ่มใช้งาน</a>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -264,7 +325,7 @@ if is_started or st.session_state.consent_accepted:
                 st.write("หากมีอาการผิดปกติหรือความกังวล กรุณาปรึกษาแพทย์เพื่อรับการตรวจเพิ่มเติม")
                 st.markdown("---")
                 
-                # --- ใช้ !important เพื่อบังคับขนาดตัวอักษรให้เล็กลง (1.1rem) ---
+                # *** คำแนะนำ: ปรับขนาดตัวอักษรให้เล็กลง (1.1rem) ***
                 st.markdown("""
                 <div style="font-size: 1.1rem !important; font-weight: 600; margin-bottom: 10px;">📝 คำแนะนำเพื่อให้ผลลัพธ์แม่นยำขึ้น</div>
                 <ul style="margin-bottom: 20px; line-height: 1.6; padding-left: 20px;">
@@ -273,7 +334,6 @@ if is_started or st.session_state.consent_accepted:
                     <li style="font-size: 1.1rem !important;">วาดเส้นด้วยความเร็วและแรงกดตามธรรมชาติ</li>
                 </ul>
                 """, unsafe_allow_html=True)
-                # -----------------------------------------------------------
 
                 st.markdown("---")
                 st.write("อาการมือสั่นอาจเกิดจากหลายสาเหตุ เช่น ความเครียด ภาวะวิตกกังวล หรือโรคอื่นที่ไม่ใช่พาร์กินสัน")
@@ -344,7 +404,7 @@ if is_started or st.session_state.consent_accepted:
                         desc_text = "ตรวจพบรูปแบบการวาดที่มีความไม่สม่ำเสมอ ซึ่งอาจสัมพันธ์กับความผิดปกติของการควบคุมการเคลื่อนไหว"
                         rec_list = "<li>ควรปรึกษาแพทย์ผู้เชี่ยวชาญเพื่อรับการตรวจและวินิจฉัยเพิ่มเติม</li><li>สามารถทำการทดสอบซ้ำในสภาวะที่ผ่อนคลาย</li>"
                     else:
-                        # --- เปลี่ยนสีพื้นหลังเป็นสีเขียว #86B264 ---
+                        # --- แก้ไขสีพื้นหลังเป็นสีเขียว #86B264 ---
                         card_bg = "#86B264" 
                         status_text = "✅ ไม่พบความผิดปกติเด่นชัด (Normal)"
                         status_color = "#388E3C"
