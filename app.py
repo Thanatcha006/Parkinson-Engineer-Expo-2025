@@ -43,9 +43,7 @@ st.markdown("""
         margin-left: calc(-50vw + 50%); 
         margin-right: calc(-50vw + 50%);
         
-        padding-top: 60px; 
-        padding-bottom: 80px;
-        margin-bottom: 40px; 
+        padding-top: 60px;  
         
         text-align: center;
         display: flex;
@@ -153,7 +151,7 @@ st.markdown(f"""
     <a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>
 </div>
 """, unsafe_allow_html=True)
-st.image("parkinson cover.png")
+st.image("parkinson cover.png", width=1000, height=1500)
 
 # ----------------------------------
 # 6. Model & Logic
