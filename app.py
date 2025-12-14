@@ -208,62 +208,7 @@ st.markdown("""
         font-size: 1.1rem !important;
         line-height: 1.7 !important;
     }
-
-    /* ------------------------------------------------------------- */
-    /* ✅ ปุ่มกดและ Checkbox */
-    /* ------------------------------------------------------------- */
-    
-    /* 1. ปุ่ม PROCESS (สีเขียว) - ใช้ Type "Secondary" */
-    button[kind="secondary"] {
-        background-color: #86B264 !important; 
-        color: white !important;
-        border: none !important;
-        padding: 18px 60px !important;
-        border-radius: 50px !important;
-        font-size: 1.3rem !important;
-        font-weight: 700 !important;
-        box-shadow: 0 4px 15px rgba(134, 178, 100, 0.4) !important;
-        transition: transform 0.2s !important;
-        width: 100% !important;
-    }
-    button[kind="secondary"]:hover {
-        transform: translateY(-3px);
-        background-color: #729c52 !important;
-    }
-
-    /* 2. ปุ่ม DISCLAIMER (สีเหลือง) - ต้องอยู่ในการ์ด */
-    /* เจาะจงปุ่ม Primary ที่อยู่ใน Card */
-    div[data-testid="stVerticalBlockBorderWrapper"] button[kind="primary"] {
-        background-color: #E4C728 !important; 
-        color: white !important;
-        border: none !important;
-        padding: 18px 60px !important;
-        border-radius: 50px !important;
-        font-size: 1.3rem !important;
-        font-weight: 700 !important;
-        box-shadow: 0 6px 20px rgba(228, 199, 40, 0.4) !important;
-        width: 100% !important;
-        margin-top: 10px;
-    }
-    div[data-testid="stVerticalBlockBorderWrapper"] button[kind="primary"]:hover {
-        transform: translateY(-3px);
-        background-color: #cfb31f !important;
-    }
-    /* ปุ่มตอนปิดใช้งาน (ยังไม่ติ๊ก) */
-    div[data-testid="stVerticalBlockBorderWrapper"] button[kind="primary"]:disabled {
-        background-color: #f0f0f0 !important;
-        color: #ccc !important;
-        box-shadow: none !important;
-        opacity: 1 !important;
-    }
-
-    /* 3. Checkbox (สีเหลือง) */
-    div[data-testid="stCheckbox"] label span[data-testid="stTickBar"] {
-        background-color: #E4C728 !important; 
-    }
-    div[data-testid="stCheckbox"] label {
-        color: #333 !important;
-    }
+   
 </style>
 """, unsafe_allow_html=True)
 
