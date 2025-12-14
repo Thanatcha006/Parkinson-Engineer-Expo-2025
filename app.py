@@ -30,9 +30,9 @@ def get_image_base64(image_path):
     except FileNotFoundError:
         return None
 
-# --- [แก้ไข: ฟังก์ชันแสดงคลิปตัวอย่างแบบ Expander] ---
+# --- [ฟังก์ชันแสดงคลิปตัวอย่างแบบ Expander] ---
 def show_demo_clip(file_root_name):
-    # ใช้ st.expander เพื่อซ่อนคลิปไว้ในแถบเมนู (ช่วยประหยัดพื้นที่)
+    # ใช้ st.expander เพื่อซ่อนคลิปไว้ในแถบเมนู
     with st.expander(f"🎥 คลิกเพื่อดูตัวอย่างการวาด ({file_root_name})"):
         # จัด Layout ข้างใน Expander ให้คลิปอยู่กึ่งกลางพอดีๆ
         c1, c2, c3 = st.columns([1, 2, 1])
@@ -85,6 +85,20 @@ st.markdown('''
     }
     .nav-links { display: flex; gap: 20px; }
     .nav-links a { font-weight: 600; text-decoration: none; }
+
+    /* --- [เพิ่ม] Styling สำหรับ Expander ให้เป็นสี #FBDED4 --- */
+    div[data-testid="stExpander"] details > summary {
+        background-color: #FBDED4 !important; /* สีที่คุณต้องการ */
+        color: #333333 !important; /* สีตัวอักษรเข้มเพื่อให้ตัดกัน */
+        border-radius: 10px !important;
+        font-weight: 600 !important;
+        border: 1px solid #FBDED4 !important;
+    }
+    div[data-testid="stExpander"] details > summary:hover {
+        color: #000000 !important;
+        opacity: 0.9;
+    }
+    /* ----------------------------------------------------- */
 
     /* Result Card Styles */
     .result-card {
