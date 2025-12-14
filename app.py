@@ -8,6 +8,7 @@ import os
 import time
 import base64
 import textwrap
+import joblib # เพิ่ม import joblib เพื่อให้โหลดไฟล์ .joblib ได้
 
 # ----------------------------------
 # 1. Page Config
@@ -280,15 +281,17 @@ st.markdown(f"""
 @st.cache_resource
 def load_spiral_model():
     if os.path.exists("model_spiral_final_production.joblib"):
-        return tf.joblib.models.load_model("model_spiral_final_production.joblib")
+        # แก้ไข: ใช้ joblib.load สำหรับไฟล์ .joblib
+        return joblib.load("model_spiral_final_production.joblib")
     return None
 spiral_model = load_spiral_model()
 
 # --- LOAD WAVE MODEL ---
 @st.cache_resource
 def load_wave_model():
-    if os.path.exists("effnet_wave_model.keras"):
-        return tf.keras.models.load_model("effnet_wave_model.keras")
+    if os.path.exists("model_wave_final_production.joblib"):
+        # แก้ไข: ใช้ joblib.load สำหรับไฟล์ .joblib
+        return joblib.load("model_wave_final_production.joblib")
     return None
 wave_model = load_wave_model()
 
