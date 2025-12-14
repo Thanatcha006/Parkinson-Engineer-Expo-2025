@@ -217,7 +217,7 @@ st.markdown("""
     <div style="font-size: 1.5rem; color: #885D95; font-weight:700;">🧬 Parkinson AI</div>
     <div class="nav-links">
         <a href="#about_area" style="color:#67ACC3;">เกี่ยวกับโรค</a>
-        <a href="#test_area" style="color:#885D95;">เริ่มใช้งาน</a>
+        <a href="?start=true"a" style="color:#885D95;">เริ่มใช้งาน</a>
     </div>
 </div>
 """, unsafe_allow_html=True)
