@@ -112,6 +112,25 @@ st.markdown("""
         position: relative; z-index: 100;
     }
 
+    /* ------------------------------------------------------------- */
+    /* ✅ ส่วนใหม่: เกี่ยวกับโรคพาร์กินสัน (สีฟ้า #67ACC3) */
+    /* ------------------------------------------------------------- */
+    .about-section {
+        background-color: #67ACC3;
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        margin-right: calc(-50vw + 50%);
+        padding: 60px 20px;
+        color: white;
+        text-align: center;
+        display: flex; flex-direction: column; align-items: center;
+    }
+    .about-content { max-width: 900px; }
+    .about-header { font-size: 2.2rem; font-weight: 700; margin-bottom: 20px; }
+    .about-text { font-size: 1.1rem; line-height: 1.8; font-weight: 300; }
+
+    
+
     /* CARD STYLE */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
@@ -180,6 +199,37 @@ st.markdown("""
         font-size: 1.1rem !important;
         line-height: 1.7 !important;
     }
+
+
+    /* ------------------------------------------------------------- */
+    /* ✅ ปรับแต่ง Disclaimer (สีเหลือง #E4C728) */
+    /* ------------------------------------------------------------- */
+    /* หัวข้อในการ์ด Disclaimer ให้เป็นสีเหลือง */
+    .disclaimer-header {
+        color: #E4C728 !important; 
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+
+    /* ปุ่มตกลง (สีเหลือง) */
+    div.stButton.gold-btn > button {
+        background-color: #E4C728 !important;
+        color: white !important;
+        border-radius: 50px !important;
+        font-size: 1.3rem !important;
+        font-weight: 700 !important;
+        padding: 15px 40px !important;
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(228, 199, 40, 0.4) !important;
+        transition: transform 0.2s;
+        width: 100%;
+        display: block;
+        margin-top: 10px;
+    }
+    div.stButton.gold-btn > button:hover {
+        transform: translateY(-3px);
+        background-color: #cfb31f !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -203,6 +253,26 @@ st.markdown(f"""
     <a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>
 </div>
 """, unsafe_allow_html=True)
+
+
+# =========================================================
+# ABOUT SECTION (สีฟ้า #67ACC3)
+# =========================================================
+st.markdown("""
+<div class="about-section">
+    <div class="about-content">
+        <div class="about-header">รู้จักกับโรคพาร์กินสัน</div>
+        <div class="about-text">
+            โรคพาร์กินสัน (Parkinson’s Disease) เป็นโรคความเสื่อมของระบบประสาทที่พบบ่อยในผู้สูงอายุ 
+            เกิดจากการที่สมองขาดสารสื่อประสาท "โดพามีน" ทำให้การควบคุมการเคลื่อนไหวผิดปกติ 
+            การตรวจพบตั้งแต่ระยะเริ่มต้นจะช่วยให้ผู้ป่วยมีคุณภาพชีวิตที่ดีขึ้นได้
+            <br><br>
+            อาการที่พบบ่อยได้แก่ อาการสั่น (Tremor) เคลื่อนไหวช้า (Bradykinesia) และกล้ามเนื้อแข็งเกร็ง (Rigidity)
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
 
 # ----------------------------------
 # 6. Model & Logic
