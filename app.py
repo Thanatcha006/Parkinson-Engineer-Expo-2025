@@ -357,13 +357,13 @@ else:
 # =========================================================
 st.markdown('<div id="about_area" style="padding-top: 40px;"></div>', unsafe_allow_html=True) 
 
-image_url = "https://kcmh.chulalongkornhospital.go.th/ec/wp-content/uploads/2019/02/Parkinson-Cover-1024x683.jpg"
+image = "parkinson cover.png"
 
 about_html = f'''
 <div class="about-section">
 <div class="about-content">
 <div class="about-header">ศูนย์ความเป็นเลิศทางการแพทย์<br>โรคพาร์กินสัน และกลุ่มโรคความเคลื่อนไหวผิดปกติ</div>
-<div style="text-align:center;"><img src="{image_url}" class="about-img" alt="Parkinson Info"></div>
+<div style="text-align:center;"><img src="{image}" class="about-img" alt="Parkinson Info"></div>
 <div class="about-text">
 โรคพาร์กินสัน (Parkinson’s Disease) ถือเป็นโรคความเสื่อมของระบบประสาทที่พบได้บ่อยเป็นอันดับที่ 2 รองจากโรคอัลไซเมอร์ มักพบในผู้ที่มีอายุ 60 ปีขึ้นไป แต่ในปัจจุบันเริ่มพบผู้ป่วยที่มีอายุน้อยลงเรื่อยๆ สาเหตุหลักเกิดจากการที่เซลล์สมองในส่วนที่สร้างสารสื่อประสาทชื่อ <b>"โดพามีน (Dopamine)"</b> เกิดการเสื่อมสลาย ทำให้สมองไม่สามารถควบคุมการเคลื่อนไหวของร่างกายได้อย่างปกติ
 <br><br>
