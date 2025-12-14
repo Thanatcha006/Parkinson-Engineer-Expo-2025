@@ -90,7 +90,7 @@ st.markdown("""
     }
     
     .hero-title {
-        color: #4A4A4A;
+        color: white;
         font-size: clamp(2.2rem, 4vw, 2.5rem); 
         font-weight: 700;
         line-height: 1.1;
@@ -98,7 +98,7 @@ st.markdown("""
         text-align: center;
     }
     .hero-sub {
-        color: #757575;
+        color: #f0f0f0;
         font-size: clamp(1.05rem, 1.5vw, 1.3rem); /* แก้ไขขนาด font ขั้นต่ำ */
         font-weight: 300;
         margin-bottom: 40px;
@@ -124,7 +124,7 @@ st.markdown("""
     }
     .cta-button:hover {
         transform: translateY(-3px);
-        background-color: white;
+        background-color: #f8f8f8;
     }
 
     /* ----------------------------------------------------------- */
