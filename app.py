@@ -5,12 +5,21 @@ from PIL import Image
 import tensorflow as tf
 from streamlit_drawable_canvas import st_canvas
 import os
+import base6
 
 # ----------------------------------
 # Page Config (Mobile First)
 # ----------------------------------
 st.set_page_config(page_title="Parkinson Tester", layout="wide", initial_sidebar_state="collapsed")
 
+hero_image_path = "parkinson cover.png" 
+hero_img_base64 = ""
+
+if os.path.exists(hero_image_path):
+    hero_img_base64 = f"data:image/png;base64,{get_img_as_base64(hero_image_path)}"
+else:
+    # รูปสำรอง (Placeholder) เผื่อหาไฟล์ไม่เจอ
+    hero_img_base64 = "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&q=80&w=2000"
 # ----------------------------------
 # CSS Styles
 # ----------------------------------
@@ -106,6 +115,17 @@ st.markdown("""
         text-align: center;
     }
 
+    .hero-img-responsive {
+        width: 100%;             /* กว้างเต็มพื้นที่ container 100% */
+        max-width: 600px;        /* แต่ไม่เกิน 600px (สำหรับจอคอมจะได้ไม่ใหญ่ยักษ์) */
+        height: auto;            /* สูงอัตโนมัติ รักษาทรงภาพ */
+        border-radius: 15px;     /* มุมมน */
+        margin-top: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3); /* เงาลอยๆ */
+        object-fit: cover;
+    }
+
     .cta-button {
         background-color: white; 
         color: #885D95 !important;
@@ -178,6 +198,7 @@ st.markdown("""
     <div class="hero-title">“Early detection changes everything.”</div>
     <div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>
     <a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>
+    <img src="{hero_img_base64}" class="hero-img-responsive">
 </div>
 """, unsafe_allow_html=True)
 
