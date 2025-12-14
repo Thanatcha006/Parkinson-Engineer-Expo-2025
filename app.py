@@ -201,7 +201,7 @@ if st.button("เริ่มทำแบบทดสอบ ➝", key="start_tes
         st.session_state.show_disclaimer = True
         st.markdown(
             '<script>document.getElementById("test_area");</script>',
-            unsafe_allow_html=True
+            unsafe_allow_html=True)
 
 
 # ----------------------------------
