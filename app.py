@@ -31,7 +31,7 @@ def get_image_base64(image_path):
         return None
 
 # ----------------------------------
-# CSS Styles
+# CSS Styles (Updated)
 # ----------------------------------
 st.markdown('''
 <style>
@@ -55,6 +55,7 @@ st.markdown('''
         width: 100%;
         position: relative; z-index: 999;
         margin-top: -60px;
+        box-sizing: border-box;
     }
     .nav-links { display: flex; gap: 20px; }
     .nav-links a { font-weight: 600; text-decoration: none; }
@@ -122,7 +123,6 @@ st.markdown('''
         .cta-button { font-size: 1.6rem !important; padding: 20px 70px; }
         div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 2.5rem !important; }
         
-        /* แก้ไข: ลบ li ออกจากที่นี่ เพื่อให้เราไปคุมขนาดใน HTML เอง */
         div[data-testid="stVerticalBlockBorderWrapper"] p, label { font-size: 1.5rem !important; }
         
         div[data-testid="stCanvas"] button { width: 60px !important; height: 60px !important; transform: scale(1.4); margin: 10px 15px !important; }
@@ -146,6 +146,7 @@ st.markdown('''
     .hero-purple-container {
         background-color: #885D95; width: 100%; padding: 60px 20px; margin-bottom: 40px; 
         text-align: center; color: white; display: flex; flex-direction: column; align-items: center;
+        box-sizing: border-box;
     }
     .hero-title { font-weight: 700; margin-bottom: 15px; color: white !important; }
     .hero-sub { font-weight: 300; margin-bottom: 25px; max-width: 800px; color: #f0f0f0 !important; }
@@ -156,13 +157,33 @@ st.markdown('''
     }
     .cta-button:hover { transform: translateY(-5px); background-color: #f8f8f8; }
     
-    .about-section { background-color: #67ACC3; width: 100%; padding: 60px 20px; color: white; display: flex; justify-content: center; }
-    .about-container { max-width: 1200px; width: 100%; }
+    /* --- ส่วนที่แก้ไข: About Section --- */
+    .about-section { 
+        background-color: #67ACC3; 
+        width: 100%; 
+        padding: 60px 20px; 
+        color: white; 
+        display: flex; 
+        justify-content: center; 
+        box-sizing: border-box; /* ป้องกัน Padding ดัน Width */
+        overflow-x: hidden;     /* ป้องกัน Scroll แนวนอน */
+    }
+    .about-container { max-width: 1200px; width: 100%; box-sizing: border-box; }
     .about-header-large { font-size: 2.8rem; font-weight: 700; text-align: center; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 20px; margin-bottom: 40px; }
-    .about-body-grid { display: grid; grid-template-columns: 1fr; gap: 40px; align-items: center; }
+    
+    .about-body-grid { 
+        display: grid; 
+        grid-template-columns: 1fr; 
+        gap: 40px; 
+        align-items: center; 
+        width: 100%;
+    }
     
     @media (min-width: 992px) {
-        .about-body-grid { grid-template-columns: 45% 55%; }
+        .about-body-grid { 
+            /* ใช้ fr แทน % เพื่อให้คำนวณพื้นที่ที่เหลือหลังหัก Gap ได้ถูกต้อง */
+            grid-template-columns: 1fr 1.2fr; 
+        }
         .about-text-content { font-size: 1.35rem !important; text-align: left; }
         .about-image-container { text-align: center; }
         .about-img-responsive { max-width: 100%; }
@@ -181,6 +202,7 @@ st.markdown('''
         background-color: rgba(255, 255, 255, 0.15); border-left: 6px solid #ffffff; padding: 30px; margin-top: 50px;
         border-radius: 10px; font-size: 1.3rem; font-style: italic; font-weight: 500; line-height: 1.6;
         text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 100%; grid-column: 1 / -1;
+        box-sizing: border-box;
     }
 
     div[data-testid="stVerticalBlockBorderWrapper"] { background-color: #ffffff !important; border: 1px solid #E0D0E8 !important; border-radius: 20px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important; margin-bottom: 30px; }
