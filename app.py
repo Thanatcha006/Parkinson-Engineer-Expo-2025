@@ -451,27 +451,28 @@ if is_started or st.session_state.consent_accepted:
             st.markdown("<br>", unsafe_allow_html=True)
             wave_result_box = st.empty()
 
-            # PROCESS BUTTON
+    # PROCESS BUTTON
             st.markdown("<br>", unsafe_allow_html=True)
             if st.button("🔍 ประมวลผลทั้งหมด", type="primary", use_container_width=True):
                 
                 # --- PART 1: SPIRAL PROCESSING ---
                 if spiral_image is not None and spiral_model is not None:
                     try:
-                        input_tensor = preprocess(spiral_image)
+                        # [FIX] Unpack 2 values: Data for model, Image for display
+                        input_tensor, processed_img_show = preprocess(spiral_image)
                         
-                        # [FIX] Handle Prediction Shape safely
+                        # [DEBUG] Show what the model sees
+                        with st.expander("🕵️ Debug: สิ่งที่ Spiral Model เห็น"):
+                            st.image(processed_img_show, caption="Processed Image (HOG Input)", width=200, clamp=True)
+    
+                        # Predict using ONLY the input_tensor
                         raw_pred = spiral_model.predict(input_tensor)
                         
-                        # If model returns probability [[0.8]] -> use [0][0]
-                        # If model returns class [0] or [1] -> use [0]
+                        # Handle prediction shape (1D vs 2D)
                         if hasattr(raw_pred, "ndim") and raw_pred.ndim > 1:
                             pred = raw_pred[0][0]
                         else:
                             pred = raw_pred[0]
-                        
-                        # If the result is 0 or 1 (Integers), consider using predict_proba if available
-                        # But for now, we use the raw prediction
                         
                         if pred > 0.5:
                             card_bg = "#E4C728"
@@ -514,10 +515,13 @@ if is_started or st.session_state.consent_accepted:
                 # --- PART 2: WAVE PROCESSING ---
                 if wave_image is not None and wave_model is not None:
                     try:
-                        # 1. Preprocess
-                        input_tensor_w = preprocess(wave_image)
+                        # [FIX] Unpack 2 values here as well
+                        input_tensor_w, processed_img_show_w = preprocess(wave_image)
                         
-                        # 2. Predict [FIX] Handle Prediction Shape safely
+                        # [DEBUG] Show what the model sees
+                        with st.expander("🕵️ Debug: สิ่งที่ Wave Model เห็น"):
+                             st.image(processed_img_show_w, caption="Processed Image (HOG Input)", width=200, clamp=True)
+    
                         raw_pred_w = wave_model.predict(input_tensor_w)
                         
                         if hasattr(raw_pred_w, "ndim") and raw_pred_w.ndim > 1:
@@ -525,7 +529,6 @@ if is_started or st.session_state.consent_accepted:
                         else:
                             pred_w = raw_pred_w[0]
                         
-                        # 3. Check threshold
                         if pred_w > 0.5:
                             card_bg_w = "#E4C728"
                             status_text_w = "⚠️ พบรูปแบบที่อาจสัมพันธ์กับอาการสั่นแบบโรคพาร์กินสัน"
@@ -541,7 +544,6 @@ if is_started or st.session_state.consent_accepted:
                             desc_text_w = "รูปแบบการวาดมีความใกล้เคียงกับกลุ่มตัวอย่างทั่วไป ไม่พบอาการสั่นที่ผิดปกติชัดเจน"
                             rec_list_w = "<li>หากยังมีความกังวล หรือผลการทดสอบไม่ชัดเจน สามารถทำการทดสอบซ้ำได้</li><li>ควรทำในสภาวะที่ผ่อนคลาย ไม่เกร็งข้อมือ</li><li>หากผลระบุว่ามีความเสี่ยง ควรปรึกษาแพทย์เพื่อรับการตรวจวินิจฉัยอย่างละเอียด</li>"
                         
-                        # 4. Create HTML Result
                         result_html_w = textwrap.dedent(f"""
     <div class="result-card" style="background-color: {card_bg_w};">
         <div class="result-header">🧪 ผลการคัดกรองเบื้องต้น (Wave Test)</div>
@@ -564,11 +566,9 @@ if is_started or st.session_state.consent_accepted:
                     except Exception as e:
                         wave_result_box.error(f"Error Wave: {e}")
                 
-                # กรณีมีภาพแต่ยังไม่มีไฟล์โมเดล
                 elif wave_image is not None and wave_model is None: 
                     wave_result_box.info("🌊 Wave : มีภาพแล้ว (รอไฟล์ Model สำหรับ Wave)")
                 
-                # กรณีไม่มีภาพ
                 elif wave_image is None: 
                     wave_result_box.warning("🌊 Wave : ยังไม่ได้ใส่ภาพ")
 
