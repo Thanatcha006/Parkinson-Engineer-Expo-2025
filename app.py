@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 from PIL import Image
 import tensorflow as tf
-from skimage.feature import hog # เพิ่ม import hog ตามที่ขอ
+from skimage.feature import hog
 from streamlit_drawable_canvas import st_canvas
 import os
 import time
@@ -31,6 +31,25 @@ def get_image_base64(image_path):
             return base64.b64encode(img_file.read()).decode()
     except FileNotFoundError:
         return None
+
+# --- [ฟังก์ชันช่วยแกะ Model จาก Dictionary] (สำคัญมาก ห้ามลบ) ---
+def extract_model_from_dict(loaded_object, model_name="Model"):
+    # ถ้าสิ่งที่โหลดมาเป็นโมเดลเลย (มีคำสั่ง predict) ให้ส่งคืนค่าเดิม
+    if hasattr(loaded_object, "predict"):
+        return loaded_object
+    
+    # ถ้าเป็น Dictionary ให้พยายามหา Key ที่น่าจะเป็นโมเดล
+    if isinstance(loaded_object, dict):
+        possible_keys = ['model', 'classifier', 'clf', 'estimator', 'knn', 'svm', 'pipeline']
+        for key in possible_keys:
+            if key in loaded_object:
+                return loaded_object[key]
+        
+        # กรณีหา Key ไม่เจอ ให้ลองดึง Value ตัวแรกออกมา (เผื่อฟลุ๊ค)
+        if len(loaded_object) > 0:
+            return list(loaded_object.values())[0]
+
+    return loaded_object
 
 # --- [ฟังก์ชันแสดงคลิปตัวอย่างแบบ Expander] ---
 def show_demo_clip(file_root_name):
@@ -266,23 +285,25 @@ st.markdown(f"""
 # ----------------------------------
 # 4. Model & Logic
 # ----------------------------------
-# --- LOAD SPIRAL MODEL ---
+# --- LOAD SPIRAL MODEL (แก้ไข: รองรับทั้ง Model และ Dict) ---
 @st.cache_resource
 def load_spiral_model():
     if os.path.exists("model_spiral_final_production.joblib"):
-        return joblib.load("model_spiral_final_production.joblib")
+        loaded = joblib.load("model_spiral_final_production.joblib")
+        return extract_model_from_dict(loaded, "Spiral")
     return None
 spiral_model = load_spiral_model()
 
-# --- LOAD WAVE MODEL ---
+# --- LOAD WAVE MODEL (แก้ไข: รองรับทั้ง Model และ Dict) ---
 @st.cache_resource
 def load_wave_model():
     if os.path.exists("model_wave_final_production.joblib"):
-        return joblib.load("model_wave_final_production.joblib")
+        loaded = joblib.load("model_wave_final_production.joblib")
+        return extract_model_from_dict(loaded, "Wave")
     return None
 wave_model = load_wave_model()
 
-# --- เพิ่มฟังก์ชัน HOG ตามที่ระบุ ---
+# --- เพิ่มฟังก์ชัน HOG ---
 def HOG_img(img):
     hog_img = hog(img,
                 orientations=9,            # 9 ทิศทาง
