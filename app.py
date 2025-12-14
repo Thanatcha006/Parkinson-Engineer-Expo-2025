@@ -88,7 +88,7 @@ st.markdown('''
 
     /* --- [แก้ไข] Styling สำหรับ Expander ให้เป็นสี #DF6456 และข้อความสีขาว --- */
     div[data-testid="stExpander"] details > summary {
-        background-color: #E78A7C!important; /* เปลี่ยนสีพื้นหลัง */
+        background-color: #F5BA9F !important; /* เปลี่ยนสีพื้นหลัง */
         color: white !important; /* เปลี่ยนสีข้อความ */
         border-radius: 10px !important;
         font-weight: 600 !important;
