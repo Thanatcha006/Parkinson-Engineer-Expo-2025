@@ -86,16 +86,16 @@ st.markdown('''
     .nav-links { display: flex; gap: 20px; }
     .nav-links a { font-weight: 600; text-decoration: none; }
 
-    /* --- [เพิ่ม] Styling สำหรับ Expander ให้เป็นสี #FBDED4 --- */
+    /* --- [แก้ไข] Styling สำหรับ Expander ให้เป็นสี #DF6456 และข้อความสีขาว --- */
     div[data-testid="stExpander"] details > summary {
-        background-color: #FBDED4 !important; /* สีที่คุณต้องการ */
-        color: #333333 !important; /* สีตัวอักษรเข้มเพื่อให้ตัดกัน */
+        background-color: #DF6456 !important; /* เปลี่ยนสีพื้นหลัง */
+        color: white !important; /* เปลี่ยนสีข้อความ */
         border-radius: 10px !important;
         font-weight: 600 !important;
-        border: 1px solid #FBDED4 !important;
+        border: 1px solid #DF6456 !important; /* เปลี่ยนสีขอบให้เข้ากัน */
     }
     div[data-testid="stExpander"] details > summary:hover {
-        color: #000000 !important;
+        color: white !important; /* ให้ข้อความยังคงเป็นสีขาวตอนเอาเมาส์ไปวาง */
         opacity: 0.9;
     }
     /* ----------------------------------------------------- */
