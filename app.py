@@ -31,7 +31,7 @@ def get_image_base64(image_path):
         return None
 
 # ----------------------------------
-# CSS Styles (Updated)
+# CSS Styles
 # ----------------------------------
 st.markdown('''
 <style>
@@ -157,7 +157,6 @@ st.markdown('''
     }
     .cta-button:hover { transform: translateY(-5px); background-color: #f8f8f8; }
     
-    /* --- ส่วนที่แก้ไข: About Section --- */
     .about-section { 
         background-color: #67ACC3; 
         width: 100%; 
@@ -165,8 +164,8 @@ st.markdown('''
         color: white; 
         display: flex; 
         justify-content: center; 
-        box-sizing: border-box; /* ป้องกัน Padding ดัน Width */
-        overflow-x: hidden;     /* ป้องกัน Scroll แนวนอน */
+        box-sizing: border-box; 
+        overflow-x: hidden; 
     }
     .about-container { max-width: 1200px; width: 100%; box-sizing: border-box; }
     .about-header-large { font-size: 2.8rem; font-weight: 700; text-align: center; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 20px; margin-bottom: 40px; }
@@ -180,10 +179,7 @@ st.markdown('''
     }
     
     @media (min-width: 992px) {
-        .about-body-grid { 
-            /* ใช้ fr แทน % เพื่อให้คำนวณพื้นที่ที่เหลือหลังหัก Gap ได้ถูกต้อง */
-            grid-template-columns: 1fr 1.2fr; 
-        }
+        .about-body-grid { grid-template-columns: 1fr 1.2fr; }
         .about-text-content { font-size: 1.35rem !important; text-align: left; }
         .about-image-container { text-align: center; }
         .about-img-responsive { max-width: 100%; }
@@ -240,12 +236,22 @@ st.markdown(f"""
 # ----------------------------------
 # 4. Model & Logic
 # ----------------------------------
+# --- LOAD SPIRAL MODEL ---
 @st.cache_resource
 def load_spiral_model():
     if os.path.exists("(Test_naja)effnet_parkinson_model.keras"):
         return tf.keras.models.load_model("(Test_naja)effnet_parkinson_model.keras")
     return None
 spiral_model = load_spiral_model()
+
+# --- LOAD WAVE MODEL (เพิ่มใหม่) ---
+@st.cache_resource
+def load_wave_model():
+    # ใส่ชื่อไฟล์ Model ของ Wave ตรงนี้
+    if os.path.exists("effnet_wave_model.keras"):
+        return tf.keras.models.load_model("effnet_wave_model.keras")
+    return None
+wave_model = load_wave_model()
 
 def preprocess(img):
     img = np.array(img.convert("RGB"))
@@ -286,7 +292,6 @@ if is_started or st.session_state.consent_accepted:
                 st.write("หากมีอาการผิดปกติหรือความกังวล กรุณาปรึกษาแพทย์เพื่อรับการตรวจเพิ่มเติม")
                 st.markdown("---")
                 
-                # --- ใช้ !important เพื่อบังคับขนาดตัวอักษรให้เล็กลง (1.1rem) ---
                 st.markdown("""
                 <div style="font-size: 1.1rem !important; font-weight: 600; margin-bottom: 10px;">📝 คำแนะนำเพื่อให้ผลลัพธ์แม่นยำขึ้น</div>
                 <ul style="margin-bottom: 20px; line-height: 1.6; padding-left: 20px;">
@@ -295,7 +300,6 @@ if is_started or st.session_state.consent_accepted:
                     <li style="font-size: 1.1rem !important;">วาดเส้นด้วยความเร็วและแรงกดตามธรรมชาติ</li>
                 </ul>
                 """, unsafe_allow_html=True)
-                # -----------------------------------------------------------
 
                 st.markdown("---")
                 st.write("อาการมือสั่นอาจเกิดจากหลายสาเหตุ เช่น ความเครียด ภาวะวิตกกังวล หรือโรคอื่นที่ไม่ใช่พาร์กินสัน")
@@ -353,6 +357,8 @@ if is_started or st.session_state.consent_accepted:
         # PROCESS BUTTON
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("🔍 ประมวลผลทั้งหมด", type="primary", use_container_width=True):
+            
+            # --- PART 1: SPIRAL PROCESSING ---
             if spiral_image is not None and spiral_model is not None:
                 try:
                     input_tensor = preprocess(spiral_image)
@@ -366,7 +372,6 @@ if is_started or st.session_state.consent_accepted:
                         desc_text = "ตรวจพบรูปแบบการวาดที่มีความไม่สม่ำเสมอ ซึ่งอาจสัมพันธ์กับความผิดปกติของการควบคุมการเคลื่อนไหว"
                         rec_list = "<li>ควรปรึกษาแพทย์ผู้เชี่ยวชาญเพื่อรับการตรวจและวินิจฉัยเพิ่มเติม</li><li>สามารถทำการทดสอบซ้ำในสภาวะที่ผ่อนคลาย</li>"
                     else:
-                        # --- เปลี่ยนสีพื้นหลังเป็นสีเขียว #86B264 ---
                         card_bg = "#86B264" 
                         status_text = "✅ ไม่พบความผิดปกติเด่นชัด (Normal)"
                         status_color = "#388E3C"
@@ -396,10 +401,60 @@ if is_started or st.session_state.consent_accepted:
                     spiral_result_box.error(f"Error: {e}")
             elif spiral_image is None: 
                 spiral_result_box.warning("🌀 Spiral : ยังไม่ได้ใส่ภาพ")
+
+            # --- PART 2: WAVE PROCESSING (Logic เหมือน Spiral เป๊ะ) ---
+            if wave_image is not None and wave_model is not None:
+                try:
+                    # 1. Preprocess
+                    input_tensor_w = preprocess(wave_image)
+                    # 2. Predict
+                    pred_w = wave_model.predict(input_tensor_w)[0][0]
+                    
+                    # 3. Check threshold
+                    if pred_w > 0.5:
+                        card_bg_w = "#E4C728"
+                        status_text_w = "⚠️ พบรูปแบบที่อาจสัมพันธ์กับอาการสั่นแบบโรคพาร์กินสัน"
+                        status_color_w = "#856404"
+                        confidence_w = pred_w * 100
+                        desc_text_w = "ตรวจพบรูปแบบการวาดที่มีความไม่สม่ำเสมอ ซึ่งอาจสัมพันธ์กับความผิดปกติของการควบคุมการเคลื่อนไหว"
+                        rec_list_w = "<li>ควรปรึกษาแพทย์ผู้เชี่ยวชาญเพื่อรับการตรวจและวินิจฉัยเพิ่มเติม</li><li>สามารถทำการทดสอบซ้ำในสภาวะที่ผ่อนคลาย</li>"
+                    else:
+                        card_bg_w = "#86B264" 
+                        status_text_w = "✅ ไม่พบความผิดปกติเด่นชัด (Normal)"
+                        status_color_w = "#388E3C"
+                        confidence_w = (1 - pred_w) * 100
+                        desc_text_w = "รูปแบบการวาดมีความใกล้เคียงกับกลุ่มตัวอย่างทั่วไป ไม่พบอาการสั่นที่ผิดปกติชัดเจน"
+                        rec_list_w = "<li>หากยังมีความกังวล หรือผลการทดสอบไม่ชัดเจน สามารถทำการทดสอบซ้ำได้</li><li>ควรทำในสภาวะที่ผ่อนคลาย ไม่เกร็งข้อมือ</li><li>หากผลระบุว่ามีความเสี่ยง ควรปรึกษาแพทย์เพื่อรับการตรวจวินิจฉัยอย่างละเอียด</li>"
+                    
+                    # 4. Create HTML Result
+                    result_html_w = textwrap.dedent(f"""
+<div class="result-card" style="background-color: {card_bg_w};">
+    <div class="result-header">🧪 ผลการคัดกรองเบื้องต้น (Wave Test)</div>
+    <div class="status-box" style="color: {status_color_w};">{status_text_w}</div>
+    <div class="confidence-wrapper">
+        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+            <span>ระดับความเชื่อมั่นของโมเดล (Confidence)</span><span>{confidence_w:.1f}%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width: {confidence_w}%;"></div></div>
+    </div>
+    <div class="result-label">📝 คำอธิบาย:</div>
+    <div class="result-text">{desc_text_w}</div>
+    <div class="result-label">💡 คำแนะนำ:</div>
+    <ul class="result-list">{rec_list_w}</ul>
+    <div class="disclaimer-small">⚠️ หมายเหตุ: ผลลัพธ์นี้เป็นการคัดกรองเบื้องต้นเท่านั้น <b>ไม่ใช่การวินิจฉัยทางการแพทย์</b> โปรดใช้วิจารณญาณ</div>
+</div>
+""").strip()
+                    wave_result_box.markdown(result_html_w, unsafe_allow_html=True)
+                
+                except Exception as e:
+                    wave_result_box.error(f"Error Wave: {e}")
             
-            if wave_image is not None: 
-                wave_result_box.info("🌊 Wave : มีภาพแล้ว (รอโมเดล)")
-            else: 
+            # กรณีมีภาพแต่ยังไม่มีไฟล์โมเดล (ให้ขึ้นข้อความเดิมรอไว้)
+            elif wave_image is not None and wave_model is None: 
+                wave_result_box.info("🌊 Wave : มีภาพแล้ว (รอไฟล์ Model สำหรับ Wave)")
+            
+            # กรณีไม่มีภาพ
+            elif wave_image is None: 
                 wave_result_box.warning("🌊 Wave : ยังไม่ได้ใส่ภาพ")
 
 else:
