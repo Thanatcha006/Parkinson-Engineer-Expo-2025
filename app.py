@@ -63,7 +63,7 @@ st.markdown('''
     .nav-links a { font-weight: 600; text-decoration: none; }
 
     /* -------------------------------------------------------
-       RESPONSIVE LAYOUT & TYPOGRAPHY (HERO & GENERAL)
+       RESPONSIVE LAYOUT & TYPOGRAPHY
        ------------------------------------------------------- */
     @media (min-width: 992px) {
         .hero-title { font-size: 4rem !important; }
@@ -133,33 +133,38 @@ st.markdown('''
     }
     
     /* -------------------------------------------------------
-       ABOUT SECTION STYLES (NEW RESPONSIVE GRID)
+       ABOUT SECTION STYLES (NEW LAYOUT)
        ------------------------------------------------------- */
     .about-section {
-        background-color: #67ACC3; /* สีพื้นหลังเดิม */
-        width: 100%; 
-        padding: 60px 20px; 
+        background-color: #67ACC3;
+        width: 100%;
+        padding: 60px 20px;
         color: white;
-        display: flex; 
+        display: flex;
         justify-content: center;
     }
     
-    /* คอนเทนเนอร์หลักของ About */
     .about-container {
         max-width: 1200px;
         width: 100%;
-        display: grid;
-        gap: 40px; /* ระยะห่างระหว่างคอลัมน์ */
-        align-items: center; /* จัดให้อยู่กึ่งกลางแนวตั้ง */
     }
     
-    /* Header ใหญ่ */
+    /* Header ใหญ่เหมือนเดิม */
     .about-header-large {
-        font-size: 2.5rem;
+        font-size: 2.8rem;
         font-weight: 700;
-        margin-bottom: 30px;
         text-align: center;
-        grid-column: 1 / -1; /* ให้ Header กินพื้นที่เต็มความกว้างเสมอ */
+        border-bottom: 2px solid rgba(255,255,255,0.3);
+        padding-bottom: 20px;
+        margin-bottom: 40px;
+    }
+
+    /* Grid สำหรับแบ่งซ้ายขวาใน PC */
+    .about-body-grid {
+        display: grid;
+        grid-template-columns: 1fr; /* ค่าเริ่มต้น Mobile: 1 คอลัมน์ */
+        gap: 40px;
+        align-items: center;
     }
 
     /* รูปภาพ */
@@ -168,64 +173,49 @@ st.markdown('''
         height: auto;
         border-radius: 15px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        border: 3px solid rgba(255, 255, 255, 0.3);
+        border: 4px solid rgba(255, 255, 255, 0.2);
     }
     
     /* เนื้อหาข้อความ */
     .about-text-content {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         line-height: 1.8;
         font-weight: 300;
+        text-align: justify;
     }
     
-    /* Quote Box สวยๆ */
+    /* Quote Box */
     .quote-box {
-        background-color: rgba(255, 255, 255, 0.15); /* พื้นหลังจางๆ */
-        border-left: 6px solid #ffffff; /* เส้นขอบซ้ายสีขาว */
-        padding: 25px;
-        margin-top: 40px;
-        border-radius: 8px;
-        font-size: 1.3rem;
+        background-color: rgba(255, 255, 255, 0.15);
+        border-left: 6px solid #ffffff;
+        padding: 30px;
+        margin-top: 50px;
+        border-radius: 10px;
+        font-size: 1.4rem;
         font-style: italic;
         font-weight: 500;
         line-height: 1.6;
-        text-align: center; /* จัด Quote กึ่งกลาง */
+        text-align: center;
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        width: 100%;
     }
 
-    /* --- RESPONSIVE RULES FOR ABOUT SECTION --- */
-    /* Desktop (PC) > 992px: 2 คอลัมน์ (ซ้ายรูป ขวาข้อความ) */
+    /* >>> Desktop Only Rules (แบ่งซ้ายขวา) <<< */
     @media (min-width: 992px) {
-        .about-container {
-            grid-template-columns: 1fr 1fr; /* แบ่งเป็น 2 ส่วนเท่ากัน */
-        }
-        .about-header-large {
-            text-align: left; /* Header ชิดซ้ายบน PC */
+        .about-body-grid {
+            grid-template-columns: 1fr 1.2fr; /* แบ่ง 2 คอลัมน์ (รูป 1 : ข้อความ 1.2) */
         }
         .about-text-content {
-             font-size: 1.35rem; /* ขยาย font บน PC */
-        }
-        .quote-box {
-             font-size: 1.5rem; /* ขยาย quote บน PC */
-        }
-    }
-
-    /* Mobile/Tablet < 991px: 1 คอลัมน์ (เรียงซ้อนกัน) */
-    @media (max-width: 991px) {
-        .about-container {
-            grid-template-columns: 1fr; /* คอลัมน์เดียว */
-            text-align: center; /* จัดทุกอย่างกึ่งกลางบนมือถือ */
+            font-size: 1.35rem; /* ขยายตัวหนังสือ */
         }
         .about-header-large {
-            font-size: 2rem; /* ลดขนาด Header ลงหน่อย */
+            font-size: 3.5rem; /* ขยายหัวข้อ */
         }
-        .about-img-responsive {
-            max-width: 80%; /* รูปไม่เต็มจอเกินไปบนมือถือ */
-            margin: 0 auto; /* จัดรูปกึ่งกลาง */
+        .quote-box {
+            font-size: 1.6rem;
         }
     }
     /* ------------------------------------------------------- */
-
 
     /* Cards */
     div[data-testid="stVerticalBlockBorderWrapper"] {
@@ -291,7 +281,6 @@ def preprocess(img):
 # =========================================================
 # 5. TEST AREA
 # =========================================================
-# Logic Gate: โชว์ก็ต่อเมื่อกด Link (?start=true) หรือเคยยอมรับแล้ว
 if is_started or st.session_state.consent_accepted:
 
     # 1. Anchor Point
@@ -436,39 +425,45 @@ else:
     pass
 
 # =========================================================
-# 6. ABOUT SECTION (Updated Layout & Content)
+# 6. ABOUT SECTION (New Layout & Content)
 # =========================================================
 st.markdown('<div id="about_area" style="padding-top: 40px;"></div>', unsafe_allow_html=True) 
 
-# แปลงไฟล์รูปในเครื่องเป็น Base64
+# ดึงรูปจากเครื่อง
 img_b64 = get_image_base64("parkinson cover.png")
 
-# เช็คว่ามีรูปไหม
 if img_b64:
     img_tag = f'<img src="data:image/png;base64,{img_b64}" class="about-img-responsive" alt="Parkinson Cover">'
 else:
     img_tag = '<div style="background:rgba(255,255,255,0.2); padding:40px; color:white; border-radius:15px; text-align:center; border: 2px dashed white;">⚠️ ไม่พบไฟล์ parkinson cover.png<br>กรุณาวางไฟล์รูปภาพไว้ในโฟลเดอร์เดียวกับไฟล์โค้ด</div>'
 
-# สร้าง HTML สำหรับ About Section แบบใหม่ (ใช้ CSS Grid)
+# HTML Layout ใหม่
 about_html = f'''
 <div class="about-section">
     <div class="about-container">
+        
         <div class="about-header-large">โรคพาร์กินสัน (Parkinson’s Disease)</div>
         
-        <div class="about-image-container">
-            {img_tag}
+        <div class="about-body-grid">
+            
+            <div class="about-image-container">
+                {img_tag}
+            </div>
+            
+            <div class="about-text-container">
+                <div class="about-text-content">
+                    โรคพาร์กินสันเป็นโรคความเสื่อมของระบบประสาทที่พบได้บ่อยเป็นอันดับต้น ๆ ของโลก มักพบในผู้ที่มีอายุ 60 ปีขึ้นไป แต่ในปัจจุบันเริ่มพบผู้ป่วยในวัยที่อายุน้อยลงมากขึ้น สาเหตุหลักเกิดจากการเสื่อมของเซลล์สมองที่สร้างสาร โดพามีน (Dopamine) ซึ่งมีบทบาทสำคัญในการควบคุมการเคลื่อนไหวของร่างกาย เมื่อระดับโดพามีนลดลง จะส่งผลให้การเคลื่อนไหวผิดปกติ
+                    <br><br>
+                    อาการที่พบบ่อย ได้แก่ มือสั่นขณะอยู่นิ่ง การเคลื่อนไหวช้า กล้ามเนื้อแข็งเกร็ง การทรงตัวไม่ดี รวมถึงอาการอื่น ๆ เช่น การรับรู้กลิ่นลดลง ท้องผูก หรือความผิดปกติของการนอนหลับ ซึ่งอาจเกิดขึ้นก่อนอาการสั่น
+                </div>
+            </div>
+            
         </div>
         
-        <div class="about-text-container">
-            <div class="about-text-content">
-                โรคพาร์กินสันเป็นโรคความเสื่อมของระบบประสาทที่พบได้บ่อยเป็นอันดับต้น ๆ ของโลก มักพบในผู้ที่มีอายุ 60 ปีขึ้นไป แต่ในปัจจุบันเริ่มพบผู้ป่วยในวัยที่อายุน้อยลงมากขึ้น สาเหตุหลักเกิดจากการเสื่อมของเซลล์สมองที่สร้างสาร โดพามีน (Dopamine) ซึ่งมีบทบาทสำคัญในการควบคุมการเคลื่อนไหวของร่างกาย เมื่อระดับโดพามีนลดลง จะส่งผลให้การเคลื่อนไหวผิดปกติ
-                <br><br>
-                อาการที่พบบ่อย ได้แก่ มือสั่นขณะอยู่นิ่ง การเคลื่อนไหวช้า กล้ามเนื้อแข็งเกร็ง การทรงตัวไม่ดี รวมถึงอาการอื่น ๆ เช่น การรับรู้กลิ่นลดลง ท้องผูก หรือความผิดปกติของการนอนหลับ ซึ่งอาจเกิดขึ้นก่อนอาการสั่น
-            </div>
-            <div class="quote-box">
-                “แม้โรคพาร์กินสันจะยังไม่สามารถรักษาให้หายขาดได้ แต่การตรวจพบตั้งแต่ระยะเริ่มต้นจะช่วยให้สามารถควบคุมอาการ ชะลอความเสื่อมของโรค และช่วยให้ผู้ป่วยมีคุณภาพชีวิตที่ดีขึ้น”
-            </div>
+        <div class="quote-box">
+            “แม้โรคพาร์กินสันจะยังไม่สามารถรักษาให้หายขาดได้ แต่การตรวจพบตั้งแต่ระยะเริ่มต้นจะช่วยให้สามารถควบคุมอาการ ชะลอความเสื่อมของโรค และช่วยให้ผู้ป่วยมีคุณภาพชีวิตที่ดีขึ้น”
         </div>
+        
     </div>
 </div>
 '''
