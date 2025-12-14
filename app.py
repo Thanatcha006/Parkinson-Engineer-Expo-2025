@@ -126,12 +126,15 @@ st.markdown("""
     }
 
     .hero-img-responsive {
-        width: 100%;             /* กว้างเต็มพื้นที่ container 100% */
-        height: auto;            /* สูงอัตโนมัติ รักษาทรงภาพ */
-        margin-top: 20px;
-        margin-bottom: 30px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.3); /* เงาลอยๆ */
+        width: 100%;             /* ขยายเต็มความกว้าง Container */
+        max-width: 1000px;       /* จำกัดความกว้างสูงสุดไว้ที่ 1000px (จะได้ไม่ใหญ่เกินไปในจอคอมยักษ์) */
+        height: auto;            /* รักษาอัตราส่วนภาพ */
+        
+        margin-top: 40px;        /* เว้นระยะห่างจากปุ่ม */
+        
+        box-shadow: 0 15px 40px rgba(0,0,0,0.3); /* เงาสวยๆ */
         object-fit: cover;
+        border: 4px solid rgba(255,255,255,0.2); /* ขอบขาวจางๆ ให้ดูแพง */
     }
 
     .cta-button {
