@@ -315,32 +315,33 @@ def HOG_img(img):
 
 # --- ปรับแก้ฟังก์ชัน Preprocess เพื่อใช้ Threshold + HOG ---
 def preprocess(img_pil):
-    # 1. แปลงเป็น RGB และเป็น Numpy Array
+    # 1. แปลง PIL Image เป็น Numpy Array
+    # img_pil.convert("RGB") จะได้ RGB
     img = np.array(img_pil.convert("RGB"))
     
-    # 2. แปลงเป็น Grayscale
-    img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    # 2. แปลง RGB เป็น BGR (เพื่อให้เหมือน cv2.imread ในตอนเทรน)
+    # เพราะ cv2.imread อ่านสีเป็น BGR แต่ PIL อ่านเป็น RGB
+    img = img[:, :, ::-1].copy() 
     
-    # 3. Resize ภาพ (ใช้ INTER_AREA เพื่อรักษาความคมชัดของเส้นเวลาลดขนาด)
-    img = cv2.resize(img, (200, 200), interpolation=cv2.INTER_AREA)
-
-    # 4. Thresholding (แก้จุดนี้!)
-    # ใช้ Fixed Threshold แทน Otsu: อะไรที่เข้มกว่า 200 ให้เป็นเส้น (ขาว) พื้นหลังเป็นดำ
-    # หมายเหตุ: THRESH_BINARY_INV จะกลับขาวเป็นดำ ดำเป็นขาว
-    # (Background ขาว -> กลายเป็นดำ 0)
-    # (เส้นสีดำ -> กลายเป็นขาว 255)
-    ret, img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
-
-    # --- เช็ค Debug: ถ้าภาพดำมืดสนิท (ไม่มีเส้น) ให้แจ้งเตือนใน Console ---
-    if cv2.countNonZero(img) == 0:
-        print("Warning: Image is completely black after preprocessing!")
-
-    # 5. ส่งเข้า HOG
+    # 3. แปลงเป็น Grayscale (ตามโค้ดเทรน)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    # 4. Resize เป็น 200x200 (ตามโค้ดเทรน)
+    img = cv2.resize(img, (200, 200))
+    
+    # 5. Threshold ด้วย OTSU (ตามโค้ดเทรนเป๊ะๆ)
+    # [1] คือเอาเฉพาะตัวภาพผลลัพธ์
+    img = cv2.threshold(img, 
+                        0, 
+                        255, 
+                        cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+    
+    # 6. ส่งเข้า HOG
+    # (สมมติว่าตอนเทรนคุณเอาภาพจาก Data.append(img) ไปเข้า HOG ต่อ)
     feature_vector = HOG_img(img)
     
-    # Return ทั้ง Vector และ รูปที่ Process แล้ว (เพื่อเอาไปแสดงผล)
+    # Return ทั้ง Vector (เข้าโมเดล) และ รูปภาพ (ไว้แสดง Debug)
     return feature_vector.reshape(1, -1), img
-
 # =========================================================
 # 5. TEST AREA
 # =========================================================
