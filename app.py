@@ -148,23 +148,6 @@ st.markdown("""
         color: #4A4A4A !important;
     }
 
-    div.stButton > button {
-        background-color: #86B264 !important;
-        color: white !important;
-        border-radius: 50px !important;
-        font-size: 1.3rem !important;
-        font-weight: 700 !important;
-        padding: 15px 40px !important;
-        border: none !important;
-        box-shadow: 0 4px 15px rgba(134, 178, 100, 0.4) !important;
-        transition: transform 0.2s;
-        width: 100%;
-    }
-    div.stButton > button:hover {
-        transform: translateY(-3px);
-        background-color: #729c52 !important;
-    }
-
     /* UI Elements Colors */
     div[data-testid="stRadio"] label p { color: #333 !important; font-weight: 600; font-size: 1.1rem !important; }
     .stFileUploader label { color: #333 !important; }
