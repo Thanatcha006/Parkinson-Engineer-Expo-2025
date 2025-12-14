@@ -11,14 +11,11 @@ import os
 # ----------------------------------
 st.set_page_config(page_title="Parkinson Tester", layout="wide", initial_sidebar_state="collapsed")
 
-# Initialize Session State
 if "consent_accepted" not in st.session_state:
     st.session_state.consent_accepted = False
-if "test_started" not in st.session_state:
-    st.session_state.test_started = False  # ตัวแปรสำหรับเช็คว่ากดปุ่มเริ่มหรือยัง
 
 # ----------------------------------
-# CSS Styles (Responsive System)
+# CSS Styles
 # ----------------------------------
 st.markdown('''
 <style>
@@ -49,16 +46,18 @@ st.markdown('''
     .nav-links { display: flex; gap: 20px; }
     .nav-links a { font-weight: 600; text-decoration: none; }
 
-    /* Responsive Typography */
+    /* -------------------------------------------------------
+       RESPONSIVE TYPOGRAPHY & LAYOUT
+       ------------------------------------------------------- */
+    
+    /* Desktop (PC) */
     @media (min-width: 992px) {
         .hero-title { font-size: 4rem !important; }
         .hero-sub { font-size: 1.6rem !important; }
         .about-text { font-size: 1.5rem !important; }
         
-        /* ปรับปุ่ม Start ใน Hero ให้ใหญ่ */
-        div.stButton.hero-btn > button {
-            font-size: 1.6rem !important; padding: 20px 70px !important;
-        }
+        /* สไตล์ปุ่มเดิมของคุณ */
+        .cta-button { font-size: 1.6rem !important; padding: 20px 70px; }
         
         div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 2.5rem !important; }
         div[data-testid="stVerticalBlockBorderWrapper"] p,
@@ -71,15 +70,13 @@ st.markdown('''
         .nav-links a { font-size: 1.4rem; }
     }
 
+    /* Mobile / Tablet */
     @media (max-width: 991px) {
         .hero-title { font-size: 2.2rem !important; }
         .hero-sub { font-size: 1.1rem !important; }
         .about-text { font-size: 1.1rem !important; line-height: 1.6 !important; }
         
-        /* ปรับปุ่ม Start ใน Hero ให้พอดีมือถือ */
-        div.stButton.hero-btn > button {
-            font-size: 1.2rem !important; padding: 12px 30px !important;
-        }
+        .cta-button { font-size: 1.1rem !important; padding: 12px 30px; }
 
         div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 1.6rem !important; }
         div[data-testid="stVerticalBlockBorderWrapper"] p,
@@ -95,18 +92,9 @@ st.markdown('''
         div[data-testid="stVerticalBlockBorderWrapper"] { padding: 20px !important; }
     }
 
-    /* Fix Canvas Disappearing */
-    canvas {
-        max-width: 100% !important;
-        height: auto !important;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-    }
-    div[data-testid="stCanvas"] {
-        display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;
-    }
-
-    /* Hero Section */
+    /* -------------------------------------------------------
+       HERO STYLES (Original Button Style)
+       ------------------------------------------------------- */
     .hero-purple-container {
         background-color: #885D95; width: 100%; 
         padding: 60px 20px; margin-bottom: 40px; 
@@ -116,23 +104,39 @@ st.markdown('''
     .hero-title { font-weight: 700; margin-bottom: 15px; color: white !important; }
     .hero-sub { font-weight: 300; margin-bottom: 25px; max-width: 800px; color: #f0f0f0 !important; }
     
-    /* Custom Style for Hero Button (White/Purple) */
-    div.stButton.hero-btn > button {
-        background-color: white !important; 
+    /* นี่คือ Class ปุ่มของคุณ (เหมือนเดิม 100%) */
+    .cta-button {
+        background-color: #ffffff;
         color: #885D95 !important;
-        border-radius: 50px !important; 
-        font-weight: 700 !important; 
-        text-decoration: none !important;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
-        border: none !important;
-        transition: all 0.3s ease !important;
+        border-radius: 50px; 
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        display: inline-block; transition: all 0.3s ease;
     }
-    div.stButton.hero-btn > button:hover {
-        transform: translateY(-5px) !important;
-        background-color: #f8f8f8 !important;
+    .cta-button:hover { 
+        transform: translateY(-5px); 
+        background-color: #f8f8f8;
     }
-    
-    /* About Section */
+
+    /* -------------------------------------------------------
+       CANVAS FIX (แก้ปัญหาล้นจอในมือถือ)
+       ------------------------------------------------------- */
+    /* บังคับให้ Canvas ยืดหดตามหน้าจอ */
+    canvas {
+        max-width: 100% !important;
+        height: auto !important;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+    /* จัดกลาง */
+    div[data-testid="stCanvas"] {
+        display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;
+    }
+
+    /* -------------------------------------------------------
+       GENERAL
+       ------------------------------------------------------- */
     .about-section {
         background-color: #67ACC3; width: 100%; padding: 50px 20px; color: white;
         display: flex; flex-direction: column; align-items: center;
@@ -145,7 +149,6 @@ st.markdown('''
         border-radius: 30px; font-weight: 700; text-decoration: none; margin-top: 20px; display: inline-block;
     }
 
-    /* Cards */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
         border: 1px solid #E0D0E8 !important; border-radius: 20px !important;
@@ -153,13 +156,11 @@ st.markdown('''
     }
     div[data-testid="stVerticalBlockBorderWrapper"] h3 { color: #885D95 !important; text-align: center !important; font-weight: 700 !important; }
 
-    /* Button Primary (Process Button) */
     div.stButton > button[kind="primary"] {
         background-color: #86B264 !important; border: none !important; color: white !important;
         height: auto; padding: 15px; width: 100%; font-size: 1.3rem; border-radius: 10px;
     }
     
-    /* Radio Group Spacing */
     div[role="radiogroup"] { gap: 15px; }
 
 </style>
@@ -184,21 +185,14 @@ st.markdown("""
 # UI Content: Hero & Main
 # ----------------------------------
 
-# Hero Section
+# Hero Section (ปุ่มของคุณ แบบเดิมทุกประการ)
 st.markdown(f"""
 <div class="hero-purple-container">
     <div class="hero-title">“Early detection changes everything.”</div>
     <div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>
+    <a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>
+</div>
 """, unsafe_allow_html=True)
-
-# ปุ่ม Start Test (เปลี่ยนจาก Link เป็นปุ่ม Streamlit เพื่อคุม Logic)
-st.markdown('<div class="stButton hero-btn">', unsafe_allow_html=True)
-if st.button("เริ่มทำแบบทดสอบ ➝"):
-    st.session_state.test_started = True # กดแล้วเปลี่ยนสถานะเป็นเริ่ม
-    st.rerun() # รีเฟรชหน้าเพื่อโชว์ส่วนถัดไป
-st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown("</div>", unsafe_allow_html=True) # ปิด container
 
 # About Section
 st.markdown('<div id="about_area" style="padding-top: 20px;"></div>', unsafe_allow_html=True) 
@@ -252,136 +246,20 @@ def preprocess(img):
     return img
 
 # =========================================================
-# 5. TEST AREA (Logic: Hide -> Show Disclaimer -> Show Test)
+# 5. TEST AREA (Anchor Point)
 # =========================================================
+# เมื่อกดปุ่มจากข้างบน มันจะเลื่อนมาที่ div id="test_area" นี้
 st.markdown('<div id="test_area" style="padding-top: 40px;"></div>', unsafe_allow_html=True) 
 
-# ถ้าผู้ใช้กดปุ่มเริ่มแล้ว (test_started) หรือเคยยอมรับแล้ว (consent_accepted) ถึงจะโชว์ส่วนล่าง
-if st.session_state.test_started or st.session_state.consent_accepted:
-    
-    if not st.session_state.consent_accepted:
-        # Disclaimer Section (Inline - ตามโค้ดต้นฉบับ)
-        c1, c2, c3 = st.columns([1, 8, 1]) 
-        with c2:
-           with st.container(border=True):
-                st.markdown('<div class="disclaimer-header"><h3 style="text-align:center;">⚠️ ข้อควรทราบก่อนทำการทดสอบ</h3></div>', unsafe_allow_html=True)
-                
-                st.write("ระบบนี้เป็นเครื่องมือคัดกรองเบื้องต้นโดยใช้ปัญญาประดิษฐ์ (AI)")
-                st.error("ไม่สามารถใช้แทนการวินิจฉัยของแพทย์ผู้เชี่ยวชาญได้")
-                st.write("หากมีอาการผิดปกติหรือความกังวล กรุณาปรึกษาแพทย์เพื่อรับการตรวจเพิ่มเติม")
-                
-                st.markdown("---")
-                st.markdown("**📝 คำแนะนำเพื่อให้ผลลัพธ์แม่นยำขึ้น**")
-                st.markdown("""
-                * นั่งในท่าที่สบาย แขนวางบนพื้นราบ
-                * ทำจิตใจให้สงบ หลีกเลี่ยงความเครียด
-                * วาดเส้นด้วยความเร็วและแรงกดตามธรรมชาติ
-                """)
-                st.markdown("---")
-                
-                st.write("อาการมือสั่นอาจเกิดจากหลายสาเหตุ เช่น ความเครียด ภาวะวิตกกังวล หรือโรคอื่นที่ไม่ใช่พาร์กินสัน")
-                st.write("ระบบอาจไม่สามารถแยกแยะสาเหตุของอาการมือสั่นได้อย่างสมบูรณ์")
-                st.write("ผลลัพธ์จึงควรใช้ประกอบการพิจารณาเท่านั้น")
-                
-                st.write("") 
-                accepted = st.checkbox("ข้าพเจ้ารับทราบและยินยอมตามเงื่อนไขข้างต้น")
-                st.write("")
-                
-                if st.button("ตกลง / เริ่มทำแบบทดสอบ", disabled=not accepted, type="primary", use_container_width=True):
-                    st.session_state.consent_accepted = True
-                    st.rerun()
-
-    else:
-        # Test Section (Show ONLY if consent accepted)
-        
-        # -----------------------------------
-        # SPIRAL CARD
-        # -----------------------------------
-        with st.container(border=True): 
-            st.subheader("🌀 Spiral")
-            spiral_mode = st.radio("เลือกวิธีใส่ภาพ (Spiral)", ["Upload", "Draw"], horizontal=True, key="spiral_mode")
-            st.markdown("---")
-
-            spiral_image = None
+# เงื่อนไข: ถ้ายังไม่กด Accept Consent ให้โชว์ Disclaimer
+# (และ Disclaimer นี้จะโผล่ให้เห็นก็ต่อเมื่อผู้ใช้กดปุ่มเลื่อนลงมาเจอมัน หรือเลื่อนลงมาเอง)
+if not st.session_state.consent_accepted:
+    # Disclaimer Section (Inline)
+    c1, c2, c3 = st.columns([1, 8, 1]) 
+    with c2:
+       with st.container(border=True):
+            st.markdown('<div class="disclaimer-header"><h3 style="text-align:center;">⚠️ ข้อควรทราบก่อนทำการทดสอบ</h3></div>', unsafe_allow_html=True)
             
-            if spiral_mode == "Upload":
-                uc1, uc2, uc3 = st.columns([0.1, 1, 0.1])
-                with uc2:
-                    spiral_file = st.file_uploader("อัปโหลด Spiral", type=["png", "jpg", "jpeg"], key="spiral_upload")
-                    if spiral_file:
-                        spiral_image = Image.open(spiral_file).convert("RGB")
-                        st.image(spiral_image, caption="Preview", use_container_width=True)
-            else:
-                spiral_canvas = st_canvas(
-                    fill_color="rgba(255, 255, 255, 0)",
-                    stroke_width=6,
-                    stroke_color="black",
-                    background_color="#ffffff",
-                    height=500,
-                    width=700, 
-                    drawing_mode="freedraw",
-                    key="spiral_draw",
-                    display_toolbar=True
-                )
-                if spiral_canvas.image_data is not None:
-                    spiral_image = Image.fromarray(spiral_canvas.image_data.astype("uint8")).convert("RGB")
-            
-            st.markdown("<br>", unsafe_allow_html=True)
-            spiral_result_box = st.empty()
-
-        # -----------------------------------
-        # WAVE CARD
-        # -----------------------------------
-        st.markdown("<br>", unsafe_allow_html=True)
-        with st.container(border=True): 
-            st.subheader("🌊 Wave")
-            wave_mode = st.radio("เลือกวิธีใส่ภาพ (Wave)", ["Upload", "Draw"], horizontal=True, key="wave_mode")
-            st.markdown("---")
-
-            wave_image = None
-            
-            if wave_mode == "Upload":
-                uc1, uc2, uc3 = st.columns([0.1, 1, 0.1])
-                with uc2:
-                    wave_file = st.file_uploader("อัปโหลด Wave", type=["png", "jpg", "jpeg"], key="wave_upload")
-                    if wave_file:
-                        wave_image = Image.open(wave_file).convert("RGB")
-                        st.image(wave_image, caption="Preview", use_container_width=True)
-            else:
-                wave_canvas = st_canvas(
-                    fill_color="rgba(255, 255, 255, 0)",
-                    stroke_width=6,
-                    stroke_color="black",
-                    background_color="#ffffff",
-                    height=500,
-                    width=700,
-                    drawing_mode="freedraw",
-                    key="wave_draw",
-                    display_toolbar=True
-                )
-                if wave_canvas.image_data is not None:
-                    wave_image = Image.fromarray(wave_canvas.image_data.astype("uint8")).convert("RGB")
-            
-            st.markdown("<br>", unsafe_allow_html=True)
-            wave_result_box = st.empty()
-
-        # -----------------------------------
-        # PROCESS BUTTON
-        # -----------------------------------
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("🔍 ประมวลผลทั้งหมด", type="primary", use_container_width=True):
-            if spiral_image is not None and spiral_model is not None:
-                try:
-                    input_tensor = preprocess(spiral_image)
-                    pred = spiral_model.predict(input_tensor)[0][0]
-                    if pred > 0.5: spiral_result_box.error(f"🌀 Spiral : เสี่ยง Parkinson ({pred:.3f})")
-                    else: spiral_result_box.success(f"🌀 Spiral : ปกติ ({pred:.3f})")
-                except Exception as e: spiral_result_box.error(f"Error: {e}")
-            elif spiral_image is None: spiral_result_box.warning("🌀 Spiral : ยังไม่ได้ใส่ภาพ")
-            
-            if wave_image is not None: wave_result_box.info("🌊 Wave : มีภาพแล้ว (รอโมเดล)")
-            else: wave_result_box.warning("🌊 Wave : ยังไม่ได้ใส่ภาพ")
-
-else:
-    # ถ้ายังไม่กดปุ่มเริ่ม -> ไม่แสดงอะไรเลย (หรือจะแสดง Footer/Space ก็ได้)
-    pass
+            st.write("ระบบนี้เป็นเครื่องมือคัดกรองเบื้องต้นโดยใช้ปัญญาประดิษฐ์ (AI)")
+            st.error("ไม่สามารถใช้แทนการวินิจฉัยของแพทย์ผู้เชี่ยวชาญได้")
+            st.write("หากมีอาการ
