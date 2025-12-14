@@ -6,6 +6,7 @@ import tensorflow as tf
 from streamlit_drawable_canvas import st_canvas
 import os
 from datetime import datetime
+import streamlit.components.v1 as components
 
 # ----------------------------------
 # 1. Page Config (ต้องอยู่บรรทัดแรกสุด)
@@ -14,13 +15,20 @@ st.set_page_config(page_title="Parkinson Tester", layout="wide", initial_sidebar
 if "show_disclaimer" not in st.session_state:
     st.session_state.show_disclaimer = False
 
-if "consent_accepted" not in st.session_state:
-    st.session_state.consent_accepted = False
-
 
 if st.session_state.consent_accepted and "consent_time" not in st.session_state:
     st.session_state.consent_time = datetime.now()
 
+def scroll_to_test():
+    js = '''
+    <script>
+        // สั่งให้ Browser ค้นหาจุดที่ชื่อ test_area แล้วเลื่อนลงไปหา
+        var element = document.getElementById("test_area");
+        if(element) {
+            element.scrollIntoView({behavior: "smooth"});
+        }
+    </script>
+    '''
 
 # ----------------------------------
 # CSS Styles 
@@ -51,7 +59,7 @@ st.markdown("""
         margin-left: calc(-50vw + 50%); 
         margin-right: calc(-50vw + 50%);
         padding-top: 60px;  
-        padding-bottom: 80px;
+        padding-bottom: 40px;
         margin-bottom: 40px;
         text-align: center;
         display: flex;
@@ -84,19 +92,23 @@ st.markdown("""
     }
     
     /* Button Style */
-    .cta-button {
-        background-color: #ffffff;
+    div.stButton.hero-btn > button {
+        background-color: white !important;
         color: #885D95 !important;
-        padding: 18px 60px; 
-        border-radius: 50px; 
-        font-size: 1.2rem;
-        font-weight: 700;
-        text-decoration: none;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        border: none !important;
+        border-radius: 50px !important;
+        padding: 18px 60px !important;
+        font-size: 1.2rem !important;
+        font-weight: 700 !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+        transition: transform 0.2s !important;
         display: inline-block;
-        transition: transform 0.2s;
     }
-    .cta-button:hover { transform: translateY(-3px); background-color: #f8f8f8; }
+    div.stButton.hero-btn > button:hover {
+        transform: translateY(-3px);
+        background-color: #729c52 !important;
+    }
+    
 
     /* NAVBAR */
     .navbar {
@@ -191,12 +203,19 @@ st.markdown(f"""
 <div class="hero-purple-container">
     <div class="hero-title">“Early detection changes everything.”</div>
     <div class="hero-sub">ใช้ AI ตรวจคัดกรองพาร์กินสันเบื้องต้น แม่นยำ รวดเร็ว และรู้ผลทันที<br>เพียงแค่วาดเส้น หรืออัปโหลดรูปภาพ</div>
-    st.markdown('<a href="#test_area" class="cta-button">เริ่มทำแบบทดสอบ ➝</a>', unsafe_allow_html=True)
     st.markdown('<br><br>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 </div>
 """, unsafe_allow_html=True)
 
+col_hero_1, col_hero_2, col_hero_3 = st.columns([1, 2, 1])
+with col_hero_2:
+    # เพิ่ม Class hero-btn เพื่อแต่ง CSS เฉพาะปุ่มนี้
+    st.markdown('<div style="margin-top: -20px; margin-bottom: 20px; text-align: center;">', unsafe_allow_html=True)
+    if st.button("เริ่มทำแบบทดสอบ ➝", key="hero_start", type="primary"):
+        st.session_state.open_disclaimer = True # สั่งเปิด Modal
+        scroll_to_test() # สั่ง Scroll
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ----------------------------------
 # 6. Model & Logic
@@ -218,36 +237,36 @@ def preprocess(img):
 # =========================================================
 # DIACLAIMER
 # =========================================================
-if not st.session_state.consent_accepted:
-    st.markdown("""
-    <div class="modal-backdrop"></div>
-    <div class="modal-box">
-        <h3 style="text-align:center; margin-bottom:10px; color:#885D95;">⚠️ ข้อควรทราบก่อนทำการทดสอบ</h3>
-        <p>ระบบนี้เป็นเครื่องมือคัดกรองเบื้องต้นโดยใช้ปัญญาประดิษฐ์ (AI)</p> 
-        <b style="color:red;">ไม่สามารถใช้แทนการวินิจฉัยของแพทย์ผู้เชี่ยวชาญได้</b>
-        <p>หากมีอาการผิดปกติหรือความกังวล กรุณาปรึกษาแพทย์เพื่อรับการตรวจเพิ่มเติม</p>
-        
-        <hr style="margin: 15px 0;">
-        <b>📝 คำแนะนำเพื่อให้ผลลัพธ์แม่นยำขึ้น</b>
-        <ul>
-            <li>นั่งในท่าที่สบาย แขนวางบนพื้นราบ</li>
-            <li>ทำจิตใจให้สงบ หลีกเลี่ยงความเครียด</li>
-            <li>วาดเส้นด้วยความเร็วและแรงกดตามธรรมชาติ</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # ปุ่มยอมรับ (ต้องใช้วิธีวาง Layout หลอกๆ เพื่อให้ปุ่มไปลอยอยู่บน Modal)
-    # เนื่องจาก Streamlit วางปุ่มทับ HTML ยาก เราจึงใช้ Columns ช่วยจัดตำแหน่ง
-    col_modal1, col_modal2, col_modal3 = st.columns([1, 2, 1])
-    with col_modal2:
-        st.markdown('<div style="height: 200px;"></div>', unsafe_allow_html=True) # ดันปุ่มลงมา
-        if st.button("✅ ฉันรับทราบและยินยอม", use_container_width=True, type="primary"):
-            st.session_state.consent_accepted = True
-            st.rerun() # รีโหลดหน้าเพื่อปิด Modal
+@st.dialog("⚠️ ข้อตกลงและเงื่อนไขการใช้งาน")
+def disclaimer_popup():
+    st.write("ระบบนี้เป็นเครื่องมือคัดกรองเบื้องต้นโดยใช้ปัญญาประดิษฐ์ (AI)")
+    st.error("ไม่สามารถใช้แทนการวินิจฉัยของแพทย์ผู้เชี่ยวชาญได้")
+    st.write("หากมีอาการผิดปกติหรือความกังวล กรุณาปรึกษาแพทย์เพื่อรับการตรวจเพิ่มเติม")
     
-    # หยุดการทำงานส่วนที่เหลือจนกว่าจะกดปุ่ม
-    st.stop()
+    st.markdown("---")
+    st.markdown("**📝 คำแนะนำเพื่อให้ผลลัพธ์แม่นยำขึ้น**")
+    st.markdown("""
+    * นั่งในท่าที่สบาย แขนวางบนพื้นราบ
+    * ทำจิตใจให้สงบ หลีกเลี่ยงความเครียด
+    * วาดเส้นด้วยความเร็วและแรงกดตามธรรมชาติ
+    """)
+    st.markdown("---")
+
+    st.write("อาการมือสั่นอาจเกิดจากหลายสาเหตุ เช่น ความเครียด ภาวะวิตกกังวล หรือโรคอื่นที่ไม่ใช่พาร์กินสัน")
+    st.write("ระบบอาจไม่สามารถแยกแยะสาเหตุของอาการมือสั่นได้อย่างสมบูรณ์")
+    st.write("ผลลัพธ์จึงควรใช้ประกอบการพิจารณาเท่านั้น")
+    
+    # Checkbox ยอมรับ
+    accepted = st.checkbox("ข้าพเจ้ารับทราบและยินยอมตามเงื่อนไขข้างต้น")
+    
+    if st.button("ตกลง / เริ่มทำแบบทดสอบ", disabled=not accepted, type="primary"):
+        st.session_state.consent_accepted = True
+        st.rerun()
+
+# ตรวจสอบว่าต้องเปิด Popup หรือไม่
+if "open_disclaimer" in st.session_state and st.session_state.open_disclaimer:
+    if not st.session_state.consent_accepted:
+        disclaimer_popup()
 
 # =========================================================
 # TEST AREA
