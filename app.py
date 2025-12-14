@@ -5,7 +5,6 @@ from PIL import Image
 import tensorflow as tf
 from streamlit_drawable_canvas import st_canvas
 import os
-from datetime import datetime
 
 # ----------------------------------
 # 1. Page Config
@@ -18,7 +17,8 @@ if "consent_accepted" not in st.session_state:
 # ----------------------------------
 # CSS Styles 
 # ----------------------------------
-st.markdown("""
+# ใช้ ''' เพื่อป้องกันปัญหากับ docstring ทั่วไป
+st.markdown('''
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Open+Sans:wght@400;600;700&display=swap');
     
@@ -32,66 +32,35 @@ st.markdown("""
         color: #333333 !important;
     }
 
-    header {visibility: hidden;} /* ซ่อน Header ปกติของ Streamlit */
+    header {visibility: hidden;}
 
-    /* ========================================= */
-    /* 1. FONT SIZE ADJUSTMENT (ยกเว้น Headers) */
-    /* ========================================= */
-    
-    /* เพิ่มขนาดฟอนต์พื้นฐานให้ใหญ่ขึ้น */
-    p, li, label, span, div.stMarkdown, .about-text, .stRadio label, .stFileUploader label {
-        font-size: 1.25rem !important; /* ใหญ่ขึ้นเป็น 20px */
-        line-height: 1.8 !important;
-    }
-    
-    /* ยกเว้น Header ไม่ให้ขยายตาม (คงขนาดเดิมหรือตามคลาสที่กำหนด) */
-    h1, h2, h3, .hero-title, .hero-sub, .about-header {
-        /* ปล่อยให้ใช้ขนาดที่กำหนดเฉพาะของมัน */
-    }
-
-    /* ========================================= */
-    /* 2. RESPONSIVE NAVBAR & SIDEBAR LOGIC      */
-    /* ========================================= */
-    
-    /* --- Desktop View (หน้าจอกว้าง) --- */
+    /* RESPONSIVE NAVBAR */
     @media (min-width: 769px) {
-        /* โชว์ Custom Navbar */
         .navbar { display: flex !important; }
-        
-        /* ซ่อนปุ่ม Hamburger และ Sidebar ของ Streamlit บน Desktop */
         section[data-testid="stSidebar"] { display: none !important; }
         button[kind="header"] { display: none !important; }
     }
 
-    /* --- Mobile View (หน้าจอแคบ) --- */
     @media (max-width: 768px) {
-        /* ซ่อน Custom Navbar */
         .navbar { display: none !important; }
-        
-        /* โชว์ปุ่ม Hamburger ของ Streamlit เพื่อเปิด Sidebar */
         button[kind="header"] { 
             display: block !important; 
             visibility: visible !important;
             color: #885D95 !important;
             position: fixed;
-            top: 10px;
-            right: 15px;
-            z-index: 9999;
-            background: white;
-            border-radius: 5px;
+            top: 15px; right: 15px;
+            z-index: 99999;
+            background: rgba(255,255,255,0.9);
+            border-radius: 8px;
             padding: 5px;
         }
-        
-        /* ปรับ Hero Section บนมือถือ */
         .hero-purple-container {
-            margin-top: -50px; /* ดึงขึ้นไปแทนที่ navbar */
+            margin-top: -60px; 
             padding-top: 80px;
         }
     }
 
-    /* ========================================= */
-    /* 3. HERO SECTION                           */
-    /* ========================================= */
+    /* HERO SECTION */
     .hero-purple-container {
         background-color: #885D95;
         width: 100vw; 
@@ -101,29 +70,21 @@ st.markdown("""
         padding-bottom: 50px;
         margin-bottom: 60px; 
         text-align: center;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        display: flex; flex-direction: column; align-items: center;
         box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        padding-left: 20px;
-        padding-right: 20px;
+        padding-left: 20px; padding-right: 20px;
     }
 
     .hero-title {
         color: #ffffff !important;
-        font-size: clamp(2.2rem, 5vw, 4rem); /* Header คงเดิม/ใหญ่ตามสัดส่วน */
-        font-weight: 700; 
-        line-height: 1.2; 
-        margin-bottom: 20px;
-        text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        font-size: clamp(2.2rem, 5vw, 4rem); 
+        font-weight: 700; margin-bottom: 20px;
     }
     .hero-sub {
         color: #f0f0f0 !important;
-        font-size: clamp(1.1rem, 2vw, 1.4rem); 
-        font-weight: 300; 
-        margin-bottom: 30px; 
-        line-height: 1.6; 
-        max-width: 800px;
+        font-size: clamp(1.2rem, 2vw, 1.5rem); 
+        font-weight: 300; margin-bottom: 30px; 
+        max-width: 800px; line-height: 1.6;
     }
     
     .cta-button {
@@ -131,46 +92,32 @@ st.markdown("""
         color: #885D95 !important;
         padding: 18px 60px; 
         border-radius: 50px; 
-        font-size: 1.4rem;
-        font-weight: 700;
+        font-size: 1.4rem; font-weight: 700;
         text-decoration: none;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-        display: inline-block;
-        transition: all 0.3s ease;
+        display: inline-block; transition: all 0.3s ease;
     }
     .cta-button:hover { 
         transform: translateY(-5px); 
         background-color: #f8f8f8;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
     }
     
-    /* ========================================= */
-    /* 4. NAVBAR STYLE                           */
-    /* ========================================= */
+    /* NAVBAR STYLE */
     .navbar {
         display: flex; justify-content: space-between; align-items: center;
         padding: 15px 40px; 
         background-color: #ffffff; 
         border-bottom: none;
-        color: #555; font-weight: 600;
         width: 100vw;
         margin-left: calc(-50vw + 50%);
         margin-right: calc(-50vw + 50%);
         margin-top: -60px; 
         position: relative; z-index: 100;
     }
-    
-    .nav-links {
-        display: flex;
-        gap: 30px;
-    }
-    .nav-links a {
-        font-size: 1.3rem; /* เมนูใหญ่ขึ้น */
-    }
+    .nav-links { display: flex; gap: 30px; }
+    .nav-links a { font-size: 1.3rem; font-weight: 600; text-decoration: none; }
 
-    /* ========================================= */
-    /* 5. ABOUT SECTION (ARTICLE STYLE)          */
-    /* ========================================= */
+    /* ABOUT SECTION */
     .about-section {
         background-color: #67ACC3;
         width: 100vw;
@@ -178,74 +125,48 @@ st.markdown("""
         margin-right: calc(-50vw + 50%);
         padding: 80px 20px;
         color: white;
-        display: flex; 
-        flex-direction: column; 
-        align-items: center;
+        display: flex; flex-direction: column; align-items: center;
         margin-bottom: 80px; 
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
-    .about-content { 
-        max-width: 1000px; 
-        width: 100%;
-        text-align: left; /* จัดชิดซ้ายให้อ่านง่ายแบบบทความ */
-    }
+    .about-content { max-width: 1000px; width: 100%; text-align: left; }
+    
     .about-header { 
-        font-size: 2.5rem; 
-        font-weight: 700; 
-        margin-bottom: 40px; 
-        text-align: center;
+        font-size: 2.5rem; font-weight: 700; 
+        margin-bottom: 40px; text-align: center;
         border-bottom: 2px solid rgba(255,255,255,0.3);
-        padding-bottom: 20px;
+        padding-bottom: 20px; color: white !important;
     }
     .about-subhead {
-        font-size: 1.8rem;
-        font-weight: 600;
-        margin-top: 30px;
-        margin-bottom: 15px;
-        color: #e3f2fd;
+        font-size: 1.8rem; font-weight: 600;
+        margin-top: 30px; margin-bottom: 15px; color: #e3f2fd;
     }
-    .about-text { 
-        font-size: 1.3rem; 
+    /* ปรับฟอนต์เฉพาะใน about-text */
+    .about-text, .about-text li { 
+        font-size: 1.3rem !important; 
         line-height: 1.9; 
-        font-weight: 300; 
-        text-align: justify;
+        font-weight: 300; text-align: justify; color: white !important;
     }
-    
-    /* กรอบรูปใน About */
-    .about-img-container {
-        text-align: center;
-        margin: 30px 0;
-    }
+    .about-img-container { text-align: center; margin: 30px 0; }
     .about-img {
-        max-width: 100%;
-        border-radius: 15px;
+        max-width: 100%; height: auto; border-radius: 15px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         border: 4px solid rgba(255,255,255,0.2);
     }
-    
-    /* ปุ่ม External Link */
     .btn-hospital {
-        display: inline-block;
-        background-color: #ffffff;
-        color: #67ACC3 !important;
-        padding: 15px 30px;
-        border-radius: 40px;
-        font-weight: 700;
-        text-decoration: none;
-        margin-top: 30px;
-        font-size: 1.2rem;
-        transition: 0.3s;
-        text-align: center;
+        display: inline-block; background-color: #ffffff;
+        color: #67ACC3 !important; padding: 15px 30px;
+        border-radius: 40px; font-weight: 700;
+        text-decoration: none; margin-top: 30px;
+        font-size: 1.2rem; transition: 0.3s;
+        text-align: center; border: 2px solid white;
     }
     .btn-hospital:hover {
-        background-color: #f0f0f0;
-        transform: scale(1.05);
+        background-color: #f0f0f0; transform: scale(1.05);
         color: #558a9e !important;
     }
 
-    /* ========================================= */
-    /* 6. CARD & UI ELEMENTS                     */
-    /* ========================================= */
+    /* CARD & BUTTONS */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
         border: 1px solid #E0D0E8 !important; 
@@ -254,46 +175,31 @@ st.markdown("""
         box-shadow: 0 20px 50px rgba(0,0,0,0.1) !important;
         margin-bottom: 40px;
     }
-    
-    div[data-testid="stVerticalBlockBorderWrapper"] * {
-        color: #333333 !important;
-    }
+    div[data-testid="stVerticalBlockBorderWrapper"] * { color: #333333 !important; }
     
     div[data-testid="stVerticalBlockBorderWrapper"] h3 {
-        text-align: center !important;
-        color: #885D95 !important;
-        font-size: 2rem !important;
-        font-weight: 700 !important;
+        text-align: center !important; color: #885D95 !important;
+        font-size: 2rem !important; font-weight: 700 !important;
         margin-bottom: 25px !important;
     }
 
-    /* Button Primary (Green) */
     div.stButton > button[kind="primary"] {
         background-color: #86B264 !important;
-        border: none !important;
-        color: white !important;
-        transition: all 0.3s ease;
+        border: none !important; color: white !important;
         box-shadow: 0 4px 15px rgba(134, 178, 100, 0.3);
-        height: 60px; /* ปุ่มใหญ่ขึ้น */
-        font-size: 1.3rem;
+        height: 60px; font-size: 1.3rem;
     }
     div.stButton > button[kind="primary"]:hover {
-        background-color: #759e56 !important;
-        transform: scale(1.02);
-        box-shadow: 0 6px 20px rgba(134, 178, 100, 0.5);
+        background-color: #759e56 !important; transform: scale(1.02);
     }
 
-    .disclaimer-header h3 {
-        color: #86B264 !important; 
-    }
-    
+    .disclaimer-header h3 { color: #86B264 !important; }
 </style>
-""", unsafe_allow_html=True)
+''', unsafe_allow_html=True)
 
 # ----------------------------------
 # UI Content: Sidebar (Mobile Only)
 # ----------------------------------
-# Sidebar จะถูกซ่อนใน Desktop ด้วย CSS และโผล่มาเฉพาะ Mobile
 with st.sidebar:
     st.title("เมนูหลัก")
     st.markdown("""
@@ -307,16 +213,16 @@ with st.sidebar:
 # UI Content: Main Page
 # ----------------------------------
 
-# จุด Anchor สำหรับปุ่ม Home
+# Anchor
 st.markdown('<div id="top"></div>', unsafe_allow_html=True)
 
-# 1. Navbar (Desktop Only)
+# 1. Navbar (Desktop)
 st.markdown("""
 <div class="navbar">
     <div style="font-size: 1.5rem; color: #885D95; font-weight:700;">🧬 Parkinson AI</div>
     <div class="nav-links">
-        <a href="#about_area" style="text-decoration:none; color:#67ACC3; font-weight:600;">เกี่ยวกับโรค</a>
-        <a href="#test_area" style="text-decoration:none; color:#885D95; font-weight:600;">เริ่มใช้งาน</a>
+        <a href="#about_area" style="color:#67ACC3;">เกี่ยวกับโรค</a>
+        <a href="#test_area" style="color:#885D95;">เริ่มใช้งาน</a>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -332,9 +238,44 @@ st.markdown(f"""
 
 
 # =========================================================
-# 3. ABOUT SECTION (Article Style)
+# 3. ABOUT SECTION 
 # =========================================================
+st.markdown('<div id="about_area" style="padding-top: 20px;"></div>', unsafe_allow_html=True) 
 
+image_url = "https://kcmh.chulalongkornhospital.go.th/ec/wp-content/uploads/2019/02/Parkinson-Cover-1024x683.jpg"
+
+# ✅ เปลี่ยนเป็น f-string แบบ Single Quote สามตัว (''') เพื่อให้ Highlighter ไม่เอ๋อ
+about_html = f'''
+<div class="about-section">
+<div class="about-content">
+<div class="about-header">ศูนย์ความเป็นเลิศทางการแพทย์<br>โรคพาร์กินสัน และกลุ่มโรคความเคลื่อนไหวผิดปกติ</div>
+<div class="about-img-container">
+<img src="{image_url}" class="about-img" alt="Parkinson Info">
+</div>
+<div class="about-text">
+โรคพาร์กินสัน (Parkinson’s Disease) ถือเป็นโรคความเสื่อมของระบบประสาทที่พบได้บ่อยเป็นอันดับที่ 2 รองจากโรคอัลไซเมอร์ มักพบในผู้ที่มีอายุ 60 ปีขึ้นไป แต่ในปัจจุบันเริ่มพบผู้ป่วยที่มีอายุน้อยลงเรื่อยๆ สาเหตุหลักเกิดจากการที่เซลล์สมองในส่วนที่สร้างสารสื่อประสาทชื่อ <b>"โดพามีน (Dopamine)"</b> เกิดการเสื่อมสลาย ทำให้สมองไม่สามารถควบคุมการเคลื่อนไหวของร่างกายได้อย่างปกติ
+<br><br>
+<div class="about-subhead">อาการที่ควรสังเกต (Warning Signs)</div>
+อาการของโรคพาร์กินสันมักเริ่มต้นอย่างช้าๆ และค่อยเป็นค่อยไป โดยสัญญาณเตือนที่สำคัญแบ่งออกเป็น 2 กลุ่ม คือ:
+<ul>
+<li><b>อาการทางการเคลื่อนไหว:</b> อาการสั่นขณะอยู่นิ่ง (Resting Tremor), การเคลื่อนไหวช้า (Bradykinesia), กล้ามเนื้อแข็งเกร็ง (Rigidity) และการทรงตัวไม่ดี เดินซอยเท้าถี่</li>
+<li><b>อาการที่ไม่ใช่การเคลื่อนไหว:</b> การรับรู้กลิ่นลดลง, ท้องผูกเรื้อรัง, นอนละเมอ, ภาวะซึมเศร้า หรือวิตกกังวล ซึ่งอาการเหล่านี้อาจเกิดขึ้นก่อนอาการสั่นหลายปี</li>
+</ul>
+<div class="about-subhead">ทำไมการตรวจพบเร็วถึงสำคัญ?</div>
+แม้ว่าปัจจุบันโรคพาร์กินสันจะยังไม่สามารถรักษาให้หายขาดได้ แต่การตรวจพบในระยะเริ่มต้น (Early Detection) จะช่วยให้แพทย์สามารถวางแผนการรักษาเพื่อชะลอความเสื่อมของโรค ควบคุมอาการ และช่วยให้ผู้ป่วยสามารถใช้ชีวิตประจำวันได้อย่างมีคุณภาพยาวนานที่สุด
+<br><br>
+หากท่านหรือคนใกล้ชิดมีอาการที่น่าสงสัย ทางโรงพยาบาลจุฬาลงกรณ์ สภากาชาดไทย มีศูนย์ความเป็นเลิศทางการแพทย์ฯ ที่พร้อมให้คำปรึกษาและดูแลรักษาแบบครบวงจร ท่านสามารถศึกษาข้อมูลเพิ่มเติมได้ที่เว็บไซต์ด้านล่างนี้
+</div>
+<div style="text-align: center; margin-top: 40px;">
+<a href="https://kcmh.chulalongkornhospital.go.th/ec/excellence-for-parkinsons-disease-related-disorders-th/" target="_blank" class="btn-hospital">
+🏥 ศึกษาข้อมูลเพิ่มเติม - รพ.จุฬาลงกรณ์
+</a>
+</div>
+</div>
+</div>
+'''
+
+st.markdown(about_html, unsafe_allow_html=True)
 
 
 # ----------------------------------
@@ -378,15 +319,13 @@ if not st.session_state.consent_accepted:
             * วาดเส้นด้วยความเร็วและแรงกดตามธรรมชาติ
             """)
             st.markdown("---")
-
+            
             st.write("อาการมือสั่นอาจเกิดจากหลายสาเหตุ เช่น ความเครียด ภาวะวิตกกังวล หรือโรคอื่นที่ไม่ใช่พาร์กินสัน")
             st.write("ระบบอาจไม่สามารถแยกแยะสาเหตุของอาการมือสั่นได้อย่างสมบูรณ์")
             st.write("ผลลัพธ์จึงควรใช้ประกอบการพิจารณาเท่านั้น")
             
             st.write("") 
-            
             accepted = st.checkbox("ข้าพเจ้ารับทราบและยินยอมตามเงื่อนไขข้างต้น")
-            
             st.write("")
             
             if st.button("ตกลง / เริ่มทำแบบทดสอบ", disabled=not accepted, type="primary", use_container_width=True):
