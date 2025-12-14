@@ -6,7 +6,6 @@ import tensorflow as tf
 from streamlit_drawable_canvas import st_canvas
 import os
 from datetime import datetime
-import streamlit.components.v1 as components
 
 # ----------------------------------
 # 1. Page Config
@@ -33,16 +32,73 @@ st.markdown("""
         color: #333333 !important;
     }
 
-    header, footer {visibility: hidden;}
+    header {visibility: hidden;} /* ซ่อน Header ปกติของ Streamlit */
 
-    /* HERO SECTION */
+    /* ========================================= */
+    /* 1. FONT SIZE ADJUSTMENT (ยกเว้น Headers) */
+    /* ========================================= */
+    
+    /* เพิ่มขนาดฟอนต์พื้นฐานให้ใหญ่ขึ้น */
+    p, li, label, span, div.stMarkdown, .about-text, .stRadio label, .stFileUploader label {
+        font-size: 1.25rem !important; /* ใหญ่ขึ้นเป็น 20px */
+        line-height: 1.8 !important;
+    }
+    
+    /* ยกเว้น Header ไม่ให้ขยายตาม (คงขนาดเดิมหรือตามคลาสที่กำหนด) */
+    h1, h2, h3, .hero-title, .hero-sub, .about-header {
+        /* ปล่อยให้ใช้ขนาดที่กำหนดเฉพาะของมัน */
+    }
+
+    /* ========================================= */
+    /* 2. RESPONSIVE NAVBAR & SIDEBAR LOGIC      */
+    /* ========================================= */
+    
+    /* --- Desktop View (หน้าจอกว้าง) --- */
+    @media (min-width: 769px) {
+        /* โชว์ Custom Navbar */
+        .navbar { display: flex !important; }
+        
+        /* ซ่อนปุ่ม Hamburger และ Sidebar ของ Streamlit บน Desktop */
+        section[data-testid="stSidebar"] { display: none !important; }
+        button[kind="header"] { display: none !important; }
+    }
+
+    /* --- Mobile View (หน้าจอแคบ) --- */
+    @media (max-width: 768px) {
+        /* ซ่อน Custom Navbar */
+        .navbar { display: none !important; }
+        
+        /* โชว์ปุ่ม Hamburger ของ Streamlit เพื่อเปิด Sidebar */
+        button[kind="header"] { 
+            display: block !important; 
+            visibility: visible !important;
+            color: #885D95 !important;
+            position: fixed;
+            top: 10px;
+            right: 15px;
+            z-index: 9999;
+            background: white;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        
+        /* ปรับ Hero Section บนมือถือ */
+        .hero-purple-container {
+            margin-top: -50px; /* ดึงขึ้นไปแทนที่ navbar */
+            padding-top: 80px;
+        }
+    }
+
+    /* ========================================= */
+    /* 3. HERO SECTION                           */
+    /* ========================================= */
     .hero-purple-container {
         background-color: #885D95;
         width: 100vw; 
         margin-left: calc(-50vw + 50%); 
         margin-right: calc(-50vw + 50%);
         padding-top: 60px;  
-        padding-bottom: 40px;
+        padding-bottom: 50px;
         margin-bottom: 60px; 
         text-align: center;
         display: flex;
@@ -55,7 +111,7 @@ st.markdown("""
 
     .hero-title {
         color: #ffffff !important;
-        font-size: clamp(2rem, 5vw, 3.5rem); 
+        font-size: clamp(2.2rem, 5vw, 4rem); /* Header คงเดิม/ใหญ่ตามสัดส่วน */
         font-weight: 700; 
         line-height: 1.2; 
         margin-bottom: 20px;
@@ -63,7 +119,7 @@ st.markdown("""
     }
     .hero-sub {
         color: #f0f0f0 !important;
-        font-size: clamp(1rem, 2vw, 1.3rem); 
+        font-size: clamp(1.1rem, 2vw, 1.4rem); 
         font-weight: 300; 
         margin-bottom: 30px; 
         line-height: 1.6; 
@@ -75,7 +131,7 @@ st.markdown("""
         color: #885D95 !important;
         padding: 18px 60px; 
         border-radius: 50px; 
-        font-size: 1.3rem;
+        font-size: 1.4rem;
         font-weight: 700;
         text-decoration: none;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
@@ -88,7 +144,9 @@ st.markdown("""
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
     }
     
-    /* NAVBAR */
+    /* ========================================= */
+    /* 4. NAVBAR STYLE                           */
+    /* ========================================= */
     .navbar {
         display: flex; justify-content: space-between; align-items: center;
         padding: 15px 40px; 
@@ -104,27 +162,90 @@ st.markdown("""
     
     .nav-links {
         display: flex;
-        gap: 25px;
+        gap: 30px;
+    }
+    .nav-links a {
+        font-size: 1.3rem; /* เมนูใหญ่ขึ้น */
     }
 
-    /* ABOUT SECTION */
+    /* ========================================= */
+    /* 5. ABOUT SECTION (ARTICLE STYLE)          */
+    /* ========================================= */
     .about-section {
         background-color: #67ACC3;
         width: 100vw;
         margin-left: calc(-50vw + 50%);
         margin-right: calc(-50vw + 50%);
-        padding: 60px 20px;
+        padding: 80px 20px;
         color: white;
-        text-align: center;
-        display: flex; flex-direction: column; align-items: center;
+        display: flex; 
+        flex-direction: column; 
+        align-items: center;
         margin-bottom: 80px; 
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
-    .about-content { max-width: 900px; }
-    .about-header { font-size: 2.2rem; font-weight: 700; margin-bottom: 20px; }
-    .about-text { font-size: 1.1rem; line-height: 1.8; font-weight: 300; }
+    .about-content { 
+        max-width: 1000px; 
+        width: 100%;
+        text-align: left; /* จัดชิดซ้ายให้อ่านง่ายแบบบทความ */
+    }
+    .about-header { 
+        font-size: 2.5rem; 
+        font-weight: 700; 
+        margin-bottom: 40px; 
+        text-align: center;
+        border-bottom: 2px solid rgba(255,255,255,0.3);
+        padding-bottom: 20px;
+    }
+    .about-subhead {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        color: #e3f2fd;
+    }
+    .about-text { 
+        font-size: 1.3rem; 
+        line-height: 1.9; 
+        font-weight: 300; 
+        text-align: justify;
+    }
+    
+    /* กรอบรูปใน About */
+    .about-img-container {
+        text-align: center;
+        margin: 30px 0;
+    }
+    .about-img {
+        max-width: 100%;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        border: 4px solid rgba(255,255,255,0.2);
+    }
+    
+    /* ปุ่ม External Link */
+    .btn-hospital {
+        display: inline-block;
+        background-color: #ffffff;
+        color: #67ACC3 !important;
+        padding: 15px 30px;
+        border-radius: 40px;
+        font-weight: 700;
+        text-decoration: none;
+        margin-top: 30px;
+        font-size: 1.2rem;
+        transition: 0.3s;
+        text-align: center;
+    }
+    .btn-hospital:hover {
+        background-color: #f0f0f0;
+        transform: scale(1.05);
+        color: #558a9e !important;
+    }
 
-    /* CARD STYLE */
+    /* ========================================= */
+    /* 6. CARD & UI ELEMENTS                     */
+    /* ========================================= */
     div[data-testid="stVerticalBlockBorderWrapper"] {
         background-color: #ffffff !important;
         border: 1px solid #E0D0E8 !important; 
@@ -141,23 +262,20 @@ st.markdown("""
     div[data-testid="stVerticalBlockBorderWrapper"] h3 {
         text-align: center !important;
         color: #885D95 !important;
-        font-size: 1.8rem !important;
+        font-size: 2rem !important;
         font-weight: 700 !important;
         margin-bottom: 25px !important;
     }
 
-    div[data-testid="stRadio"] label p { color: #333 !important; font-weight: 600; font-size: 1.1rem !important; }
-    .stFileUploader label { color: #333 !important; }
-    div[class*="stMarkdown"] p { color: #333 !important; }
-    div.stButton > button { width: 100%; border-radius: 30px; height: 50px; font-size: 18px; }
-
-    /* Custom Button Color (Green) */
+    /* Button Primary (Green) */
     div.stButton > button[kind="primary"] {
         background-color: #86B264 !important;
         border: none !important;
         color: white !important;
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(134, 178, 100, 0.3);
+        height: 60px; /* ปุ่มใหญ่ขึ้น */
+        font-size: 1.3rem;
     }
     div.stButton > button[kind="primary"]:hover {
         background-color: #759e56 !important;
@@ -165,7 +283,6 @@ st.markdown("""
         box-shadow: 0 6px 20px rgba(134, 178, 100, 0.5);
     }
 
-    /* ✅ เปลี่ยนสี Header Disclaimer เป็นสีเขียว (#86B264) */
     .disclaimer-header h3 {
         color: #86B264 !important; 
     }
@@ -174,13 +291,29 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ----------------------------------
-# 5. UI Content
+# UI Content: Sidebar (Mobile Only)
+# ----------------------------------
+# Sidebar จะถูกซ่อนใน Desktop ด้วย CSS และโผล่มาเฉพาะ Mobile
+with st.sidebar:
+    st.title("เมนูหลัก")
+    st.markdown("""
+    * [🏠 หน้าหลัก](#top)
+    * [📖 เกี่ยวกับโรคพาร์กินสัน](#about_area)
+    * [🩺 แบบทดสอบคัดกรอง](#test_area)
+    """)
+    st.info("แนะนำให้เปิดใช้งานบนคอมพิวเตอร์เพื่อการแสดงผลที่สมบูรณ์ที่สุด")
+
+# ----------------------------------
+# UI Content: Main Page
 # ----------------------------------
 
-# Navbar
+# จุด Anchor สำหรับปุ่ม Home
+st.markdown('<div id="top"></div>', unsafe_allow_html=True)
+
+# 1. Navbar (Desktop Only)
 st.markdown("""
 <div class="navbar">
-    <div style="font-size: 1.3rem; color: #885D95; font-weight:700;">🧬 Parkinson AI</div>
+    <div style="font-size: 1.5rem; color: #885D95; font-weight:700;">🧬 Parkinson AI</div>
     <div class="nav-links">
         <a href="#about_area" style="text-decoration:none; color:#67ACC3; font-weight:600;">เกี่ยวกับโรค</a>
         <a href="#test_area" style="text-decoration:none; color:#885D95; font-weight:600;">เริ่มใช้งาน</a>
@@ -188,7 +321,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# HERO SECTION
+# 2. Hero Section
 st.markdown(f"""
 <div class="hero-purple-container">
     <div class="hero-title">“Early detection changes everything.”</div>
@@ -199,28 +332,13 @@ st.markdown(f"""
 
 
 # =========================================================
-# ABOUT SECTION
+# 3. ABOUT SECTION (Article Style)
 # =========================================================
-st.markdown('<div id="about_area" style="padding-top: 20px;"></div>', unsafe_allow_html=True) 
 
-st.markdown("""
-<div class="about-section">
-    <div class="about-content">
-        <div class="about-header">รู้จักกับโรคพาร์กินสัน</div>
-        <div class="about-text">
-            โรคพาร์กินสัน (Parkinson’s Disease) เป็นโรคความเสื่อมของระบบประสาทที่พบบ่อยในผู้สูงอายุ 
-            เกิดจากการที่สมองขาดสารสื่อประสาท "โดพามีน" ทำให้การควบคุมการเคลื่อนไหวผิดปกติ 
-            การตรวจพบตั้งแต่ระยะเริ่มต้นจะช่วยให้ผู้ป่วยมีคุณภาพชีวิตที่ดีขึ้นได้
-            <br><br>
-            อาการที่พบบ่อยได้แก่ อาการสั่น (Tremor) เคลื่อนไหวช้า (Bradykinesia) และกล้ามเนื้อแข็งเกร็ง (Rigidity)
-        </div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
 
 
 # ----------------------------------
-# 6. Model & Logic
+# 4. Model & Logic
 # ----------------------------------
 @st.cache_resource
 def load_spiral_model():
@@ -237,7 +355,7 @@ def preprocess(img):
     return img
 
 # =========================================================
-# DISCLAIMER / TEST AREA
+# 5. DISCLAIMER / TEST AREA
 # =========================================================
 st.markdown('<div id="test_area" style="padding-top: 50px;"></div>', unsafe_allow_html=True) 
 
@@ -246,7 +364,6 @@ if not st.session_state.consent_accepted:
     c1, c2, c3 = st.columns([1, 2, 1])
     with c2:
        with st.container(border=True):
-            # ✅ ใช้ Class ใหม่ที่เปลี่ยนสีเป็นเขียวแล้ว
             st.markdown('<div class="disclaimer-header"><h3 style="text-align:center;">⚠️ ข้อควรทราบก่อนทำการทดสอบ</h3></div>', unsafe_allow_html=True)
             
             st.write("ระบบนี้เป็นเครื่องมือคัดกรองเบื้องต้นโดยใช้ปัญญาประดิษฐ์ (AI)")
