@@ -6,6 +6,7 @@ import tensorflow as tf
 from streamlit_drawable_canvas import st_canvas
 import os
 import time
+import base64
 
 # ----------------------------------
 # 1. Page Config
@@ -16,8 +17,7 @@ st.set_page_config(page_title="Parkinson Tester", layout="wide", initial_sidebar
 if "consent_accepted" not in st.session_state:
     st.session_state.consent_accepted = False
 
-# ตรวจสอบ URL Parameter ว่ามีการกดปุ่มเริ่มมาหรือไม่
-# ถ้า URL มี ?start=true แสดงว่าผู้ใช้กดปุ่มมาแล้ว
+# เช็ค Query Params
 query_params = st.query_params
 is_started = query_params.get("start") == "true"
 
@@ -26,7 +26,7 @@ is_started = query_params.get("start") == "true"
 # ----------------------------------
 st.markdown('''
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Open+Sans:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&family=Open+Sans:wght@400;600;700&display=swap');
     
     html, body, [class*="css"], .stMarkdown { 
         font-family: 'Kanit', sans-serif !important; 
@@ -52,21 +52,86 @@ st.markdown('''
     .nav-links { display: flex; gap: 20px; }
     .nav-links a { font-weight: 600; text-decoration: none; }
 
-    /* -----------------------------------------------------------
-       RESPONSIVE TYPOGRAPHY
-       ----------------------------------------------------------- */
+    /* -------------------------------------------------------
+       RESULT CARD STYLES (NEW)
+       ------------------------------------------------------- */
+    .result-card {
+        background-color: #67ACC3; /* สีฟ้าเดียวกับ About เดิม */
+        color: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-top: 30px;
+        box-shadow: 0 10px 30px rgba(103, 172, 195, 0.4);
+        animation: fadeIn 0.8s ease;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-header {
+        font-size: 1.8rem;
+        font-weight: 700;
+        border-bottom: 2px solid rgba(255,255,255,0.3);
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    /* กล่องสถานะ (ขาว) */
+    .status-box {
+        background-color: white;
+        border-radius: 12px;
+        padding: 15px 20px;
+        color: #333;
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    /* Progress Bar */
+    .confidence-wrapper { margin-bottom: 20px; }
+    .progress-track {
+        background-color: rgba(255,255,255,0.3);
+        height: 12px;
+        border-radius: 6px;
+        width: 100%;
+        margin-top: 8px;
+        overflow: hidden;
+    }
+    .progress-fill {
+        height: 100%;
+        background-color: #fff; /* สีขาววิ่งบนพื้นฟ้า */
+        border-radius: 6px;
+    }
+
+    /* Text Details */
+    .result-label { font-weight: 600; font-size: 1.2rem; margin-top: 15px; margin-bottom: 5px; color: #e3f2fd; }
+    .result-text { font-weight: 300; font-size: 1.1rem; line-height: 1.6; margin-bottom: 15px; }
+    .result-list { margin-top: 5px; padding-left: 20px; font-weight: 300; line-height: 1.6; }
+    .disclaimer-small {
+        font-size: 0.9rem;
+        background: rgba(0,0,0,0.1);
+        padding: 10px;
+        border-radius: 8px;
+        margin-top: 20px;
+        font-style: italic;
+    }
+
+    /* -------------------------------------------------------
+       RESPONSIVE
+       ------------------------------------------------------- */
     @media (min-width: 992px) {
         .hero-title { font-size: 4rem !important; }
         .hero-sub { font-size: 1.6rem !important; }
-        .about-text { font-size: 1.5rem !important; }
-        
-        /* สไตล์ปุ่มเดิมของคุณ */
         .cta-button { font-size: 1.6rem !important; padding: 20px 70px; }
         
         div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 2.5rem !important; }
-        div[data-testid="stVerticalBlockBorderWrapper"] p,
-        div[data-testid="stVerticalBlockBorderWrapper"] label,
-        div[data-testid="stVerticalBlockBorderWrapper"] li { font-size: 1.5rem !important; }
+        div[data-testid="stVerticalBlockBorderWrapper"] p, label, li { font-size: 1.5rem !important; }
         
         div[data-testid="stCanvas"] button {
             width: 60px !important; height: 60px !important; transform: scale(1.4); margin: 10px 15px !important;
@@ -77,19 +142,14 @@ st.markdown('''
     @media (max-width: 991px) {
         .hero-title { font-size: 2.2rem !important; }
         .hero-sub { font-size: 1.1rem !important; }
-        .about-text { font-size: 1.1rem !important; line-height: 1.6 !important; }
-        
         .cta-button { font-size: 1.1rem !important; padding: 12px 30px; }
 
         div[data-testid="stVerticalBlockBorderWrapper"] h3 { font-size: 1.6rem !important; }
-        div[data-testid="stVerticalBlockBorderWrapper"] p,
-        div[data-testid="stVerticalBlockBorderWrapper"] label,
-        div[data-testid="stVerticalBlockBorderWrapper"] li { font-size: 1.1rem !important; }
+        div[data-testid="stVerticalBlockBorderWrapper"] p, label, li { font-size: 1.1rem !important; }
 
         div[data-testid="stCanvas"] button {
             width: 40px !important; height: 40px !important; transform: scale(1.0); margin: 5px !important;
         }
-        
         .navbar { flex-direction: column; gap: 10px; padding: 10px; }
         .nav-links a { font-size: 1rem; }
         div[data-testid="stVerticalBlockBorderWrapper"] { padding: 20px !important; }
@@ -116,32 +176,16 @@ st.markdown('''
     .hero-title { font-weight: 700; margin-bottom: 15px; color: white !important; }
     .hero-sub { font-weight: 300; margin-bottom: 25px; max-width: 800px; color: #f0f0f0 !important; }
     
-    /* ปุ่ม HTML <a> Class เดิม 100% */
+    /* ปุ่ม HTML <a> เดิม */
     .cta-button {
-        background-color: #ffffff;
-        color: #885D95 !important;
-        border-radius: 50px; 
-        font-weight: 700;
-        text-decoration: none;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-        display: inline-block; transition: all 0.3s ease;
+        background-color: white; color: #885D95 !important;
+        border-radius: 50px; font-weight: 700; text-decoration: none;
+        display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        cursor: pointer;
     }
-    .cta-button:hover { 
+    .cta-button:hover {
         transform: translateY(-5px); 
         background-color: #f8f8f8;
-    }
-    
-    /* About Section */
-    .about-section {
-        background-color: #67ACC3; width: 100%; padding: 50px 20px; color: white;
-        display: flex; flex-direction: column; align-items: center;
-    }
-    .about-content { max-width: 1000px; width: 100%; }
-    .about-header { font-size: 2rem; font-weight: 700; text-align: center; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 15px; margin-bottom: 30px; }
-    .about-img { max-width: 100%; height: auto; border-radius: 10px; margin: 20px 0; border: 4px solid rgba(255,255,255,0.2); }
-    .btn-hospital {
-        background-color: white; color: #67ACC3 !important; padding: 12px 25px;
-        border-radius: 30px; font-weight: 700; text-decoration: none; margin-top: 20px; display: inline-block;
     }
 
     /* Cards */
@@ -171,7 +215,6 @@ st.markdown("""
 <div class="navbar">
     <div style="font-size: 1.5rem; color: #885D95; font-weight:700;">🧬 Parkinson AI</div>
     <div class="nav-links">
-        <a href="#about_area" style="color:#67ACC3;">เกี่ยวกับโรค</a>
         <a href="#test_area" style="color:#885D95;">เริ่มใช้งาน</a>
     </div>
 </div>
@@ -180,7 +223,6 @@ st.markdown("""
 # ----------------------------------
 # UI Content: Hero
 # ----------------------------------
-# ปุ่ม <a> ที่เมื่อกดจะ Reload หน้าพร้อมพารามิเตอร์ ?start=true
 st.markdown(f"""
 <div class="hero-purple-container">
     <div class="hero-title">“Early detection changes everything.”</div>
@@ -207,24 +249,22 @@ def preprocess(img):
     return img
 
 # =========================================================
-# 5. TEST AREA (แทรกเนื้อหาระหว่าง Hero และ About)
+# 5. TEST AREA
 # =========================================================
-# เนื้อหาจะถูกสร้างขึ้นเมื่อกดปุ่ม (is_started = True) หรือเคยยอมรับเงื่อนไขแล้ว
-
 if is_started or st.session_state.consent_accepted:
 
-    # 1. จุด Anchor ที่จะให้เลื่อนลงมาหา
     st.markdown('<div id="test_content_anchor" style="padding-top: 20px;"></div>', unsafe_allow_html=True)
 
-    # 2. JavaScript เพื่อเลื่อนหน้าจออัตโนมัติ (Auto-scroll)
-    # สคริปต์นี้จะ "ตามหา" ID test_content_anchor ทุกๆ 0.1 วินาที จนกว่าจะเจอ แล้วเลื่อนลงมา
+    # JS Auto-scroll
     st.markdown("""
         <script>
             var targetId = 'test_content_anchor';
             var scrollInterval = setInterval(function() {
                 var element = window.parent.document.getElementById(targetId);
                 if (element) {
-                    element.scrollIntoView({behavior: "smooth", block: "center"});
+                    setTimeout(function(){
+                         element.scrollIntoView({behavior: "smooth", block: "center"});
+                    }, 300);
                     clearInterval(scrollInterval);
                 }
             }, 100);
@@ -232,16 +272,14 @@ if is_started or st.session_state.consent_accepted:
     """, unsafe_allow_html=True)
 
     if not st.session_state.consent_accepted:
-        # Disclaimer Section
+        # Disclaimer
         c1, c2, c3 = st.columns([1, 8, 1]) 
         with c2:
            with st.container(border=True):
                 st.markdown('<div class="disclaimer-header"><h3 style="text-align:center;">⚠️ ข้อควรทราบก่อนทำการทดสอบ</h3></div>', unsafe_allow_html=True)
-                
                 st.write("ระบบนี้เป็นเครื่องมือคัดกรองเบื้องต้นโดยใช้ปัญญาประดิษฐ์ (AI)")
                 st.error("ไม่สามารถใช้แทนการวินิจฉัยของแพทย์ผู้เชี่ยวชาญได้")
                 st.write("หากมีอาการผิดปกติหรือความกังวล กรุณาปรึกษาแพทย์เพื่อรับการตรวจเพิ่มเติม")
-                
                 st.markdown("---")
                 st.markdown("**📝 คำแนะนำเพื่อให้ผลลัพธ์แม่นยำขึ้น**")
                 st.markdown("""
@@ -250,30 +288,25 @@ if is_started or st.session_state.consent_accepted:
                 * วาดเส้นด้วยความเร็วและแรงกดตามธรรมชาติ
                 """)
                 st.markdown("---")
-                
                 st.write("อาการมือสั่นอาจเกิดจากหลายสาเหตุ เช่น ความเครียด ภาวะวิตกกังวล หรือโรคอื่นที่ไม่ใช่พาร์กินสัน")
                 st.write("ระบบอาจไม่สามารถแยกแยะสาเหตุของอาการมือสั่นได้อย่างสมบูรณ์")
                 st.write("ผลลัพธ์จึงควรใช้ประกอบการพิจารณาเท่านั้น")
-                
                 st.write("") 
                 accepted = st.checkbox("ข้าพเจ้ารับทราบและยินยอมตามเงื่อนไขข้างต้น")
                 st.write("")
-                
                 if st.button("ตกลง / เริ่มทำแบบทดสอบ", disabled=not accepted, type="primary", use_container_width=True):
                     st.session_state.consent_accepted = True
                     st.rerun()
-
     else:
-        # Testing Tool Section (Spiral / Wave)
-        
+        # Test Section
+        st.markdown('<div id="test_area" style="padding-top: 40px;"></div>', unsafe_allow_html=True)
+
         # SPIRAL CARD
         with st.container(border=True): 
             st.subheader("🌀 Spiral")
             spiral_mode = st.radio("เลือกวิธีใส่ภาพ (Spiral)", ["Upload", "Draw"], horizontal=True, key="spiral_mode")
             st.markdown("---")
-
             spiral_image = None
-            
             if spiral_mode == "Upload":
                 uc1, uc2, uc3 = st.columns([0.1, 1, 0.1])
                 with uc2:
@@ -295,7 +328,6 @@ if is_started or st.session_state.consent_accepted:
                 )
                 if spiral_canvas.image_data is not None:
                     spiral_image = Image.fromarray(spiral_canvas.image_data.astype("uint8")).convert("RGB")
-            
             st.markdown("<br>", unsafe_allow_html=True)
             spiral_result_box = st.empty()
 
@@ -305,9 +337,7 @@ if is_started or st.session_state.consent_accepted:
             st.subheader("🌊 Wave")
             wave_mode = st.radio("เลือกวิธีใส่ภาพ (Wave)", ["Upload", "Draw"], horizontal=True, key="wave_mode")
             st.markdown("---")
-
             wave_image = None
-            
             if wave_mode == "Upload":
                 uc1, uc2, uc3 = st.columns([0.1, 1, 0.1])
                 with uc2:
@@ -329,7 +359,6 @@ if is_started or st.session_state.consent_accepted:
                 )
                 if wave_canvas.image_data is not None:
                     wave_image = Image.fromarray(wave_canvas.image_data.astype("uint8")).convert("RGB")
-            
             st.markdown("<br>", unsafe_allow_html=True)
             wave_result_box = st.empty()
 
@@ -340,50 +369,68 @@ if is_started or st.session_state.consent_accepted:
                 try:
                     input_tensor = preprocess(spiral_image)
                     pred = spiral_model.predict(input_tensor)[0][0]
-                    if pred > 0.5: spiral_result_box.error(f"🌀 Spiral : เสี่ยง Parkinson ({pred:.3f})")
-                    else: spiral_result_box.success(f"🌀 Spiral : ปกติ ({pred:.3f})")
-                except Exception as e: spiral_result_box.error(f"Error: {e}")
-            elif spiral_image is None: spiral_result_box.warning("🌀 Spiral : ยังไม่ได้ใส่ภาพ")
+                    
+                    # คำนวณความมั่นใจและสถานะ
+                    if pred > 0.5:
+                        status_text = "มีความเสี่ยงพาร์กินสัน (Risk Detected)"
+                        status_color = "#D32F2F" # สีแดง
+                        confidence = pred * 100
+                        desc_text = "รูปแบบการวาดมีความสั่นไหวหรือไม่ต่อเนื่อง ซึ่งอาจสัมพันธ์กับอาการเริ่มต้นของโรค"
+                    else:
+                        status_text = "✅ ไม่พบความผิดปกติเด่นชัด (Normal)"
+                        status_color = "#388E3C" # สีเขียว
+                        confidence = (1 - pred) * 100
+                        desc_text = "รูปแบบการวาดมีความใกล้เคียงกับกลุ่มตัวอย่างทั่วไป ไม่พบอาการสั่นที่ผิดปกติชัดเจน"
+                    
+                    # สร้าง HTML Result Card
+                    result_html = f"""
+                    <div class="result-card">
+                        <div class="result-header">🧪 ผลการคัดกรองเบื้องต้น (Spiral Test)</div>
+                        
+                        <div class="status-box" style="color: {status_color};">
+                            {status_text}
+                        </div>
+                        
+                        <div class="confidence-wrapper">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                                <span>ระดับความเชื่อมั่นของโมเดล (Confidence)</span>
+                                <span>{confidence:.1f}%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: {confidence}%;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="result-label">📝 คำอธิบาย:</div>
+                        <div class="result-text">{desc_text}</div>
+                        
+                        <div class="result-label">💡 คำแนะนำ:</div>
+                        <ul class="result-list">
+                            <li>หากยังมีความกังวล หรือผลการทดสอบไม่ชัดเจน สามารถทำการทดสอบซ้ำได้</li>
+                            <li>ควรทำในสภาวะที่ผ่อนคลาย ไม่เกร็งข้อมือ</li>
+                            <li>หากผลระบุว่ามีความเสี่ยง ควรปรึกษาแพทย์เพื่อรับการตรวจวินิจฉัยอย่างละเอียด</li>
+                        </ul>
+                        
+                        <div class="disclaimer-small">
+                            ⚠️ หมายเหตุ: ผลลัพธ์นี้เกิดจากการประมวลผลด้วย AI เพื่อการคัดกรองเบื้องต้นเท่านั้น 
+                            <b>ไม่ใช่การวินิจฉัยทางการแพทย์</b> โปรดใช้วิจารณญาณ
+                        </div>
+                    </div>
+                    """
+                    # แสดงผล Card
+                    spiral_result_box.markdown(result_html, unsafe_allow_html=True)
+                    
+                except Exception as e: 
+                    spiral_result_box.error(f"Error: {e}")
+            elif spiral_image is None: 
+                spiral_result_box.warning("🌀 Spiral : ยังไม่ได้ใส่ภาพ")
             
-            if wave_image is not None: wave_result_box.info("🌊 Wave : มีภาพแล้ว (รอโมเดล)")
-            else: wave_result_box.warning("🌊 Wave : ยังไม่ได้ใส่ภาพ")
+            # Wave (Placeholder logic)
+            if wave_image is not None: 
+                wave_result_box.info("🌊 Wave : มีภาพแล้ว (รอโมเดล)")
+            else: 
+                wave_result_box.warning("🌊 Wave : ยังไม่ได้ใส่ภาพ")
 
 else:
     # ถ้ายังไม่กดปุ่ม -> ไม่แสดงเนื้อหา
     pass
-
-# =========================================================
-# 6. ABOUT SECTION (อยู่ล่างสุดเสมอ)
-# =========================================================
-st.markdown('<div id="about_area" style="padding-top: 40px;"></div>', unsafe_allow_html=True) 
-
-image_url = "https://kcmh.chulalongkornhospital.go.th/ec/wp-content/uploads/2019/02/Parkinson-Cover-1024x683.jpg"
-
-about_html = f'''
-<div class="about-section">
-<div class="about-content">
-<div class="about-header">ทำความรู้จักกับ<br>โรคพาร์กินสัน (Parkinson’s Disease)</div>
-<div style="text-align:center;"><img src="{image_url}" class="about-img" alt="Parkinson Info"></div>
-<div class="about-text">
-โรคพาร์กินสันเป็นโรคความเสื่อมของระบบประสาทที่พบได้บ่อยเป็นอันดับต้น ๆ ของโลก มักพบในผู้ที่มีอายุ 60 ปีขึ้นไป แต่ในปัจจุบันเริ่มพบผู้ป่วยในวัยที่อายุน้อยลงมากขึ้น สาเหตุหลักเกิดจากการเสื่อมของเซลล์สมองที่สร้างสาร โดพามีน (Dopamine) ซึ่งมีบทบาทสำคัญในการควบคุมการเคลื่อนไหวของร่างกาย เมื่อระดับโดพามีนลดลง จะส่งผลให้การเคลื่อนไหวผิดปกติ
-<br><br>
-<div style="font-weight:600; margin-bottom:10px; color:#e3f2fd;">อาการที่ควรสังเกต (Warning Signs)</div>
-อาการของโรคพาร์กินสันมักเริ่มต้นอย่างช้าๆ และค่อยเป็นค่อยไป โดยสัญญาณเตือนที่สำคัญแบ่งออกเป็น 2 กลุ่ม คือ:
-<ul>
-<li><b>อาการทางการเคลื่อนไหว:</b> อาการสั่นขณะอยู่นิ่ง (Resting Tremor), การเคลื่อนไหวช้า (Bradykinesia), กล้ามเนื้อแข็งเกร็ง (Rigidity) และการทรงตัวไม่ดี เดินซอยเท้าถี่</li>
-<li><b>อาการที่ไม่ใช่การเคลื่อนไหว:</b> การรับรู้กลิ่นลดลง, ท้องผูกเรื้อรัง, นอนละเมอ, ภาวะซึมเศร้า หรือวิตกกังวล ซึ่งอาการเหล่านี้อาจเกิดขึ้นก่อนอาการสั่นหลายปี</li>
-</ul>
-<div style="font-weight:600; margin-bottom:10px; color:#e3f2fd;">ทำไมการตรวจพบเร็วถึงสำคัญ?</div>
-แม้ว่าปัจจุบันโรคพาร์กินสันจะยังไม่สามารถรักษาให้หายขาดได้ แต่การตรวจพบในระยะเริ่มต้น (Early Detection) จะช่วยให้แพทย์สามารถวางแผนการรักษาเพื่อชะลอความเสื่อมของโรค ควบคุมอาการ และช่วยให้ผู้ป่วยสามารถใช้ชีวิตประจำวันได้อย่างมีคุณภาพยาวนานที่สุด
-<br><br>
-หากท่านหรือคนใกล้ชิดมีอาการที่น่าสงสัย ทางโรงพยาบาลจุฬาลงกรณ์ สภากาชาดไทย มีศูนย์ความเป็นเลิศทางการแพทย์ฯ ที่พร้อมให้คำปรึกษาและดูแลรักษาแบบครบวงจร ท่านสามารถศึกษาข้อมูลเพิ่มเติมได้ที่เว็บไซต์ด้านล่างนี้
-</div>
-<div style="text-align: center; margin-top: 40px;">
-<a href="https://kcmh.chulalongkornhospital.go.th/ec/excellence-for-parkinsons-disease-related-disorders-th/" target="_blank" class="btn-hospital">
-🏥 ศึกษาข้อมูลเพิ่มเติม - รพ.จุฬาลงกรณ์
-</a>
-</div>
-</div>
-</div>
-'''
-st.markdown(about_html, unsafe_allow_html=True)
